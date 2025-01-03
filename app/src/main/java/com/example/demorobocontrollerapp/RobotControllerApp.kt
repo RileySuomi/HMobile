@@ -1,6 +1,8 @@
 package com.example.demorobocontrollerapp
 
 import android.content.res.Configuration
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -25,8 +28,10 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,6 +40,7 @@ import com.example.demorobocontrollerapp.ui.theme.DemoRoboControllerAppTheme
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.unit.Dp
 
 // General setting
 const val TextColor = 0xFF212529 // dark gray // OxFF000000
@@ -61,7 +67,7 @@ const val NavButtonMaxWidth = 0.2f
 @Composable
 fun GreetingPreview() {
     DemoRoboControllerAppTheme {
-        DisplayApp(viewModel = RobotControllerViewModel()) // pass in the viewModel class
+        DisplayApp(viewModel = RobotControllerViewModel()) // pass in the 'viewModel' class
     }
 }
 
@@ -69,17 +75,22 @@ fun GreetingPreview() {
 fun DisplayApp(viewModel: RobotControllerViewModel) {
     val configuration = LocalConfiguration.current // check view mode
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    // animate the translation and alpha based on orientation
+    val offSetVal = animateDpAsState(targetValue = if (isLandscape) 200.dp else 0.dp)
+    val alphaVal = animateFloatAsState(targetValue = if (isLandscape) 0.5f else 1f)
     Column(
         modifier = Modifier.fillMaxSize() // use the whole screen size
     ) {
         if (isLandscape) { //'Landscape' view design section
-            //Monitor sections
+            // Monitor sections
             Column(
                 modifier = Modifier
                     .fillMaxWidth() // use allocated space as much as possible
                     .weight(0.4f) // take portion of the space vertically - increase/decrease as needed
+                    .offset(x = offSetVal.value)
+                    .alpha(alphaVal.value)
             ){
-                ShowMonitor(viewModel.displayText.value) // .value makes it a string
+                ShowMonitor(viewModel.displayText.value) // .value gets it as string
             }
 
             // Manipulation, Navigation,  Elevation column
@@ -88,41 +99,69 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
                     .fillMaxWidth() // use allocated space as much as possible
                     .weight(1.4f) // take portion of the space vertically - increase/decrease as needed
                     .padding(2.dp)
+                    .offset(x = offSetVal.value)
+                    .alpha(alphaVal.value)
             ){
 
                 // Manipulation ('Grab' & 'Release' buttons) & Elevation ('Lift' & 'Lower' buttons)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(2.dp),
+                        .padding(2.dp)
+                        .offset(x = offSetVal.value)
+                        .alpha(alphaVal.value),
                     horizontalArrangement = Arrangement.SpaceAround // Updated to SpaceAround
                 ) {
                     Column(
-                        modifier = Modifier.weight(1f).padding(2.dp),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(2.dp)
+                            .offset(x = offSetVal.value)
+                            .alpha(alphaVal.value),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Column(modifier = Modifier.padding(3.dp)){
+                        Column(modifier = Modifier
+                            .padding(3.dp)
+                            .offset(x = offSetVal.value)
+                            .alpha(alphaVal.value)){
                             Grab(viewModel, isLandscape)
                         }
-                        Column(modifier = Modifier.padding(3.dp)){
+                        Column(modifier = Modifier
+                            .padding(3.dp)
+                            .offset(x = offSetVal.value)
+                            .alpha(alphaVal.value)){
                             Lift(viewModel, isLandscape)
                         }
                     }
                     Column(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .offset(x = offSetVal.value)
+                            .alpha(alphaVal.value),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Bottom
                     ) {
                         Power(viewModel, isLandscape)
                     }
                     Column(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .offset(x = offSetVal.value)
+                            .alpha(alphaVal.value),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Column(modifier = Modifier.padding(3.dp)){
+                        Column(modifier = Modifier
+                            .padding(3.dp)
+                            .offset(x = offSetVal.value)
+                            .alpha(alphaVal.value))
+                        {
                             Release(viewModel, isLandscape)
                         }
-                        Column(modifier = Modifier.padding(3.dp)){
+                        Column(modifier = Modifier
+                            .padding(3.dp)
+                            .offset(x = offSetVal.value)
+                            .alpha(alphaVal.value))
+                        {
                             Lower(viewModel, isLandscape)
                         }
                     }
@@ -131,9 +170,11 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
                 //Navigation ('Forward','Backward','Left','Right' buttons) section
                 Column(modifier = Modifier
                     .fillMaxWidth()
-                    .weight(0.8f),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally)
+                    .weight(0.8f)
+                    .offset(x = offSetVal.value)
+                    .alpha(alphaVal.value),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally)
                 {
                     Forward(viewModel, isLandscape)
                 }
@@ -141,9 +182,14 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
                 Column(modifier = Modifier
                     .fillMaxWidth()
                     .weight(0.8f)
+                    .offset(x = offSetVal.value)
+                    .alpha(alphaVal.value)
                         ){
                             Row(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .offset(x = offSetVal.value)
+                                    .alpha(alphaVal.value),
                                 horizontalArrangement = Arrangement.SpaceAround
                             ) {
                                 Left(viewModel, isLandscape)
@@ -153,7 +199,9 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
 
                 Column(modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f),
+                    .weight(1f)
+                    .offset(x = offSetVal.value)
+                    .alpha(alphaVal.value),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally)
                 {
@@ -166,6 +214,8 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
                 modifier = Modifier
                     .fillMaxWidth() // use allocated space as much as possible
                     .weight(0.7f) // take portion of the space vertically - increase/decrease as needed
+                    .offset(x = offSetVal.value)
+                    .alpha(alphaVal.value)
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     ShowMonitor(viewModel.displayText.value) // .value makes it a string
@@ -176,7 +226,9 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(0.3f),
+                    .weight(0.3f)
+                    .offset(x = offSetVal.value)
+                    .alpha(alphaVal.value),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ){
@@ -187,7 +239,9 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(0.4f),
+                    .weight(0.4f)
+                    .offset(x = offSetVal.value)
+                    .alpha(alphaVal.value),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -204,7 +258,9 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(0.4f),
+                    .weight(0.4f)
+                    .offset(x = offSetVal.value)
+                    .alpha(alphaVal.value),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -221,14 +277,18 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1.2f),
+                    .weight(1.2f)
+                    .offset(x = offSetVal.value)
+                    .alpha(alphaVal.value),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Column(modifier = Modifier
                     .fillMaxWidth()
                     .weight(0.8f)
-                    .padding(8.dp),
+                    .padding(8.dp)
+                    .offset(x = offSetVal.value)
+                    .alpha(alphaVal.value),
                     verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally)
                 {
@@ -238,11 +298,15 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
                 Column(modifier = Modifier
                     .fillMaxWidth()
                     .weight(0.8f)
+                    .offset(x = offSetVal.value)
+                    .alpha(alphaVal.value)
                 ){
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp),
+                            .padding(8.dp)
+                            .offset(x = offSetVal.value)
+                            .alpha(alphaVal.value),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         Left(viewModel, isLandscape)
@@ -254,13 +318,14 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
                 Column(modifier = Modifier
                     .fillMaxWidth()
                     .weight(0.8f)
-                    .padding(8.dp),
+                    .padding(8.dp)
+                    .offset(x = offSetVal.value)
+                    .alpha(alphaVal.value),
                     verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally)
                 {
                     Backward(viewModel, isLandscape)
                 }
-
             }
         }
     }
@@ -298,11 +363,12 @@ fun Power(displayText: RobotControllerViewModel, isLandscape: Boolean) {
 // Monitor: display text/action that's taking place/happening
 @Composable
 fun ShowMonitor(displayText: String){ //
+    // TODO: might need this - , offSetVal: State<Dp>, alphaVal: State<Float>
     Column(
         // background
         modifier = Modifier
-            .fillMaxSize()
-            .background(Color(MonitorBgColor)), // makes the column take up the full available space
+            .fillMaxSize() // makes the column take up the full available space
+            .background(Color(MonitorBgColor)),
         verticalArrangement = Arrangement.SpaceEvenly, // evenly spaces the header, main, and footer
         horizontalAlignment = Alignment.CenterHorizontally // centers horizontally (optional)
     ) {
