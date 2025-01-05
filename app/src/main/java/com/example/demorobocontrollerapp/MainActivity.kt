@@ -27,8 +27,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-// TODO: Regularly update to Github 'main' branch using Terminal(local):
-//      git add .
-//      git commit -m "commit message here"
-//      git push origin main
