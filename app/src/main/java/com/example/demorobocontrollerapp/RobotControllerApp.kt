@@ -79,7 +79,7 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
                     .fillMaxWidth() // use allocated space as much as possible
                     .weight(0.4f) // take portion of the space vertically - increase/decrease as needed
             ){
-                ShowMonitor(viewModel.displayText) // .value gets it as string
+                ShowMonitor(viewModel.displayText.value) // .value gets it as string
             }
 
             // Manipulation, Navigation,  Elevation column
@@ -181,7 +181,7 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
                     .weight(0.7f) // take portion of the space vertically - increase/decrease as needed
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    ShowMonitor(viewModel.displayText) // .value makes it a string
+                    ShowMonitor(viewModel.displayText.value) // .value makes it a string
                 }
             }
 
@@ -279,17 +279,17 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
 }
 
 // Power button to turn on/off connection
-@Composable // TODO: make toogle/switch work
-fun Power(model: RobotControllerViewModel, isLandscape: Boolean) {
+@Composable // TODO: make toggle/switch work
+fun Power(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
     Button(
         onClick = {
-            model.switchPowerStatus()  // Toggle power status
-            model.setDisplayText(
-                if (model.isPowerOn) "Let's lift with ease!" else "Rest mode!"
+            viewModel.switchPowerStatus()  // toggle power status
+            viewModel.setDisplayText(
+                if (viewModel.isPowerOn.value) "Let's lift with ease!" else "Rest mode!"
             )
         },
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(if (model.isPowerOn) 0xFF4CAF50 else 0xFFFF5733), // green if on, red if off
+            containerColor = Color(if (viewModel.isPowerOn.value) 0xFF4CAF50 else 0xFFFF5733), // green if on, red if off
             contentColor = Color(TextColor) //
         ),
         modifier = Modifier
@@ -299,7 +299,7 @@ fun Power(model: RobotControllerViewModel, isLandscape: Boolean) {
     ) {
         // Display button text and icon
         Text(
-            if (model.isPowerOn) "On" else "Off",
+            if (viewModel.isPowerOn.value) "On" else "Off",
             fontSize = ManipElevFontSize,
             fontWeight = FontWeight.Bold
         )
@@ -310,7 +310,6 @@ fun Power(model: RobotControllerViewModel, isLandscape: Boolean) {
 // Monitor: display text/action that's taking place/happening
 @Composable
 fun ShowMonitor(displayText: String){ //
-    // TODO: might need this - , offSetVal: State<Dp>, alphaVal: State<Float>
     Column(
         // background
         modifier = Modifier
@@ -341,9 +340,9 @@ fun ShowMonitor(displayText: String){ //
 
 // Manipulation: consist of 'Grab' & 'Release' btn
 @Composable
-fun Grab(displayText: RobotControllerViewModel , isLandscape: Boolean) { // 'Grab'
+fun Grab(viewModel: RobotControllerViewModel , isLandscape: Boolean) { // 'Grab'
     Button(
-        onClick = { displayText.setDisplayText( "Grabbing Item..." )},
+        onClick = { viewModel.setDisplayText("Grabbing...")},
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(ManipBtnColor), // button background color (soft green)
             contentColor = Color(TextColor)
@@ -359,9 +358,9 @@ fun Grab(displayText: RobotControllerViewModel , isLandscape: Boolean) { // 'Gra
 }
 
 @Composable
-fun Release(displayText: RobotControllerViewModel, isLandscape: Boolean){
+fun Release(viewModel: RobotControllerViewModel, isLandscape: Boolean){
     Button(
-        onClick = { displayText.setDisplayText("Releasing Item...") },
+        onClick = { viewModel.setDisplayText("Releasing Item...") },
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(ManipBtnColor), // button background color (soft green)
             contentColor = Color(TextColor)
@@ -375,11 +374,11 @@ fun Release(displayText: RobotControllerViewModel, isLandscape: Boolean){
     }
 }
 
-// Elevation: consist of 'Lift' & 'Lower' buttons
+// Elevation: consist of 'Lift' & 'Lower' buttons 
 @Composable
-fun Lift(displayText: RobotControllerViewModel, isLandscape: Boolean) { // 'Lift' btn
+fun Lift(viewModel: RobotControllerViewModel, isLandscape: Boolean) { // 'Lift' btn
     Button(
-        onClick = {displayText.setDisplayText("Lifting Item...")},
+        onClick = {viewModel.setDisplayText("Lifting Item...")},
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(ElevBtnColor), // button background color (purple)
             contentColor = Color(TextColor) // text color (white)
@@ -391,15 +390,15 @@ fun Lift(displayText: RobotControllerViewModel, isLandscape: Boolean) { // 'Lift
         Text("Lift ",fontSize = ManipElevFontSize, fontWeight = FontWeight.Bold)
         Icon(
             Icons.Default.KeyboardArrowUp,
-            contentDescription = "Lift"
+            contentDescription = "Lift" 
         )
     }
 }
 
 @Composable
-fun Lower(displayText: RobotControllerViewModel, isLandscape: Boolean){
+fun Lower(viewModel: RobotControllerViewModel, isLandscape: Boolean){
     Button(
-        onClick = {displayText.setDisplayText("Lowering Item...") },
+        onClick = {viewModel.setDisplayText("Lowering Item...") },
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(ElevBtnColor), // button background color (soft green)
             contentColor = Color(TextColor)
@@ -418,9 +417,9 @@ fun Lower(displayText: RobotControllerViewModel, isLandscape: Boolean){
 
 // Navigation: consists of 'Forward' 'Backward' 'Left' 'Right'
 @Composable
-fun Forward(displayText: RobotControllerViewModel,isLandscape : Boolean) {
+fun Forward(viewModel: RobotControllerViewModel,isLandscape : Boolean) {
         Button(
-            onClick = { displayText.setDisplayText( "Moving Forward...") },
+            onClick = { viewModel.setDisplayText( "Moving Forward...") },
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(NavBtnColor),
                 contentColor = Color(TextColor)
@@ -437,10 +436,10 @@ fun Forward(displayText: RobotControllerViewModel,isLandscape : Boolean) {
 }
 
 @Composable
-fun Backward(displayText: RobotControllerViewModel, isLandscape: Boolean){
+fun Backward(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         Button(
             onClick = {
-                displayText.setDisplayText("Moving Backward...")
+                viewModel.setDisplayText("Moving Backward...")
             },
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(NavBtnColor),
@@ -458,10 +457,10 @@ fun Backward(displayText: RobotControllerViewModel, isLandscape: Boolean){
 }
 
 @Composable
-fun Left(displayText: RobotControllerViewModel, isLandscape: Boolean){
+fun Left(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         Button(
             onClick = {
-                displayText.setDisplayText("Moving Left...")
+                viewModel.setDisplayText("Moving Left...")
             },
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(NavBtnColor),
@@ -479,10 +478,10 @@ fun Left(displayText: RobotControllerViewModel, isLandscape: Boolean){
 }
 
 @Composable
-fun Right(displayText: RobotControllerViewModel, isLandscape: Boolean){
+fun Right(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         Button(
             onClick = {
-                displayText.setDisplayText("Moving Right...")
+                viewModel.setDisplayText("Moving Right...")
             },
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(NavBtnColor),
