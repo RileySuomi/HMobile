@@ -1,8 +1,6 @@
 package com.example.demorobocontrollerapp
 
 import android.content.res.Configuration
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -13,7 +11,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -28,10 +25,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,7 +35,6 @@ import com.example.demorobocontrollerapp.ui.theme.DemoRoboControllerAppTheme
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.unit.Dp
 
 // General setting
 const val TextColor = 0xFF212529 // dark gray // OxFF000000
@@ -75,9 +69,6 @@ fun GreetingPreview() {
 fun DisplayApp(viewModel: RobotControllerViewModel) {
     val configuration = LocalConfiguration.current // check view mode
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-    // animate the translation and alpha based on orientation
-    val offSetVal = animateDpAsState(targetValue = if (isLandscape) 200.dp else 0.dp)
-    val alphaVal = animateFloatAsState(targetValue = if (isLandscape) 0.5f else 1f)
     Column(
         modifier = Modifier.fillMaxSize() // use the whole screen size
     ) {
@@ -88,7 +79,7 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
                     .fillMaxWidth() // use allocated space as much as possible
                     .weight(0.4f) // take portion of the space vertically - increase/decrease as needed
             ){
-                ShowMonitor(viewModel.displayText.value) // .value gets it as string
+                ShowMonitor(viewModel.displayText) // .value gets it as string
             }
 
             // Manipulation, Navigation,  Elevation column
@@ -190,7 +181,7 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
                     .weight(0.7f) // take portion of the space vertically - increase/decrease as needed
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    ShowMonitor(viewModel.displayText.value) // .value makes it a string
+                    ShowMonitor(viewModel.displayText) // .value makes it a string
                 }
             }
 
@@ -265,8 +256,6 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(8.dp),
-//                            .offset(x = offSetVal.value)
-//                            .alpha(alphaVal.value),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         Left(viewModel, isLandscape)
@@ -291,16 +280,16 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
 
 // Power button to turn on/off connection
 @Composable // TODO: make toogle/switch work
-fun Power(displayText: RobotControllerViewModel, isLandscape: Boolean) {
+fun Power(model: RobotControllerViewModel, isLandscape: Boolean) {
     Button(
         onClick = {
-            displayText.switchPowerStatus()  // Toggle power status
-            displayText.setDisplayText(
-                if (displayText.isPowerOn) "Let's lift with ease!" else "Rest mode!"
+            model.switchPowerStatus()  // Toggle power status
+            model.setDisplayText(
+                if (model.isPowerOn) "Let's lift with ease!" else "Rest mode!"
             )
         },
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(if (displayText.isPowerOn) 0xFF4CAF50 else 0xFFFF5733), // green if on, red if off
+            containerColor = Color(if (model.isPowerOn) 0xFF4CAF50 else 0xFFFF5733), // green if on, red if off
             contentColor = Color(TextColor) //
         ),
         modifier = Modifier
@@ -310,7 +299,7 @@ fun Power(displayText: RobotControllerViewModel, isLandscape: Boolean) {
     ) {
         // Display button text and icon
         Text(
-            if (displayText.isPowerOn) "On" else "Off",
+            if (model.isPowerOn) "On" else "Off",
             fontSize = ManipElevFontSize,
             fontWeight = FontWeight.Bold
         )
