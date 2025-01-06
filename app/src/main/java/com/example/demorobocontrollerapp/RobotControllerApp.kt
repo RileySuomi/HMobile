@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.example.demorobocontrollerapp
 
 import android.content.res.Configuration
@@ -20,11 +22,18 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,6 +44,7 @@ import com.example.demorobocontrollerapp.ui.theme.DemoRoboControllerAppTheme
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalConfiguration
+import kotlinx.coroutines.delay
 
 // General setting
 const val TextColor = 0xFF212529 // dark gray // OxFF000000
@@ -342,11 +352,16 @@ fun ShowMonitor(displayText: String){ //
 // Manipulation: consist of 'Grab' & 'Release' btn
 @Composable
 fun Grab(viewModel: RobotControllerViewModel , isLandscape: Boolean) { // 'Grab'
+    // State for button enabled status
+    var isGrabButtonEnabled by remember { mutableStateOf(true) }
+
+    // State for the dialog visibility
+    var showDialog by remember { mutableStateOf(false) }
     Button(
-        onClick = { viewModel.setDisplayText("Grabbing...")},
+        onClick = { viewModel.setDisplayText("Grabbing...") },
+        enabled = !viewModel.isPowerOn.value,
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (viewModel.isPowerOn.value) Color(OffButtonColor) else Color(
-                ManipBtnColor), // button background color (soft green)
+            containerColor = Color(ManipBtnColor), // button background color (soft green)
             contentColor = Color(TextColor)
         ),
         modifier = Modifier
@@ -363,8 +378,9 @@ fun Grab(viewModel: RobotControllerViewModel , isLandscape: Boolean) { // 'Grab'
 fun Release(viewModel: RobotControllerViewModel, isLandscape: Boolean){
     Button(
         onClick = { viewModel.setDisplayText("Releasing Item...") },
+        enabled = !viewModel.isPowerOn.value,
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (viewModel.isPowerOn.value) Color(OffButtonColor) else Color(ManipBtnColor), // button background color (soft green)
+            containerColor = Color(ManipBtnColor), // button background color (soft green)
             contentColor = Color(TextColor)
         ), modifier = Modifier
             .clip(CircleShape) // make the button circular
@@ -381,8 +397,9 @@ fun Release(viewModel: RobotControllerViewModel, isLandscape: Boolean){
 fun Lift(viewModel: RobotControllerViewModel, isLandscape: Boolean) { // 'Lift' btn
     Button(
         onClick = {viewModel.setDisplayText("Lifting Item...")},
+        enabled = !viewModel.isPowerOn.value,
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (viewModel.isPowerOn.value) Color(OffButtonColor) else Color(ElevBtnColor), // button background color (purple)
+            containerColor = Color(ElevBtnColor), // button background color (purple)
             contentColor = Color(TextColor) // text color (white)
         ), modifier = Modifier
             .clip(CircleShape) // make the button circular
@@ -401,8 +418,9 @@ fun Lift(viewModel: RobotControllerViewModel, isLandscape: Boolean) { // 'Lift' 
 fun Lower(viewModel: RobotControllerViewModel, isLandscape: Boolean){
     Button(
         onClick = {viewModel.setDisplayText("Lowering Item...") },
+        enabled = !viewModel.isPowerOn.value,
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (viewModel.isPowerOn.value) Color(OffButtonColor) else Color(ElevBtnColor), // button background color (soft green)
+            containerColor = Color(ElevBtnColor), // button background color (soft green)
             contentColor = Color(TextColor)
         ), modifier = Modifier
             .clip(CircleShape) // Make the button circular
@@ -422,8 +440,9 @@ fun Lower(viewModel: RobotControllerViewModel, isLandscape: Boolean){
 fun Forward(viewModel: RobotControllerViewModel,isLandscape : Boolean) {
         Button(
             onClick = { viewModel.setDisplayText( "Moving Forward...") },
+            enabled = !viewModel.isPowerOn.value,
             colors = ButtonDefaults.buttonColors(
-                containerColor = if (viewModel.isPowerOn.value) Color(OffButtonColor) else Color(NavBtnColor),
+                containerColor = Color(NavBtnColor),
                 contentColor = Color(TextColor)
             ),
             modifier = Modifier
@@ -440,11 +459,10 @@ fun Forward(viewModel: RobotControllerViewModel,isLandscape : Boolean) {
 @Composable
 fun Backward(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         Button(
-            onClick = {
-                viewModel.setDisplayText("Moving Backward...")
-            },
+            onClick = { viewModel.setDisplayText("Moving Backward...")},
+            enabled = !viewModel.isPowerOn.value,
             colors = ButtonDefaults.buttonColors(
-                containerColor = if (viewModel.isPowerOn.value) Color(OffButtonColor) else Color(NavBtnColor),
+                containerColor = Color(NavBtnColor),
                 contentColor = Color(TextColor)
             ),
             modifier = Modifier
@@ -461,11 +479,10 @@ fun Backward(viewModel: RobotControllerViewModel, isLandscape: Boolean){
 @Composable
 fun Left(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         Button(
-            onClick = {
-                viewModel.setDisplayText("Moving Left...")
-            },
+            onClick = { viewModel.setDisplayText("Moving Left...") },
+            enabled = !viewModel.isPowerOn.value,
             colors = ButtonDefaults.buttonColors(
-                containerColor = if (viewModel.isPowerOn.value) Color(OffButtonColor) else Color(NavBtnColor),
+                containerColor = Color(NavBtnColor),
                 contentColor = Color(TextColor)
             ),
             modifier = Modifier
@@ -482,11 +499,10 @@ fun Left(viewModel: RobotControllerViewModel, isLandscape: Boolean){
 @Composable
 fun Right(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         Button(
-            onClick = {
-                viewModel.setDisplayText("Moving Right...")
-            },
+            onClick = { viewModel.setDisplayText("Moving Right...") },
+            enabled = !viewModel.isPowerOn.value,
             colors = ButtonDefaults.buttonColors(
-                containerColor = if (viewModel.isPowerOn.value) Color(OffButtonColor) else Color(NavBtnColor),
+                containerColor = Color(NavBtnColor),
                 contentColor = Color(TextColor)
             ),
             modifier = Modifier
@@ -499,3 +515,20 @@ fun Right(viewModel: RobotControllerViewModel, isLandscape: Boolean){
                 fontWeight = FontWeight.Bold)
         }
 }
+
+
+// Alert dialog
+//    if (showDialog) {
+//        AlertDialog(
+//            onDismissRequest = { showDialog = false},
+//            confirmButton = {},
+//            title = { Text("Action in Progress") },
+//            text = { Text("Button Disabled") } // This is where the message is shown
+//        )
+//
+//        // Automatically dismiss the dialog after 3 seconds
+//        LaunchedEffect(Unit) {
+//            delay(1000) // Wait for 3 seconds
+//            showDialog = false // Dismiss the dialog
+//        }
+//    }
