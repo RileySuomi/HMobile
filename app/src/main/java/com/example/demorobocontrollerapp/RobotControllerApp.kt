@@ -38,6 +38,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 
 // General setting
 const val TextColor = 0xFF212529 // dark gray // OxFF000000
+const val OffButtonColor = 0xFF929292 // dark-ish gray to signify 'power off'
 
 // Monitor setting
 val MonitorFontSize = 32.sp
@@ -279,13 +280,13 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
 }
 
 // Power button to turn on/off connection
-@Composable // TODO: make toggle/switch work
+@Composable
 fun Power(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
     Button(
         onClick = {
             viewModel.switchPowerStatus()  // toggle power status
             viewModel.setDisplayText(
-                if (viewModel.isPowerOn.value) "Let's lift with ease!" else "Rest mode!"
+                if (!viewModel.isPowerOn.value) "Let's lift with ease!" else "Rest mode!"
             )
         },
         colors = ButtonDefaults.buttonColors(
@@ -344,7 +345,8 @@ fun Grab(viewModel: RobotControllerViewModel , isLandscape: Boolean) { // 'Grab'
     Button(
         onClick = { viewModel.setDisplayText("Grabbing...")},
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(ManipBtnColor), // button background color (soft green)
+            containerColor = if (viewModel.isPowerOn.value) Color(OffButtonColor) else Color(
+                ManipBtnColor), // button background color (soft green)
             contentColor = Color(TextColor)
         ),
         modifier = Modifier
@@ -362,7 +364,7 @@ fun Release(viewModel: RobotControllerViewModel, isLandscape: Boolean){
     Button(
         onClick = { viewModel.setDisplayText("Releasing Item...") },
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(ManipBtnColor), // button background color (soft green)
+            containerColor = if (viewModel.isPowerOn.value) Color(OffButtonColor) else Color(ManipBtnColor), // button background color (soft green)
             contentColor = Color(TextColor)
         ), modifier = Modifier
             .clip(CircleShape) // make the button circular
@@ -380,7 +382,7 @@ fun Lift(viewModel: RobotControllerViewModel, isLandscape: Boolean) { // 'Lift' 
     Button(
         onClick = {viewModel.setDisplayText("Lifting Item...")},
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(ElevBtnColor), // button background color (purple)
+            containerColor = if (viewModel.isPowerOn.value) Color(OffButtonColor) else Color(ElevBtnColor), // button background color (purple)
             contentColor = Color(TextColor) // text color (white)
         ), modifier = Modifier
             .clip(CircleShape) // make the button circular
@@ -400,7 +402,7 @@ fun Lower(viewModel: RobotControllerViewModel, isLandscape: Boolean){
     Button(
         onClick = {viewModel.setDisplayText("Lowering Item...") },
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(ElevBtnColor), // button background color (soft green)
+            containerColor = if (viewModel.isPowerOn.value) Color(OffButtonColor) else Color(ElevBtnColor), // button background color (soft green)
             contentColor = Color(TextColor)
         ), modifier = Modifier
             .clip(CircleShape) // Make the button circular
@@ -421,7 +423,7 @@ fun Forward(viewModel: RobotControllerViewModel,isLandscape : Boolean) {
         Button(
             onClick = { viewModel.setDisplayText( "Moving Forward...") },
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(NavBtnColor),
+                containerColor = if (viewModel.isPowerOn.value) Color(OffButtonColor) else Color(NavBtnColor),
                 contentColor = Color(TextColor)
             ),
             modifier = Modifier
@@ -442,7 +444,7 @@ fun Backward(viewModel: RobotControllerViewModel, isLandscape: Boolean){
                 viewModel.setDisplayText("Moving Backward...")
             },
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(NavBtnColor),
+                containerColor = if (viewModel.isPowerOn.value) Color(OffButtonColor) else Color(NavBtnColor),
                 contentColor = Color(TextColor)
             ),
             modifier = Modifier
@@ -463,7 +465,7 @@ fun Left(viewModel: RobotControllerViewModel, isLandscape: Boolean){
                 viewModel.setDisplayText("Moving Left...")
             },
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(NavBtnColor),
+                containerColor = if (viewModel.isPowerOn.value) Color(OffButtonColor) else Color(NavBtnColor),
                 contentColor = Color(TextColor)
             ),
             modifier = Modifier
@@ -484,7 +486,7 @@ fun Right(viewModel: RobotControllerViewModel, isLandscape: Boolean){
                 viewModel.setDisplayText("Moving Right...")
             },
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(NavBtnColor),
+                containerColor = if (viewModel.isPowerOn.value) Color(OffButtonColor) else Color(NavBtnColor),
                 contentColor = Color(TextColor)
             ),
             modifier = Modifier
