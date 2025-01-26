@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 //use as 'preview'
-@Preview(showBackground = true, device = "spec:width=411dp,height=891dp")
+@Preview(showBackground = true)
 @Composable
 fun LoadingPreview() {
     DemoRoboControllerAppTheme {
