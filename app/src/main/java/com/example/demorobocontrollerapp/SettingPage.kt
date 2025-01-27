@@ -16,12 +16,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,7 +33,28 @@ import com.example.demorobocontrollerapp.ui.theme.DemoRoboControllerAppTheme
 @Preview(showBackground = true)
 @Composable
 fun SettingPreview() {
-    DisplaySetting(viewModel = SettingViewModel(), onBackPressed = {})
+    DemoRoboControllerAppTheme {
+        // Create a NavController for navigation within Compose
+        val navController = rememberNavController()
+
+        // Set up the navigation graph
+        NavHost(navController = navController, startDestination = "home") {
+            composable("home") {
+                // Display Home screen with a setting button
+                DisplaySetting(
+                    viewModel = SettingViewModel(),
+                    onBackPressed = {
+                        // This simulates navigating back to the main screen
+                        navController.navigate("main")
+                    }
+                )
+            }
+            composable("setting") {
+                MainActivity()
+            }
+        }
+//       DisplaySetting(viewModel = SettingViewModel(), onBackPressed = {})
+    }
 }
 
 @Composable

@@ -10,6 +10,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
@@ -22,14 +23,20 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun LoadingPreview() {
     DemoRoboControllerAppTheme {
-        DisplayLoading() // pass in the 'viewModel' class
+        DisplayLoading(onTimeout = {}) // pass in the 'viewModel' class
     }
 }
 
 @Composable
-fun DisplayLoading(){
+fun DisplayLoading(onTimeout: () -> Unit){
     val configuration = LocalConfiguration.current // check view mode
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
+    LaunchedEffect(Unit) {
+        kotlinx.coroutines.delay(2000)
+        onTimeout()
+    }
+
     Box(
         modifier = Modifier.fillMaxSize().background(Color.White)
     ){
