@@ -25,6 +25,9 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.demorobocontrollerapp.ui.theme.DemoRoboControllerAppTheme
 
 
@@ -32,9 +35,7 @@ import com.example.demorobocontrollerapp.ui.theme.DemoRoboControllerAppTheme
 @Preview(showBackground = true)
 @Composable
 fun SettingPreview() {
-    DemoRoboControllerAppTheme {
-       DisplaySetting(viewModel = SettingViewModel(), onBackPressed = {})
-    }
+    DisplaySetting(viewModel = SettingViewModel(), onBackPressed = {})
 }
 
 @Composable
@@ -45,7 +46,7 @@ fun DisplaySetting(viewModel: SettingViewModel, onBackPressed: () -> Unit) {
 
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text(text = "Home", fontSize = 22.sp) },
+                title = { Text(text = "Setting", fontSize = 22.sp) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Black,
                     titleContentColor = Color.White,

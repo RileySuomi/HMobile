@@ -90,7 +90,7 @@ fun DisplayApp(viewModel: RobotControllerViewModel, onSettingPressed: () -> Unit
     Scaffold (
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text(text = "Setting", fontSize = 22.sp) },
+                title = { Text(text = "Home", fontSize = 22.sp) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Black,
                     titleContentColor = Color.White,
