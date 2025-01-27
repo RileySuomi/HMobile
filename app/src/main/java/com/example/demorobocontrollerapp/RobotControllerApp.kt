@@ -18,16 +18,22 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -72,98 +78,120 @@ const val NavButtonMaxWidth = 0.2f
 @Composable
 fun GreetingPreview() {
     DemoRoboControllerAppTheme {
-        DisplayApp(viewModel = RobotControllerViewModel()) // pass in the 'viewModel' class
+        DisplayApp(viewModel = RobotControllerViewModel(), onSettingPressed = {}) // pass in the 'viewModel' class
     }
 }
 
 @Composable // The whole app display
-fun DisplayApp(viewModel: RobotControllerViewModel) {
+fun DisplayApp(viewModel: RobotControllerViewModel, onSettingPressed: () -> Unit) {
     val configuration = LocalConfiguration.current // check view mode
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-    Column(
-        modifier = Modifier.fillMaxSize() // use the whole screen size
-    ) {
-        if (isLandscape) { //'Landscape' view design section
-            // Monitor sections
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth() // use allocated space as much as possible
-                    .weight(0.4f) // take portion of the space vertically - increase/decrease as needed
-            ){
-                ShowMonitor(viewModel.displayText.value) // .value gets it as string
-            }
 
-            // Manipulation, Navigation,  Elevation column
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth() // use allocated space as much as possible
-                    .weight(1.4f) // take portion of the space vertically - increase/decrease as needed
-                    .padding(2.dp)
-            ){
-
-                // Manipulation ('Grab' & 'Release' buttons) & Elevation ('Lift' & 'Lower' buttons)
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(2.dp),
-                    horizontalArrangement = Arrangement.SpaceAround // Updated to SpaceAround
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(2.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Column(modifier = Modifier
-                            .padding(3.dp)
-                        ) {
-                            Grab(viewModel, isLandscape)
-                        }
-                        Column(modifier = Modifier
-                            .padding(3.dp)
-                        ){
-                            Lift(viewModel, isLandscape)
-                        }
-                    }
-                    Column(
-                        modifier = Modifier
-                            .weight(1f),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Bottom
-                    ) {
-                        Power(viewModel, isLandscape)
-                    }
-                    Column(
-                        modifier = Modifier
-                            .weight(1f),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Column(modifier = Modifier
-                            .padding(3.dp)
-                        ) {
-                            Release(viewModel, isLandscape)
-                        }
-                        Column(modifier = Modifier
-                            .padding(3.dp)
-                        ){
-                            Lower(viewModel, isLandscape)
-                        }
+    Scaffold (
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text(text = "Setting", fontSize = 22.sp) },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Black,
+                    titleContentColor = Color.White,
+                    actionIconContentColor = Color.White
+                ),
+                 actions = {
+                    IconButton(onClick = {onSettingPressed()}) {
+                        Icon(
+                            imageVector = Icons.Filled.Settings,
+                            contentDescription = "Localized description"
+                        )
                     }
                 }
+            )
+        },
 
-                //Navigation ('Forward','Backward','Left','Right' buttons) section
-                Column(modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(0.8f),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally)
-                {
-                    Forward(viewModel, isLandscape)
-                }
+        content = {
+            Column(
+                modifier = Modifier.fillMaxSize().padding(it) // use the whole screen size
+            ) {
+                if (isLandscape) { //'Landscape' view design section
+                    // Monitor sections
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth() // use allocated space as much as possible
+                            .weight(0.4f) // take portion of the space vertically - increase/decrease as needed
+                    ){
+                        ShowMonitor(viewModel.displayText.value) // .value gets it as string
+                    }
 
-                Column(modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(0.8f)
+                    // Manipulation, Navigation,  Elevation column
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth() // use allocated space as much as possible
+                            .weight(1.4f) // take portion of the space vertically - increase/decrease as needed
+                            .padding(2.dp)
+                    ){
+
+                        // Manipulation ('Grab' & 'Release' buttons) & Elevation ('Lift' & 'Lower' buttons)
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(2.dp),
+                            horizontalArrangement = Arrangement.SpaceAround // Updated to SpaceAround
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(2.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Column(modifier = Modifier
+                                    .padding(3.dp)
+                                ) {
+                                    Grab(viewModel, isLandscape)
+                                }
+                                Column(modifier = Modifier
+                                    .padding(3.dp)
+                                ){
+                                    Lift(viewModel, isLandscape)
+                                }
+                            }
+                            Column(
+                                modifier = Modifier
+                                    .weight(1f),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Bottom
+                            ) {
+                                Power(viewModel, isLandscape)
+                            }
+                            Column(
+                                modifier = Modifier
+                                    .weight(1f),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Column(modifier = Modifier
+                                    .padding(3.dp)
+                                ) {
+                                    Release(viewModel, isLandscape)
+                                }
+                                Column(modifier = Modifier
+                                    .padding(3.dp)
+                                ){
+                                    Lower(viewModel, isLandscape)
+                                }
+                            }
+                        }
+
+                        //Navigation ('Forward','Backward','Left','Right' buttons) section
+                        Column(modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(0.8f),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally)
+                        {
+                            Forward(viewModel, isLandscape)
+                        }
+
+                        Column(modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(0.8f)
                         ){
                             Row(
                                 modifier = Modifier
@@ -175,118 +203,120 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
                             }
                         }
 
-                Column(modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally)
-                {
-                    Backward(viewModel, isLandscape)
-                }
-            }
-        } else { //'Portrait' view design section
-            // Monitor section
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth() // use allocated space as much as possible
-                    .weight(0.7f) // take portion of the space vertically - increase/decrease as needed
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    ShowMonitor(viewModel.displayText.value) // .value makes it a string
-                }
-            }
+                        Column(modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally)
+                        {
+                            Backward(viewModel, isLandscape)
+                        }
+                    }
+                } else { //'Portrait' view design section
+                    // Monitor section
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth() // use allocated space as much as possible
+                            .weight(0.7f) // take portion of the space vertically - increase/decrease as needed
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            ShowMonitor(viewModel.displayText.value) // .value makes it a string
+                        }
+                    }
 
-            // Power button
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(0.3f),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ){
-                Power(viewModel,isLandscape)
-            }
-
-            // Manipulation section
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(0.4f),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Row(horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Grab(viewModel, isLandscape)
-                    Spacer(modifier = Modifier.width(32.dp)) // add spacing between buttons
-                    Release(viewModel, isLandscape)
-                }
-            }
-
-            // Elevation section
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(0.4f),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Row(horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Lift(viewModel, isLandscape)
-                    Spacer(modifier = Modifier.width(32.dp)) // add spacing between buttons
-                    Lower(viewModel, isLandscape)
-                }
-            }
-
-            // Navigation section
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1.2f),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Column(modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(0.8f)
-                    .padding(8.dp),
-                    verticalArrangement = Arrangement.Top,
-                    horizontalAlignment = Alignment.CenterHorizontally)
-                {
-                    Forward(viewModel, isLandscape)
-                }
-
-                Column(modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(0.8f)
-                ){
-                    Row(
+                    // Power button
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        Left(viewModel, isLandscape)
-                        Spacer(modifier = Modifier.weight(1f))
-                        Right(viewModel, isLandscape)
+                            .weight(0.3f),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ){
+                        Power(viewModel,isLandscape)
                     }
-                }
 
-                Column(modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(0.8f)
-                    .padding(8.dp),
-                    verticalArrangement = Arrangement.Top,
-                    horizontalAlignment = Alignment.CenterHorizontally)
-                {
-                    Backward(viewModel, isLandscape)
+                    // Manipulation section
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(0.4f),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Row(horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Grab(viewModel, isLandscape)
+                            Spacer(modifier = Modifier.width(32.dp)) // add spacing between buttons
+                            Release(viewModel, isLandscape)
+                        }
+                    }
+
+                    // Elevation section
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(0.4f),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Row(horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Lift(viewModel, isLandscape)
+                            Spacer(modifier = Modifier.width(32.dp)) // add spacing between buttons
+                            Lower(viewModel, isLandscape)
+                        }
+                    }
+
+                    // Navigation section
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1.2f),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Column(modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(0.8f)
+                            .padding(8.dp),
+                            verticalArrangement = Arrangement.Top,
+                            horizontalAlignment = Alignment.CenterHorizontally)
+                        {
+                            Forward(viewModel, isLandscape)
+                        }
+
+                        Column(modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(0.8f)
+                        ){
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp),
+                                horizontalArrangement = Arrangement.SpaceEvenly
+                            ) {
+                                Left(viewModel, isLandscape)
+                                Spacer(modifier = Modifier.weight(1f))
+                                Right(viewModel, isLandscape)
+                            }
+                        }
+
+                        Column(modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(0.8f)
+                            .padding(8.dp),
+                            verticalArrangement = Arrangement.Top,
+                            horizontalAlignment = Alignment.CenterHorizontally)
+                        {
+                            Backward(viewModel, isLandscape)
+                        }
+                    }
                 }
             }
         }
-    }
+    )
 }
 
 // Power button to turn on/off connection

@@ -1,5 +1,6 @@
 package com.example.demorobocontrollerapp
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -21,7 +22,13 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    DisplayApp(viewModel)
+                    DisplayApp(
+                        viewModel,
+                        onSettingPressed = {
+                            val intent = Intent(this@MainActivity, SettingActivity::class.java)
+                            startActivity(intent)
+                            finish()
+                        })
                 }
             }
         }
