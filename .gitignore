@@ -4,3 +4,19 @@
 .gradle/buildOutputCleanup/cache.properties
 .gradle/config.properties
 .gradle/buildOutputCleanup/cache.properties
+
+
+*.iml
+.idea
+.kotlin/
+
+
+# Java class files
+*.class
+
+.gradle/
+build/
+
+# generated files
+bin/
+gen/
