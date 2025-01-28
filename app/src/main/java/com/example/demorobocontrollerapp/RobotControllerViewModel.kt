@@ -1,12 +1,14 @@
 // ViewModel: Manages UI-related data and interacts with the Model to provide it to the View.
 
 package com.example.demorobocontrollerapp
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -24,10 +26,48 @@ class RobotControllerViewModel : ViewModel() {
     private val _dialogMessage = mutableStateOf("App is off")
     val showDialog: State<Boolean> get() = _showDialog
     val dialogMessage: State<String> get() = _dialogMessage
+    private var connection = RobotConnection();
 
     // Publicly exposed immutable state
     val displayText: State<String> = _displayMessage
     val isPowerOn: State<Boolean> = _isPowerOn
+
+    fun startCommunication() {
+        viewModelScope.launch(Dispatchers.IO) {
+            connection.startConnection();
+        }
+    }
+
+    fun endCommunication() {
+        viewModelScope.launch(Dispatchers.IO) {
+            connection.EndConnection();
+        }
+    }
+
+    fun moveUp() {
+        viewModelScope.launch(Dispatchers.IO) {
+            connection.SendMessage("Up\n");
+            Log.d("ViewModel", "Up message sent!")
+        }
+    }
+
+    fun moveDown() {
+        viewModelScope.launch(Dispatchers.IO) {
+            connection.SendMessage("Down\n");
+        }
+    }
+
+    fun moveLeft() {
+        viewModelScope.launch(Dispatchers.IO) {
+            connection.SendMessage("Left\n");
+        }
+    }
+
+    fun moveRight() {
+        viewModelScope.launch(Dispatchers.IO) {
+            connection.SendMessage("Right\n");
+        }
+    }
 
     // Public method to update the display text
     fun switchPowerStatus(){

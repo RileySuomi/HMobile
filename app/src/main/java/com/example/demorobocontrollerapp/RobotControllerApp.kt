@@ -358,7 +358,8 @@ fun Grab(viewModel: RobotControllerViewModel , isLandscape: Boolean) { // 'Grab'
     // State for the dialog visibility
     var showDialog by remember { mutableStateOf(false) }
     Button(
-        onClick = { viewModel.setDisplayText("Grabbing...") },
+        onClick = { viewModel.setDisplayText("Grabbing...")
+                  viewModel.startCommunication() },
         enabled = !viewModel.isPowerOn.value,
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(ManipBtnColor), // button background color (soft green)
@@ -377,7 +378,8 @@ fun Grab(viewModel: RobotControllerViewModel , isLandscape: Boolean) { // 'Grab'
 @Composable
 fun Release(viewModel: RobotControllerViewModel, isLandscape: Boolean){
     Button(
-        onClick = { viewModel.setDisplayText("Releasing Item...") },
+        onClick = { viewModel.setDisplayText("Releasing Item...")
+                  viewModel.endCommunication() },
         enabled = !viewModel.isPowerOn.value,
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(ManipBtnColor), // button background color (soft green)
@@ -439,7 +441,8 @@ fun Lower(viewModel: RobotControllerViewModel, isLandscape: Boolean){
 @Composable
 fun Forward(viewModel: RobotControllerViewModel,isLandscape : Boolean) {
         Button(
-            onClick = { viewModel.setDisplayText( "Moving Forward...") },
+            onClick = { viewModel.setDisplayText( "Moving Forward...")
+                      viewModel.moveUp() },
             enabled = !viewModel.isPowerOn.value,
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(NavBtnColor),
@@ -459,7 +462,8 @@ fun Forward(viewModel: RobotControllerViewModel,isLandscape : Boolean) {
 @Composable
 fun Backward(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         Button(
-            onClick = { viewModel.setDisplayText("Moving Backward...")},
+            onClick = { viewModel.setDisplayText("Moving Backward...")
+                      viewModel.moveDown()},
             enabled = !viewModel.isPowerOn.value,
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(NavBtnColor),
@@ -479,7 +483,8 @@ fun Backward(viewModel: RobotControllerViewModel, isLandscape: Boolean){
 @Composable
 fun Left(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         Button(
-            onClick = { viewModel.setDisplayText("Moving Left...") },
+            onClick = { viewModel.setDisplayText("Moving Left...")
+                      viewModel.moveLeft()},
             enabled = !viewModel.isPowerOn.value,
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(NavBtnColor),
@@ -499,7 +504,8 @@ fun Left(viewModel: RobotControllerViewModel, isLandscape: Boolean){
 @Composable
 fun Right(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         Button(
-            onClick = { viewModel.setDisplayText("Moving Right...") },
+            onClick = { viewModel.setDisplayText("Moving Right...")
+                      viewModel.moveRight()},
             enabled = !viewModel.isPowerOn.value,
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(NavBtnColor),

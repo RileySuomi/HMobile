@@ -4,7 +4,7 @@
             "outputFile": "com.example.demorobocontrollerapp-mergeDebugResources-49:/values-large-v4/values-large-v4.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\User\\.gradle\\caches\\transforms-3\\3f3abad1a48c11e7e19def797de2c77e\\transformed\\appcompat-1.7.0\\res\\values-large-v4\\values-large-v4.xml",
+                    "source": "C:\\Users\\Sverker\\.gradle\\caches\\transforms-3\\3f3abad1a48c11e7e19def797de2c77e\\transformed\\appcompat-1.7.0\\res\\values-large-v4\\values-large-v4.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10",
                         "startColumns": "4,4,4,4,4,4,4,4,4",

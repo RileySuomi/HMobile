@@ -4,24 +4,7 @@
             "outputFile": "com.example.demorobocontrollerapp-mergeDebugResources-49:/values-iw/values-iw.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\User\\.gradle\\caches\\transforms-3\\329deb52bd5735bac953b207cbef81cc\\transformed\\core-1.15.0\\res\\values-iw\\values-iw.xml",
-                    "from": {
-                        "startLines": "2,3,4,5,6,7,8,9",
-                        "startColumns": "4,4,4,4,4,4,4,4",
-                        "startOffsets": "55,149,251,348,445,546,646,752",
-                        "endColumns": "93,101,96,96,100,99,105,100",
-                        "endOffsets": "144,246,343,440,541,641,747,848"
-                    },
-                    "to": {
-                        "startLines": "33,34,35,36,37,38,39,91",
-                        "startColumns": "4,4,4,4,4,4,4,4",
-                        "startOffsets": "3211,3305,3407,3504,3601,3702,3802,8911",
-                        "endColumns": "93,101,96,96,100,99,105,100",
-                        "endOffsets": "3300,3402,3499,3596,3697,3797,3903,9007"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\User\\.gradle\\caches\\transforms-3\\a06f8293f3b49c4fee14aae436616e1d\\transformed\\material3-1.1.1\\res\\values-iw\\values-iw.xml",
+                    "source": "C:\\Users\\Sverker\\.gradle\\caches\\transforms-3\\a06f8293f3b49c4fee14aae436616e1d\\transformed\\material3-1.1.1\\res\\values-iw\\values-iw.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -38,7 +21,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\User\\.gradle\\caches\\transforms-3\\df615dfdfcc6bf5b2d43c619c7ff8e4f\\transformed\\ui-release\\res\\values-iw\\values-iw.xml",
+                    "source": "C:\\Users\\Sverker\\.gradle\\caches\\transforms-3\\df615dfdfcc6bf5b2d43c619c7ff8e4f\\transformed\\ui-release\\res\\values-iw\\values-iw.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -55,7 +38,24 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\User\\.gradle\\caches\\transforms-3\\3f3abad1a48c11e7e19def797de2c77e\\transformed\\appcompat-1.7.0\\res\\values-iw\\values-iw.xml",
+                    "source": "C:\\Users\\Sverker\\.gradle\\caches\\transforms-3\\329deb52bd5735bac953b207cbef81cc\\transformed\\core-1.15.0\\res\\values-iw\\values-iw.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,149,251,348,445,546,646,752",
+                        "endColumns": "93,101,96,96,100,99,105,100",
+                        "endOffsets": "144,246,343,440,541,641,747,848"
+                    },
+                    "to": {
+                        "startLines": "33,34,35,36,37,38,39,91",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "3211,3305,3407,3504,3601,3702,3802,8911",
+                        "endColumns": "93,101,96,96,100,99,105,100",
+                        "endOffsets": "3300,3402,3499,3596,3697,3797,3903,9007"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\Sverker\\.gradle\\caches\\transforms-3\\3f3abad1a48c11e7e19def797de2c77e\\transformed\\appcompat-1.7.0\\res\\values-iw\\values-iw.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",

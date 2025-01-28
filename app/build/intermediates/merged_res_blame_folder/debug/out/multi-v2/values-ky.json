@@ -4,41 +4,7 @@
             "outputFile": "com.example.demorobocontrollerapp-mergeDebugResources-49:/values-ky/values-ky.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\User\\.gradle\\caches\\transforms-3\\df615dfdfcc6bf5b2d43c619c7ff8e4f\\transformed\\ui-release\\res\\values-ky\\values-ky.xml",
-                    "from": {
-                        "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18",
-                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
-                        "startOffsets": "105,198,282,392,492,577,659,757,846,931,997,1064,1149,1236,1309,1388,1456",
-                        "endColumns": "92,83,109,99,84,81,97,88,84,65,66,84,86,72,78,67,117",
-                        "endOffsets": "193,277,387,487,572,654,752,841,926,992,1059,1144,1231,1304,1383,1451,1569"
-                    },
-                    "to": {
-                        "startLines": "40,41,74,75,77,79,80,81,82,83,84,85,86,89,93,94,95",
-                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
-                        "startOffsets": "4032,4125,7858,7968,8140,8311,8393,8491,8580,8665,8731,8798,8883,9134,9497,9576,9644",
-                        "endColumns": "92,83,109,99,84,81,97,88,84,65,66,84,86,72,78,67,117",
-                        "endOffsets": "4120,4204,7963,8063,8220,8388,8486,8575,8660,8726,8793,8878,8965,9202,9571,9639,9757"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\User\\.gradle\\caches\\transforms-3\\329deb52bd5735bac953b207cbef81cc\\transformed\\core-1.15.0\\res\\values-ky\\values-ky.xml",
-                    "from": {
-                        "startLines": "2,3,4,5,6,7,8,9",
-                        "startColumns": "4,4,4,4,4,4,4,4",
-                        "startOffsets": "55,155,257,360,467,569,673,784",
-                        "endColumns": "99,101,102,106,101,103,110,100",
-                        "endOffsets": "150,252,355,462,564,668,779,880"
-                    },
-                    "to": {
-                        "startLines": "33,34,35,36,37,38,39,91",
-                        "startColumns": "4,4,4,4,4,4,4,4",
-                        "startOffsets": "3303,3403,3505,3608,3715,3817,3921,9288",
-                        "endColumns": "99,101,102,106,101,103,110,100",
-                        "endOffsets": "3398,3500,3603,3710,3812,3916,4027,9384"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\User\\.gradle\\caches\\transforms-3\\a06f8293f3b49c4fee14aae436616e1d\\transformed\\material3-1.1.1\\res\\values-ky\\values-ky.xml",
+                    "source": "C:\\Users\\Sverker\\.gradle\\caches\\transforms-3\\a06f8293f3b49c4fee14aae436616e1d\\transformed\\material3-1.1.1\\res\\values-ky\\values-ky.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -55,7 +21,41 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\User\\.gradle\\caches\\transforms-3\\3f3abad1a48c11e7e19def797de2c77e\\transformed\\appcompat-1.7.0\\res\\values-ky\\values-ky.xml",
+                    "source": "C:\\Users\\Sverker\\.gradle\\caches\\transforms-3\\df615dfdfcc6bf5b2d43c619c7ff8e4f\\transformed\\ui-release\\res\\values-ky\\values-ky.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "105,198,282,392,492,577,659,757,846,931,997,1064,1149,1236,1309,1388,1456",
+                        "endColumns": "92,83,109,99,84,81,97,88,84,65,66,84,86,72,78,67,117",
+                        "endOffsets": "193,277,387,487,572,654,752,841,926,992,1059,1144,1231,1304,1383,1451,1569"
+                    },
+                    "to": {
+                        "startLines": "40,41,74,75,77,79,80,81,82,83,84,85,86,89,93,94,95",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "4032,4125,7858,7968,8140,8311,8393,8491,8580,8665,8731,8798,8883,9134,9497,9576,9644",
+                        "endColumns": "92,83,109,99,84,81,97,88,84,65,66,84,86,72,78,67,117",
+                        "endOffsets": "4120,4204,7963,8063,8220,8388,8486,8575,8660,8726,8793,8878,8965,9202,9571,9639,9757"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\Sverker\\.gradle\\caches\\transforms-3\\329deb52bd5735bac953b207cbef81cc\\transformed\\core-1.15.0\\res\\values-ky\\values-ky.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,155,257,360,467,569,673,784",
+                        "endColumns": "99,101,102,106,101,103,110,100",
+                        "endOffsets": "150,252,355,462,564,668,779,880"
+                    },
+                    "to": {
+                        "startLines": "33,34,35,36,37,38,39,91",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "3303,3403,3505,3608,3715,3817,3921,9288",
+                        "endColumns": "99,101,102,106,101,103,110,100",
+                        "endOffsets": "3398,3500,3603,3710,3812,3916,4027,9384"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\Sverker\\.gradle\\caches\\transforms-3\\3f3abad1a48c11e7e19def797de2c77e\\transformed\\appcompat-1.7.0\\res\\values-ky\\values-ky.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
