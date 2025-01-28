@@ -9,18 +9,18 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class LoadingActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            DisplayLoading()
-        }
-
-        GlobalScope.launch(Dispatchers.Main) {
-            delay(2000)
-            val intent = Intent(this@LoadingActivity, MainActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
-    }
-}
+//class LoadingActivity : AppCompatActivity() {
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//        setContent {
+//            DisplayLoading()
+//        }
+//
+//        GlobalScope.launch(Dispatchers.Main) {
+//            delay(2000)
+//            val intent = Intent(this@LoadingActivity, MainActivity::class.java)
+//            startActivity(intent)
+//            finish()
+//        }
+//    }
+//}

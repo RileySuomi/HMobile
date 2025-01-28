@@ -2,6 +2,8 @@
 
 package com.example.demorobocontrollerapp
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -88,10 +91,12 @@ fun DisplaySetting(viewModel: SettingViewModel, onBackPressed: () -> Unit) {
                 modifier = Modifier
                     .padding(it)
                     .fillMaxSize()
-                    .padding(0.dp, 10.dp, 0.dp, 0.dp)
+                    .padding(0.dp, 10.dp, 0.dp, 10.dp)
             ) {
                 PhoneIP("001")
+                Divider(color = Color.LightGray)
                 WirelessConnection("wifi_name")
+                Divider(color = Color.LightGray)
                 Port()
             }
         }
@@ -103,7 +108,7 @@ fun PhoneIP(ip: String) {
     Row (
         modifier = Modifier
             .fillMaxWidth()
-            .padding(0.dp, 5.dp),
+            .padding(0.dp, 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -124,7 +129,7 @@ fun WirelessConnection(wifi: String) {
     Row (
         modifier = Modifier
             .fillMaxWidth()
-            .padding(0.dp, 5.dp),
+            .padding(0.dp, 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -145,7 +150,7 @@ fun Port () {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(0.dp, 5.dp),
+            .padding(0.dp, 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
