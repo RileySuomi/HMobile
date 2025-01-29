@@ -37,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -44,7 +45,15 @@ import com.example.demorobocontrollerapp.ui.theme.DemoRoboControllerAppTheme
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.material.icons.filled.*
 import kotlinx.coroutines.delay
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.foundation.interaction.MutableInteractionSource
+
+
 
 // General setting
 const val TextColor = 0xFF212529 // dark gray // OxFF000000
@@ -75,6 +84,10 @@ fun GreetingPreview() {
         DisplayApp(viewModel = RobotControllerViewModel()) // pass in the 'viewModel' class
     }
 }
+
+
+
+
 
 @Composable // The whole app display
 fun DisplayApp(viewModel: RobotControllerViewModel) {
@@ -292,23 +305,28 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
 // Power button to turn on/off connection
 @Composable
 fun Power(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
+    // Create an interactionSource to monitor the press state
+    val interactionSource = remember { MutableInteractionSource() }
+
     Button(
         onClick = {
             viewModel.switchPowerStatus()  // toggle power status
             viewModel.setDisplayText(
-                if (!viewModel.isPowerOn.value) "Let's lift with ease!" else "Rest mode!"
+                if (!viewModel.isPowerOn.value) "Let's lift with ease!" else "Tap on below to turn on!"
             )
         },
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(if (viewModel.isPowerOn.value) 0xFF4CAF50 else 0xFFFF5733), // green if on, red if off
-            contentColor = Color(TextColor) //
+            contentColor = Color(TextColor),
+            disabledContainerColor = Color(0xFFCCCCCC), // add a disabled color if needed
+            disabledContentColor = Color(0xFF757575) // add disabled text color if needed
         ),
+        interactionSource = interactionSource,
         modifier = Modifier
             .clip(CircleShape) // Make the button circular
-            .width(if (isLandscape) ManipElevButtonWidth else ManipElevButtonWidth - 55.dp)
+            .width(if (isLandscape) ManipElevButtonWidth else ManipElevButtonWidth - 20.dp)
             .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight - 2.dp)
     ) {
-        // Display button text and icon
         Text(
             if (viewModel.isPowerOn.value) "On" else "Off",
             fontSize = ManipElevFontSize,
@@ -437,24 +455,41 @@ fun Lower(viewModel: RobotControllerViewModel, isLandscape: Boolean){
 
 // Navigation: consists of 'Forward' 'Backward' 'Left' 'Right'
 @Composable
-fun Forward(viewModel: RobotControllerViewModel,isLandscape : Boolean) {
-        Button(
-            onClick = { viewModel.setDisplayText( "Moving Forward...") },
-            enabled = !viewModel.isPowerOn.value,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(NavBtnColor),
-                contentColor = Color(TextColor)
-            ),
-            modifier = Modifier
-                .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth) // Take 20% of the screen width for landscape view
-                .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
-                .width(ManipElevButtonWidth)
-        ) {
-            Text("Forward ↑",
-                fontSize = NavFontSize,
-                fontWeight = FontWeight.Bold)
-        }
+
+fun Forward(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
+    var isPressed by remember { mutableStateOf(false) } // State to track if the button is pressed
+
+    Button(
+        onClick = {
+            viewModel.setDisplayText("Moving Forward...")
+        },
+        enabled = !viewModel.isPowerOn.value,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (isPressed) Color(0xFF4CAF50) else Color(NavBtnColor), // Button turns green when pressed
+            contentColor = Color(TextColor)
+        ),
+        modifier = Modifier
+            .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth) // Take 20% of the screen width for landscape view
+            .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
+            .width(ManipElevButtonWidth)
+            .shadow(8.dp, CircleShape, ambientColor = Color(0xFFD3D3D3), spotColor = Color(0xFF4CAF50))
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onPress = {
+                        isPressed = true // Button is pressed
+                        // You can also handle additional behavior here if needed
+                        awaitRelease() // Wait for release (no need to manually reset isPressed)
+                        isPressed = false // Reset state after button release
+                    }
+                )
+            }
+    ) {
+        Text("Forward ↑",
+            fontSize = NavFontSize,
+            fontWeight = FontWeight.Bold)
+    }
 }
+
 
 @Composable
 fun Backward(viewModel: RobotControllerViewModel, isLandscape: Boolean){
@@ -469,6 +504,7 @@ fun Backward(viewModel: RobotControllerViewModel, isLandscape: Boolean){
                 .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth)
                 .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
                 .width(ManipElevButtonWidth)
+                .shadow(8.dp, CircleShape, ambientColor = Color(0xFFD3D3D3), spotColor = Color(0xFF4CAF50))
         ) {
             Text("Backward ↓",
                 fontSize = NavFontSize,
@@ -489,6 +525,7 @@ fun Left(viewModel: RobotControllerViewModel, isLandscape: Boolean){
                 .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth)
                 .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
                 .width(ManipElevButtonWidth)
+                .shadow(8.dp, CircleShape, ambientColor = Color(0xFFD3D3D3), spotColor = Color(0xFF4CAF50))
         ) {
             Text("← Left",
                 fontSize = NavFontSize,
@@ -509,6 +546,7 @@ fun Right(viewModel: RobotControllerViewModel, isLandscape: Boolean){
                 .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + 0.4f)
                 .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
                 .width(ManipElevButtonWidth)
+                .shadow(8.dp, CircleShape, ambientColor = Color(0xFFD3D3D3), spotColor = Color(0xFF4CAF50))
         ) {
             Text("Right →",
                 fontSize = NavFontSize,
