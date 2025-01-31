@@ -280,7 +280,9 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(8.dp),
-                        horizontalArrangement = Arrangement.SpaceEvenly
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+
+
                     ) {
                         Left(viewModel, isLandscape)
                         Spacer(modifier = Modifier.weight(1f))
@@ -457,102 +459,183 @@ fun Lower(viewModel: RobotControllerViewModel, isLandscape: Boolean){
 @Composable
 
 fun Forward(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
-    var isPressed by remember { mutableStateOf(false) } // State to track if the button is pressed
+    val interactionSource = remember { MutableInteractionSource() }
+    var isPressed by remember { mutableStateOf(false) }
 
-    Button(
-        onClick = {
-            viewModel.setDisplayText("Moving Forward...")
-        },
-        enabled = !viewModel.isPowerOn.value,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = if (isPressed) Color(0xFF4CAF50) else Color(NavBtnColor), // Button turns green when pressed
-            contentColor = Color(TextColor)
-        ),
+    Column(
         modifier = Modifier
-            .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth) // Take 20% of the screen width for landscape view
-            .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
-            .width(ManipElevButtonWidth)
-            .shadow(8.dp, CircleShape, ambientColor = Color(0xFFD3D3D3), spotColor = Color(0xFF4CAF50))
-            .pointerInput(Unit) {
-                detectTapGestures(
-                    onPress = {
-                        isPressed = true // Button is pressed
-                        // You can also handle additional behavior here if needed
-                        awaitRelease() // Wait for release (no need to manually reset isPressed)
-                        isPressed = false // Reset state after button release
-                    }
-                )
-            }
+            .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth)
     ) {
-        Text("Forward ↑",
-            fontSize = NavFontSize,
-            fontWeight = FontWeight.Bold)
+        Button(
+            onClick = {
+                isPressed = !isPressed  // Toggle pressed state
+                viewModel.setDisplayText("Moving Forward...")
+            },
+            enabled = !viewModel.isPowerOn.value,
+            interactionSource = interactionSource,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = if (isPressed) Color(0xFF4CAF50) else Color(NavBtnColor),
+                contentColor = Color(TextColor),
+                disabledContainerColor = Color(OffButtonColor)
+            ),
+            modifier = Modifier
+                .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
+                .width(ManipElevButtonWidth)
+                .shadow(8.dp, CircleShape, ambientColor = Color(0xFFD3D3D3), spotColor = Color(0xFF4CAF50))
+
+        ) {
+            Text(
+                "Forward ↑",
+                fontSize = NavFontSize,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+
+    // Reset the pressed state after a delay
+    LaunchedEffect(isPressed) {
+        if (isPressed) {
+            delay(200)  // Show pressed state for 200ms
+            isPressed = false
+        }
     }
 }
 
 
 @Composable
-fun Backward(viewModel: RobotControllerViewModel, isLandscape: Boolean){
+fun Backward(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
+    val interactionSource = remember { MutableInteractionSource() }
+    var isPressed by remember { mutableStateOf(false) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth)
+    ) {
         Button(
-            onClick = { viewModel.setDisplayText("Moving Backward...")},
+            onClick = {
+                isPressed = !isPressed  // Toggle pressed state
+                viewModel.setDisplayText("Moving Backward...")
+            },
             enabled = !viewModel.isPowerOn.value,
+            interactionSource = interactionSource,
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(NavBtnColor),
-                contentColor = Color(TextColor)
+                containerColor = if (isPressed) Color(0xFF4CAF50) else Color(NavBtnColor),
+                contentColor = Color(TextColor),
+                disabledContainerColor = Color(OffButtonColor)
             ),
             modifier = Modifier
-                .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth)
                 .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
                 .width(ManipElevButtonWidth)
                 .shadow(8.dp, CircleShape, ambientColor = Color(0xFFD3D3D3), spotColor = Color(0xFF4CAF50))
+
         ) {
-            Text("Backward ↓",
+            Text(
+                "Backward ↓",
                 fontSize = NavFontSize,
-                fontWeight = FontWeight.Bold)
+                fontWeight = FontWeight.Bold
+            )
         }
+    }
+
+    // Reset the pressed state after a delay
+    LaunchedEffect(isPressed) {
+        if (isPressed) {
+            delay(200)  // Show pressed state for 200ms
+            isPressed = false
+        }
+    }
 }
 
 @Composable
-fun Left(viewModel: RobotControllerViewModel, isLandscape: Boolean){
+fun Left(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
+    val interactionSource = remember { MutableInteractionSource() }
+    var isPressed by remember { mutableStateOf(false) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth)
+    ) {
         Button(
-            onClick = { viewModel.setDisplayText("Moving Left...") },
+            onClick = {
+                isPressed = !isPressed  // Toggle pressed state
+                viewModel.setDisplayText("Moving Left...")
+            },
             enabled = !viewModel.isPowerOn.value,
+            interactionSource = interactionSource,
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(NavBtnColor),
-                contentColor = Color(TextColor)
+                containerColor = if (isPressed) Color(0xFF4CAF50) else Color(NavBtnColor),
+                contentColor = Color(TextColor),
+                disabledContainerColor = Color(OffButtonColor)
             ),
             modifier = Modifier
-                .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth)
                 .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
                 .width(ManipElevButtonWidth)
                 .shadow(8.dp, CircleShape, ambientColor = Color(0xFFD3D3D3), spotColor = Color(0xFF4CAF50))
+
         ) {
-            Text("← Left",
+            Text(
+                "← Left",
                 fontSize = NavFontSize,
-                fontWeight = FontWeight.Bold)
+                fontWeight = FontWeight.Bold
+            )
         }
+    }
+
+    // Reset the pressed state after a delay
+    LaunchedEffect(isPressed) {
+        if (isPressed) {
+            delay(200)  // Show pressed state for 200ms
+            isPressed = false
+        }
+    }
 }
 
+
+
 @Composable
-fun Right(viewModel: RobotControllerViewModel, isLandscape: Boolean){
+fun Right(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
+    val interactionSource = remember { MutableInteractionSource() }
+    var isPressed by remember { mutableStateOf(false) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth)
+    ) {
         Button(
-            onClick = { viewModel.setDisplayText("Moving Right...") },
+            onClick = {
+                isPressed = !isPressed  // Toggle pressed state
+                viewModel.setDisplayText("Moving Right...")
+            },
             enabled = !viewModel.isPowerOn.value,
+            interactionSource = interactionSource,
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(NavBtnColor),
-                contentColor = Color(TextColor)
+                containerColor = if (isPressed) Color(0xFF4CAF50) else Color(NavBtnColor),
+                contentColor = Color(TextColor),
+                disabledContainerColor = Color(OffButtonColor)
             ),
             modifier = Modifier
-                .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + 0.4f)
                 .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
                 .width(ManipElevButtonWidth)
                 .shadow(8.dp, CircleShape, ambientColor = Color(0xFFD3D3D3), spotColor = Color(0xFF4CAF50))
+
         ) {
-            Text("Right →",
+            Text(
+                "→ Right",
                 fontSize = NavFontSize,
-                fontWeight = FontWeight.Bold)
+                fontWeight = FontWeight.Bold
+            )
         }
+    }
+
+    // Reset the pressed state after a delay
+    LaunchedEffect(isPressed) {
+        if (isPressed) {
+            delay(200)  // Show pressed state for 200ms
+            isPressed = false
+        }
+    }
 }
+
 
 
 // Alert dialog
