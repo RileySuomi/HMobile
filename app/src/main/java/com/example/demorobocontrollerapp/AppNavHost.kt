@@ -25,9 +25,10 @@ fun AppNavHost() {
         composable("main") {
             DisplayApp(
                 viewModel = RobotControllerViewModel(),
-                onSettingPressed = {
-                    navController.navigate("settings")
-                }
+                // TODO: uncomment this when use
+//                onSettingPressed = {
+//                    navController.navigate("settings")
+//                }
             )
         }
 

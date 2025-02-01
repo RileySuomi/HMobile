@@ -18,24 +18,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,17 +37,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.demorobocontrollerapp.ui.theme.DemoRoboControllerAppTheme
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.platform.LocalConfiguration
-import kotlinx.coroutines.delay
+import com.example.demorobocontrollerapp.ui.theme.DemoRoboControllerAppTheme
 
 // General setting
 const val TextColor = 0xFF212529 // dark gray // OxFF000000
-const val OffButtonColor = 0xFF929292 // dark-ish gray to signify 'power off'
+// const val OffButtonColor = 0xFF929292 // dark-ish gray to signify 'power off'
 
 // Monitor setting
 val MonitorFontSize = 32.sp
@@ -78,34 +70,37 @@ const val NavButtonMaxWidth = 0.2f
 @Composable
 fun GreetingPreview() {
     DemoRoboControllerAppTheme {
-        DisplayApp(viewModel = RobotControllerViewModel(), onSettingPressed = {}) // pass in the 'viewModel' class
+        DisplayApp(viewModel = RobotControllerViewModel())
+        //DisplayApp(viewModel = RobotControllerViewModel(), onSettingPressed = {}) // pass in the 'viewModel' class
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable // The whole app display
-fun DisplayApp(viewModel: RobotControllerViewModel, onSettingPressed: () -> Unit) {
+fun DisplayApp(viewModel: RobotControllerViewModel) {
+    // fun DisplayApp(viewModel: RobotControllerViewModel, onSettingPressed: () -> Unit) {
     val configuration = LocalConfiguration.current // check view mode
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     Scaffold (
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text(text = "Home", fontSize = 22.sp) },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Black,
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                ),
-                 actions = {
-                    IconButton(onClick = {onSettingPressed()}) {
-                        Icon(
-                            imageVector = Icons.Filled.Settings,
-                            contentDescription = "Localized description"
-                        )
-                    }
-                }
-            )
-        },
+//        topBar = {
+//            CenterAlignedTopAppBar(
+//                title = { Text(text = "Home", fontSize = 22.sp) },
+//                colors = TopAppBarDefaults.topAppBarColors(
+//                    containerColor = Color.Black,
+//                    titleContentColor = Color.White,
+//                    actionIconContentColor = Color.White
+//                ),
+//                 actions = {
+//                    IconButton(onClick = {onSettingPressed()}) {
+//                        Icon(
+//                            imageVector = Icons.Filled.Settings,
+//                            contentDescription = "Localized description"
+//                        )
+//                    }
+//                }
+//            )
+//        },
 
         content = {
             Column(
@@ -324,21 +319,29 @@ fun DisplayApp(viewModel: RobotControllerViewModel, onSettingPressed: () -> Unit
 fun Power(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
     Button(
         onClick = {
-            viewModel.switchPowerStatus()  // toggle power status
+            viewModel.switchPowerStatus()  // Toggle power status
+
+            // Toggle the text based on the power status
             viewModel.setDisplayText(
                 if (!viewModel.isPowerOn.value) "Let's lift with ease!" else "Rest mode!"
             )
+
+            // Connect to WebSocket when power is turned on
+            if (!viewModel.isPowerOn.value) {
+                viewModel.webSocketManager.connect()  // Call the connect method when power is ON
+            } else {
+                viewModel.webSocketManager.disconnect()  // Optionally, close the connection when power is OFF
+            }
         },
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(if (viewModel.isPowerOn.value) 0xFF4CAF50 else 0xFFFF5733), // green if on, red if off
-            contentColor = Color(TextColor) //
+            containerColor = Color(if (viewModel.isPowerOn.value) 0xFF4CAF50 else 0xFFFF5733), // Green if on, red if off
+            contentColor = Color(TextColor)
         ),
         modifier = Modifier
             .clip(CircleShape) // Make the button circular
             .width(if (isLandscape) ManipElevButtonWidth else ManipElevButtonWidth - 55.dp)
             .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight - 2.dp)
     ) {
-        // Display button text and icon
         Text(
             if (viewModel.isPowerOn.value) "On" else "Off",
             fontSize = ManipElevFontSize,
@@ -348,7 +351,8 @@ fun Power(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
     }
 }
 
-// Monitor: display text/action that's taking place/happening
+// TODO: This will be camera input, change it to do so
+// Temporarily a monitor: display text/action that's taking place/happening
 @Composable
 fun ShowMonitor(displayText: String){ //
     Column(
@@ -384,11 +388,11 @@ fun ShowMonitor(displayText: String){ //
 fun Grab(viewModel: RobotControllerViewModel , isLandscape: Boolean) { // 'Grab'
     // State for button enabled status
     var isGrabButtonEnabled by remember { mutableStateOf(true) }
-
     // State for the dialog visibility
     var showDialog by remember { mutableStateOf(false) }
+
     Button(
-        onClick = { viewModel.setDisplayText("Grabbing...") },
+        onClick = { viewModel.webSocketManager.sendMessage("Grab");viewModel.setDisplayText("Grabbing item...") },
         enabled = !viewModel.isPowerOn.value,
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(ManipBtnColor), // button background color (soft green)
@@ -407,7 +411,7 @@ fun Grab(viewModel: RobotControllerViewModel , isLandscape: Boolean) { // 'Grab'
 @Composable
 fun Release(viewModel: RobotControllerViewModel, isLandscape: Boolean){
     Button(
-        onClick = { viewModel.setDisplayText("Releasing Item...") },
+        onClick = { viewModel.webSocketManager.sendMessage("Release");viewModel.setDisplayText("Releasing Item...") },
         enabled = !viewModel.isPowerOn.value,
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(ManipBtnColor), // button background color (soft green)
@@ -426,7 +430,7 @@ fun Release(viewModel: RobotControllerViewModel, isLandscape: Boolean){
 @Composable
 fun Lift(viewModel: RobotControllerViewModel, isLandscape: Boolean) { // 'Lift' btn
     Button(
-        onClick = {viewModel.setDisplayText("Lifting Item...")},
+        onClick = {viewModel.webSocketManager.sendMessage("Lift"); viewModel.setDisplayText("Lifting Item...")},
         enabled = !viewModel.isPowerOn.value,
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(ElevBtnColor), // button background color (purple)
@@ -447,7 +451,7 @@ fun Lift(viewModel: RobotControllerViewModel, isLandscape: Boolean) { // 'Lift' 
 @Composable
 fun Lower(viewModel: RobotControllerViewModel, isLandscape: Boolean){
     Button(
-        onClick = {viewModel.setDisplayText("Lowering Item...") },
+        onClick = {viewModel.webSocketManager.sendMessage("Lower");viewModel.setDisplayText("Lowering Item...") },
         enabled = !viewModel.isPowerOn.value,
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(ElevBtnColor), // button background color (soft green)
@@ -469,7 +473,7 @@ fun Lower(viewModel: RobotControllerViewModel, isLandscape: Boolean){
 @Composable
 fun Forward(viewModel: RobotControllerViewModel,isLandscape : Boolean) {
         Button(
-            onClick = { viewModel.setDisplayText( "Moving Forward...") },
+            onClick = {viewModel.webSocketManager.sendMessage("Forward"); viewModel.setDisplayText( "Moving Forward...") },
             enabled = !viewModel.isPowerOn.value,
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(NavBtnColor),
@@ -489,7 +493,7 @@ fun Forward(viewModel: RobotControllerViewModel,isLandscape : Boolean) {
 @Composable
 fun Backward(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         Button(
-            onClick = { viewModel.setDisplayText("Moving Backward...")},
+            onClick = { viewModel.webSocketManager.sendMessage("Move Backward"); viewModel.setDisplayText("Moving Backward...")},
             enabled = !viewModel.isPowerOn.value,
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(NavBtnColor),
@@ -509,7 +513,7 @@ fun Backward(viewModel: RobotControllerViewModel, isLandscape: Boolean){
 @Composable
 fun Left(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         Button(
-            onClick = { viewModel.setDisplayText("Moving Left...") },
+            onClick = {viewModel.webSocketManager.sendMessage("Move Left"); viewModel.setDisplayText("Moving Left...") },
             enabled = !viewModel.isPowerOn.value,
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(NavBtnColor),
@@ -529,7 +533,7 @@ fun Left(viewModel: RobotControllerViewModel, isLandscape: Boolean){
 @Composable
 fun Right(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         Button(
-            onClick = { viewModel.setDisplayText("Moving Right...") },
+            onClick = {viewModel.webSocketManager.sendMessage("Move Right"); viewModel.setDisplayText("Moving Right...") },
             enabled = !viewModel.isPowerOn.value,
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(NavBtnColor),
@@ -545,7 +549,6 @@ fun Right(viewModel: RobotControllerViewModel, isLandscape: Boolean){
                 fontWeight = FontWeight.Bold)
         }
 }
-
 
 // Alert dialog
 //    if (showDialog) {

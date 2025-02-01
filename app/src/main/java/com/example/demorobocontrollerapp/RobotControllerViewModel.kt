@@ -12,6 +12,8 @@ import kotlinx.coroutines.launch
 
 // This class define and hold data belong to a robot to keep data state &  prevent data reset when view mode changes
 class RobotControllerViewModel : ViewModel() {
+    val webSocketManager = WebSocketManager // com.example.demorobocontrollerapp.WebSocketManager sis initialized
+
     // TODO: data to send through Raspberry Pi
     private val _robotState = MutableLiveData<String>()
     val robotState: LiveData<String> get() = _robotState

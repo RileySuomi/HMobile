@@ -246,12 +246,14 @@
     <item name="compose_view_saveable_id_tag" type="id"/>
     <item name="consume_window_insets_tag" type="id"/>
     <item name="fragment_container_view_tag" type="id"/>
+    <item name="hide_graphics_layer_in_inspector_tag" type="id"/>
     <item name="hide_in_inspector_tag" type="id"/>
     <item name="home" type="id"/>
     <item name="inspection_slot_table_set" type="id"/>
     <item name="is_pooling_container_tag" type="id"/>
     <item name="line1" type="id"/>
     <item name="line3" type="id"/>
+    <item name="nav_controller_view_tag" type="id"/>
     <item name="pooling_container_listener_holder_tag" type="id"/>
     <item name="progress_circular" type="id"/>
     <item name="progress_horizontal" type="id"/>
@@ -374,14 +376,15 @@
     <string name="m3c_bottom_sheet_pane_title">Bottom Sheet</string>
     <string name="navigation_menu">"Navigation menu"</string>
     <string name="not_selected">Not selected</string>
-    <string name="off">Off</string>
-    <string name="on">On</string>
     <string name="range_end">"Range end"</string>
     <string name="range_start">"Range start"</string>
     <string name="search_bar_search">Search</string>
     <string name="search_menu_title">Search</string>
     <string name="selected">Selected</string>
     <string name="snackbar_dismiss">Dismiss</string>
+    <string name="state_empty">Empty</string>
+    <string name="state_off">Off</string>
+    <string name="state_on">On</string>
     <string name="status_bar_notification_info_overflow">999+</string>
     <string name="suggestions_available">Suggestions below</string>
     <string name="switch_role">Switch</string>
@@ -399,6 +402,8 @@
     <string name="time_picker_minute_text_field">for minutes</string>
     <string name="time_picker_period_toggle_description">Select AM or PM</string>
     <string name="time_picker_pm">PM</string>
+    <string name="tooltip_description">tooltip</string>
+    <string name="tooltip_label">show tooltip</string>
     <string name="tooltip_long_press_label">Show tooltip</string>
     <string name="tooltip_pane_description">Tooltip</string>
     <style name="AlertDialog.AppCompat" parent="Base.AlertDialog.AppCompat"/>
@@ -2031,6 +2036,13 @@
         
         <attr format="reference" name="expandActivityOverflowButtonDrawable"/>
     </declare-styleable>
+    <declare-styleable name="ActivityNavigator">
+        <attr name="android:name"/>
+        <attr format="string" name="action"/>
+        <attr format="string" name="data"/>
+        <attr format="string" name="dataPattern"/>
+        <attr format="string" name="targetPackage"/>
+    </declare-styleable>
     <declare-styleable name="AlertDialog">
         <attr name="android:layout"/>
         <attr format="reference" name="buttonPanelSideLayout"/>
@@ -2966,6 +2978,45 @@
         <attr format="boolean" name="preserveIconSpacing"/>
         
         <attr format="reference" name="subMenuArrow"/>
+    </declare-styleable>
+    <declare-styleable name="NavAction">
+        <attr name="android:id"/>
+        <attr format="reference" name="destination"/>
+        <attr format="boolean" name="launchSingleTop"/>
+        <attr format="boolean" name="restoreState"/>
+        <attr format="reference" name="popUpTo"/>
+        <attr format="boolean" name="popUpToInclusive"/>
+        <attr format="boolean" name="popUpToSaveState"/>
+        <attr format="reference" name="enterAnim"/>
+        <attr format="reference" name="exitAnim"/>
+        <attr format="reference" name="popEnterAnim"/>
+        <attr format="reference" name="popExitAnim"/>
+    </declare-styleable>
+    <declare-styleable name="NavArgument">
+        <attr name="android:name"/>
+        <attr name="android:defaultValue"/>
+        <attr format="boolean" name="nullable"/>
+        <attr format="string" name="argType"/>
+    </declare-styleable>
+    <declare-styleable name="NavDeepLink">
+        <attr format="string" name="uri"/>
+        <attr format="string" name="action"/>
+        <attr format="string" name="mimeType"/>
+        <attr name="android:autoVerify"/>
+    </declare-styleable>
+    <declare-styleable name="NavGraphNavigator">
+        <attr format="reference" name="startDestination"/>
+    </declare-styleable>
+    <declare-styleable name="NavHost">
+        <attr format="reference" name="navGraph"/>
+    </declare-styleable>
+    <declare-styleable name="NavInclude">
+        <attr format="reference" name="graph"/>
+    </declare-styleable>
+    <declare-styleable name="Navigator">
+        <attr name="android:id"/>
+        <attr format="string" name="route"/>
+        <attr name="android:label"/>
     </declare-styleable>
     <declare-styleable name="PopupWindow">
         
