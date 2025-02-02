@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package com.example.demorobocontrollerapp
 
 import android.content.res.Configuration
@@ -24,15 +22,10 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -75,7 +68,6 @@ fun GreetingPreview() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable // The whole app display
 fun DisplayApp(viewModel: RobotControllerViewModel) {
     // fun DisplayApp(viewModel: RobotControllerViewModel, onSettingPressed: () -> Unit) {
@@ -104,7 +96,9 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
 
         content = {
             Column(
-                modifier = Modifier.fillMaxSize().padding(it) // use the whole screen size
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it) // use the whole screen size
             ) {
                 if (isLandscape) { //'Landscape' view design section
                     // Monitor sections
@@ -323,18 +317,18 @@ fun Power(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
 
             // Toggle the text based on the power status
             viewModel.setDisplayText(
-                if (!viewModel.isPowerOn.value) "Let's lift with ease!" else "Rest mode!"
+                if (viewModel.isPowerOn.value) "Let's lift with ease!" else "Rest mode!"
             )
 
             // Connect to WebSocket when power is turned on
-            if (!viewModel.isPowerOn.value) {
+            if (viewModel.isPowerOn.value) {
                 viewModel.webSocketManager.connect()  // Call the connect method when power is ON
             } else {
                 viewModel.webSocketManager.disconnect()  // Optionally, close the connection when power is OFF
             }
         },
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(if (viewModel.isPowerOn.value) 0xFF4CAF50 else 0xFFFF5733), // Green if on, red if off
+            containerColor = Color(if (viewModel.isPowerOn.value) 0xFFFF5733 else 0xFF4CAF50), // Green if on, red if off
             contentColor = Color(TextColor)
         ),
         modifier = Modifier
@@ -343,7 +337,7 @@ fun Power(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
             .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight - 2.dp)
     ) {
         Text(
-            if (viewModel.isPowerOn.value) "On" else "Off",
+            if (viewModel.isPowerOn.value) "Off" else "On",
             fontSize = ManipElevFontSize,
             fontWeight = FontWeight.Bold
         )
@@ -351,7 +345,7 @@ fun Power(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
     }
 }
 
-// TODO: This will be camera input, change it to do so
+// TODO : This will be camera input, change it to do so ASAP
 // Temporarily a monitor: display text/action that's taking place/happening
 @Composable
 fun ShowMonitor(displayText: String){ //
@@ -385,172 +379,337 @@ fun ShowMonitor(displayText: String){ //
 
 // Manipulation: consist of 'Grab' & 'Release' btn
 @Composable
-fun Grab(viewModel: RobotControllerViewModel , isLandscape: Boolean) { // 'Grab'
-    // State for button enabled status
-    var isGrabButtonEnabled by remember { mutableStateOf(true) }
-    // State for the dialog visibility
-    var showDialog by remember { mutableStateOf(false) }
+fun Grab(viewModel: RobotControllerViewModel , isLandscape: Boolean) {
+        GlowingButton(
+            enabled = viewModel.isPowerOn.value,
+            text = "Grab",
+            icon = { Icon(Icons.Default.AddCircle, contentDescription = "Grab") },
+            btnColor = Color(ManipBtnColor),
+            textColor = Color(TextColor),
+            fontSize = ManipElevFontSize,
+            onClick = {
+                if(viewModel.isPowerOn.value) {
+                    viewModel.webSocketManager.sendMessage("Grab")
+                    viewModel.setDisplayText("Grabbing item...")
+                }
+            },
+            modifier = Modifier
+                .clip(CircleShape)
+                .background(Color(ManipBtnColor)) // Set the button's background color
+                .width(if (isLandscape) ManipElevButtonWidth else ManipElevButtonWidth + 10.dp)
+                .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp),
 
-    Button(
-        onClick = { viewModel.webSocketManager.sendMessage("Grab");viewModel.setDisplayText("Grabbing item...") },
-        enabled = !viewModel.isPowerOn.value,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color(ManipBtnColor), // button background color (soft green)
-            contentColor = Color(TextColor)
-        ),
-        modifier = Modifier
-            .clip(CircleShape) // make the button circular
-            .width(if (isLandscape) ManipElevButtonWidth else ManipElevButtonWidth + 10.dp)
-            .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
-    ) {
-        Text("Grab ",fontSize = ManipElevFontSize, fontWeight = FontWeight.Bold)
-        Icon(Icons.Default.AddCircle, contentDescription = "Grab")
-    }
+            )
+
+    // TODO: Double check 'landscape' view
+//    Button(
+//        onClick = { viewModel.webSocketManager.sendMessage("Grab");viewModel.setDisplayText("Grabbing item...") },
+//        enabled = !viewModel.isPowerOn.value,
+//        colors = ButtonDefaults.buttonColors(
+//            containerColor = Color(ManipBtnColor), // button background color (soft green)
+//            contentColor = Color(TextColor)
+//        ),
+//        modifier = Modifier
+//            .clip(CircleShape) // make the button circular
+//            .width(if (isLandscape) ManipElevButtonWidth else ManipElevButtonWidth + 10.dp)
+//            .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
+//    ) {
+//        Text("Grab ",fontSize = ManipElevFontSize, fontWeight = FontWeight.Bold)
+//        Icon(Icons.Default.AddCircle, contentDescription = "Grab")
+//    }
 }
 
 @Composable
 fun Release(viewModel: RobotControllerViewModel, isLandscape: Boolean){
-    Button(
-        onClick = { viewModel.webSocketManager.sendMessage("Release");viewModel.setDisplayText("Releasing Item...") },
-        enabled = !viewModel.isPowerOn.value,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color(ManipBtnColor), // button background color (soft green)
-            contentColor = Color(TextColor)
-        ), modifier = Modifier
-            .clip(CircleShape) // make the button circular
+    GlowingButton(
+        enabled = viewModel.isPowerOn.value,
+        text ="Release" ,
+        icon = { Icon(Icons.Default.CheckCircle, contentDescription = "Release") },
+        btnColor = Color(ManipBtnColor) ,
+        textColor = Color(TextColor),
+        fontSize = ManipElevFontSize ,
+        onClick = {
+            if(viewModel.isPowerOn.value) {
+                viewModel.webSocketManager.sendMessage("Release")
+                viewModel.setDisplayText("Releasing item...")
+            }
+        },
+        modifier = Modifier
+            .clip(CircleShape)
+            .background(Color(ManipBtnColor)) // Set the button's background color
             .width(if (isLandscape) ManipElevButtonWidth else ManipElevButtonWidth + 10.dp)
             .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
-    ) {
-        Text("Release ",fontSize = ManipElevFontSize, fontWeight = FontWeight.Bold)
-        Icon(Icons.Default.CheckCircle, contentDescription = "Release")
-    }
+    )
+    // TODO: Setup 'landscape' view
+//    Button(
+//        onClick = { viewModel.webSocketManager.sendMessage("Release");viewModel.setDisplayText("Releasing Item...") },
+//        enabled = !viewModel.isPowerOn.value,
+//        colors = ButtonDefaults.buttonColors(
+//            containerColor = Color(ManipBtnColor), // button background color (soft green)
+//            contentColor = Color(TextColor)
+//        ), modifier = Modifier
+//            .clip(CircleShape) // make the button circular
+//            .width(if (isLandscape) ManipElevButtonWidth else ManipElevButtonWidth + 10.dp)
+//            .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
+//    ) {
+//        Text("Release ",fontSize = ManipElevFontSize, fontWeight = FontWeight.Bold)
+//        Icon(Icons.Default.CheckCircle, contentDescription = "Release")
+//    }
 }
 
 // Elevation: consist of 'Lift' & 'Lower' buttons 
 @Composable
 fun Lift(viewModel: RobotControllerViewModel, isLandscape: Boolean) { // 'Lift' btn
-    Button(
-        onClick = {viewModel.webSocketManager.sendMessage("Lift"); viewModel.setDisplayText("Lifting Item...")},
-        enabled = !viewModel.isPowerOn.value,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color(ElevBtnColor), // button background color (purple)
-            contentColor = Color(TextColor) // text color (white)
-        ), modifier = Modifier
-            .clip(CircleShape) // make the button circular
+    GlowingButton(
+        enabled = viewModel.isPowerOn.value,
+        text ="Lift" ,
+        icon = { Icon(Icons.Default.KeyboardArrowUp, contentDescription = "Lift") },
+        btnColor = Color(ElevBtnColor) ,
+        textColor = Color(TextColor),
+        fontSize = ManipElevFontSize ,
+        onClick = {
+            if(viewModel.isPowerOn.value) {
+                viewModel.webSocketManager.sendMessage("Lift")
+                viewModel.setDisplayText("Lifting item...")
+            }
+        },
+        modifier = Modifier
+            .clip(CircleShape)
+            .background(Color(ElevBtnColor)) // Set the button's background color
             .width(if (isLandscape) ManipElevButtonWidth else ManipElevButtonWidth + 10.dp)
             .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
-    ) {
-        Text("Lift ",fontSize = ManipElevFontSize, fontWeight = FontWeight.Bold)
-        Icon(
-            Icons.Default.KeyboardArrowUp,
-            contentDescription = "Lift" 
-        )
-    }
+    )
+    // TODO: Setup 'landscape' view
+//    Button(
+//        onClick = {viewModel.webSocketManager.sendMessage("Lift"); viewModel.setDisplayText("Lifting Item...")},
+//        enabled = !viewModel.isPowerOn.value,
+//        colors = ButtonDefaults.buttonColors(
+//            containerColor = Color(ElevBtnColor), // button background color (purple)
+//            contentColor = Color(TextColor) // text color (white)
+//        ), modifier = Modifier
+//            .clip(CircleShape) // make the button circular
+//            .width(if (isLandscape) ManipElevButtonWidth else ManipElevButtonWidth + 10.dp)
+//            .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
+//    ) {
+//        Text("Lift ",fontSize = ManipElevFontSize, fontWeight = FontWeight.Bold)
+//        Icon(
+//            Icons.Default.KeyboardArrowUp,
+//            contentDescription = "Lift"
+//        )
+//    }
 }
 
 @Composable
 fun Lower(viewModel: RobotControllerViewModel, isLandscape: Boolean){
-    Button(
-        onClick = {viewModel.webSocketManager.sendMessage("Lower");viewModel.setDisplayText("Lowering Item...") },
-        enabled = !viewModel.isPowerOn.value,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color(ElevBtnColor), // button background color (soft green)
-            contentColor = Color(TextColor)
-        ), modifier = Modifier
-            .clip(CircleShape) // Make the button circular
+    GlowingButton(
+        enabled = viewModel.isPowerOn.value,
+        text ="Lower" ,
+        icon = { Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Lower") },
+        btnColor = Color(ElevBtnColor) ,
+        textColor = Color(TextColor),
+        fontSize = ManipElevFontSize ,
+        onClick = {
+            if(viewModel.isPowerOn.value) {
+                viewModel.webSocketManager.sendMessage("Lower")
+                viewModel.setDisplayText("Lowering item...")
+            }
+        },
+        modifier = Modifier
+            .clip(CircleShape)
+            .background(Color(ElevBtnColor)) // Set the button's background color
             .width(if (isLandscape) ManipElevButtonWidth else ManipElevButtonWidth + 10.dp)
             .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
-    ) {
-        Text("Lower ",fontSize = ManipElevFontSize, fontWeight = FontWeight.Bold)
-        Icon(
-            Icons.Default.KeyboardArrowDown,
-            contentDescription = "Lower"
-        )
-    }
+    )
+//    Button(
+//        onClick = {viewModel.webSocketManager.sendMessage("Lower");viewModel.setDisplayText("Lowering Item...") },
+//        enabled = !viewModel.isPowerOn.value,
+//        colors = ButtonDefaults.buttonColors(
+//            containerColor = Color(ElevBtnColor), // button background color (soft green)
+//            contentColor = Color(TextColor)
+//        ), modifier = Modifier
+//            .clip(CircleShape) // Make the button circular
+//            .width(if (isLandscape) ManipElevButtonWidth else ManipElevButtonWidth + 10.dp)
+//            .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
+//    ) {
+//        Text("Lower ",fontSize = ManipElevFontSize, fontWeight = FontWeight.Bold)
+//        Icon(
+//            Icons.Default.KeyboardArrowDown,
+//            contentDescription = "Lower"
+//        )
+//    }
 }
 
 // Navigation: consists of 'Forward' 'Backward' 'Left' 'Right'
 @Composable
 fun Forward(viewModel: RobotControllerViewModel,isLandscape : Boolean) {
-        Button(
-            onClick = {viewModel.webSocketManager.sendMessage("Forward"); viewModel.setDisplayText( "Moving Forward...") },
-            enabled = !viewModel.isPowerOn.value,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(NavBtnColor),
-                contentColor = Color(TextColor)
-            ),
-            modifier = Modifier
-                .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth) // Take 20% of the screen width for landscape view
-                .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
-                .width(ManipElevButtonWidth)
-        ) {
-            Text("Forward ↑",
-                fontSize = NavFontSize,
-                fontWeight = FontWeight.Bold)
-        }
+    GlowingButton(
+        enabled = viewModel.isPowerOn.value,
+        text ="Forward ↑" ,
+        icon = { /* in any */  },
+        btnColor = Color(NavBtnColor) ,
+        textColor = Color(TextColor),
+        fontSize = NavFontSize ,
+        onClick = {
+            if(viewModel.isPowerOn.value) {
+                viewModel.webSocketManager.sendMessage("Forward")
+                viewModel.setDisplayText("Move Forward...")
+            }
+        },
+        modifier = Modifier
+            .clip(CircleShape)
+            .background(Color(NavBtnColor)) // Set the button's background color
+            .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth)
+            .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
+            .width(ManipElevButtonWidth)
+    )
+    // TODO: Double check 'landscape' view mod
+
+//        Button(
+//            onClick = {viewModel.webSocketManager.sendMessage("Forward"); viewModel.setDisplayText( "Moving Forward...") },
+//            enabled = !viewModel.isPowerOn.value,
+//            colors = ButtonDefaults.buttonColors(
+//                containerColor = Color(NavBtnColor),
+//                contentColor = Color(TextColor)
+//            ),
+//            modifier = Modifier
+//                .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth) // Take 20% of the screen width for landscape view
+//                .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
+//                .width(ManipElevButtonWidth)
+//        ) {
+//            Text("Forward ↑",
+//                fontSize = NavFontSize,
+//                fontWeight = FontWeight.Bold)
+//        }
 }
 
 @Composable
 fun Backward(viewModel: RobotControllerViewModel, isLandscape: Boolean){
-        Button(
-            onClick = { viewModel.webSocketManager.sendMessage("Move Backward"); viewModel.setDisplayText("Moving Backward...")},
-            enabled = !viewModel.isPowerOn.value,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(NavBtnColor),
-                contentColor = Color(TextColor)
-            ),
-            modifier = Modifier
-                .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth)
-                .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
-                .width(ManipElevButtonWidth)
-        ) {
-            Text("Backward ↓",
-                fontSize = NavFontSize,
-                fontWeight = FontWeight.Bold)
-        }
+    GlowingButton(
+        enabled = viewModel.isPowerOn.value,
+        text ="Backward ↓" ,
+        icon = { /* in any */  },
+        btnColor = Color(NavBtnColor) ,
+        textColor = Color(TextColor),
+        fontSize = NavFontSize ,
+        onClick = {
+            if(viewModel.isPowerOn.value) {
+                viewModel.webSocketManager.sendMessage("Backward")
+                viewModel.setDisplayText("Move Backward...")
+            }
+        },
+        modifier = Modifier
+            .clip(CircleShape)
+            .background(Color(NavBtnColor)) // Set the button's background color
+            .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth)
+            .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
+            .width(ManipElevButtonWidth)
+    )
+    // TODO: Double check 'landscape' view mode
+
+//        Button(
+//            onClick = { viewModel.webSocketManager.sendMessage("Move Backward"); viewModel.setDisplayText("Moving Backward...")},
+//            enabled = !viewModel.isPowerOn.value,
+//            colors = ButtonDefaults.buttonColors(
+//                containerColor = Color(NavBtnColor),
+//                contentColor = Color(TextColor)
+//            ),
+//            modifier = Modifier
+//                .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth)
+//                .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
+//                .width(ManipElevButtonWidth)
+//        ) {
+//            Text("Backward ↓",
+//                fontSize = NavFontSize,
+//                fontWeight = FontWeight.Bold)
+//        }
 }
 
 @Composable
 fun Left(viewModel: RobotControllerViewModel, isLandscape: Boolean){
-        Button(
-            onClick = {viewModel.webSocketManager.sendMessage("Move Left"); viewModel.setDisplayText("Moving Left...") },
-            enabled = !viewModel.isPowerOn.value,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(NavBtnColor),
-                contentColor = Color(TextColor)
-            ),
-            modifier = Modifier
-                .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth)
-                .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
-                .width(ManipElevButtonWidth)
-        ) {
-            Text("← Left",
-                fontSize = NavFontSize,
-                fontWeight = FontWeight.Bold)
-        }
+    GlowingButton(
+        enabled = viewModel.isPowerOn.value,
+        text ="← Left" ,
+        icon = { /* in any */  },
+        btnColor = Color(NavBtnColor) ,
+        textColor = Color(TextColor),
+        fontSize = NavFontSize ,
+        onClick = {
+            if(viewModel.isPowerOn.value) {
+                viewModel.webSocketManager.sendMessage("Left")
+                viewModel.setDisplayText("Move Left...")
+            }
+        },
+        modifier = Modifier
+            .clip(CircleShape)
+            .background(Color(NavBtnColor)) // Set the button's background color
+            .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + 0.2f)
+            .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
+            .width(ManipElevButtonWidth)
+    )
+    // TODO: Double check 'landscape' view mode
+
+//        Button(
+//            onClick = {viewModel.webSocketManager.sendMessage("Move Left"); viewModel.setDisplayText("Moving Left...") },
+//            enabled = !viewModel.isPowerOn.value,
+//            colors = ButtonDefaults.buttonColors(
+//                containerColor = Color(NavBtnColor),
+//                contentColor = Color(TextColor)
+//            ),
+//            modifier = Modifier
+//                .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth)
+//                .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
+//                .width(ManipElevButtonWidth)
+//        ) {
+//            Text("← Left",
+//                fontSize = NavFontSize,
+//                fontWeight = FontWeight.Bold)
+//        }
 }
 
 @Composable
 fun Right(viewModel: RobotControllerViewModel, isLandscape: Boolean){
-        Button(
-            onClick = {viewModel.webSocketManager.sendMessage("Move Right"); viewModel.setDisplayText("Moving Right...") },
-            enabled = !viewModel.isPowerOn.value,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(NavBtnColor),
-                contentColor = Color(TextColor)
-            ),
-            modifier = Modifier
-                .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + 0.4f)
-                .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
-                .width(ManipElevButtonWidth)
-        ) {
-            Text("Right →",
-                fontSize = NavFontSize,
-                fontWeight = FontWeight.Bold)
-        }
+    GlowingButton(
+        enabled = viewModel.isPowerOn.value,
+        text ="Right →" ,
+        icon = { /* in any */  },
+        btnColor = Color(NavBtnColor) ,
+        textColor = Color(TextColor),
+        fontSize = NavFontSize ,
+        onClick = {
+            if(viewModel.isPowerOn.value) {
+                viewModel.webSocketManager.sendMessage("Right")
+                viewModel.setDisplayText("Move Right...")
+            }
+        },
+        modifier = Modifier
+            .clip(CircleShape)
+            .background(Color(NavBtnColor)) // Set the button's background color
+            .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + 0.4f)
+            .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
+            .width(ManipElevButtonWidth)
+    )
+    // TODO: Double check 'landscape' view mode
+
+//        Button(
+//            onClick = {viewModel.webSocketManager.sendMessage("Move Right"); viewModel.setDisplayText("Moving Right...") },
+//            enabled = !viewModel.isPowerOn.value,
+//            colors = ButtonDefaults.buttonColors(
+//                containerColor = Color(NavBtnColor),
+//                contentColor = Color(TextColor)
+//            ),
+//            modifier = Modifier
+//                .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + 0.4f)
+//                .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
+//                .width(ManipElevButtonWidth)
+//        ) {
+//            Text("Right →",
+//                fontSize = NavFontSize,
+//                fontWeight = FontWeight.Bold)
+//        }
 }
 
-// Alert dialog
+// TODO: shortcut to turn on app when multiple taps detected
+
 //    if (showDialog) {
 //        AlertDialog(
 //            onDismissRequest = { showDialog = false},
