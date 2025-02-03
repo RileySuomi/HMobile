@@ -58,6 +58,11 @@ val NavFontSize = 21.sp // 'nav' = 'navigation'
 const val NavBtnColor = 0xFFD3D3D3 // light gray
 const val NavButtonMaxWidth = 0.2f
 
+// Positioning Setting (arms)
+val extendBtnColor = 0xFFFFE0B2
+val retractBtnColor = 0xFFFFCC80
+const val PosButtonMaxWidth = 0.2f
+
 //use as 'preview'
 @Preview(showBackground = true)
 @Composable
@@ -217,7 +222,7 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .weight(0.3f),
+                            .weight(0.2f),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ){
@@ -228,7 +233,7 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .weight(0.4f),
+                            .weight(0.3f),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
@@ -245,7 +250,7 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .weight(0.4f),
+                            .weight(0.3f),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
@@ -268,7 +273,7 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
                     ) {
                         Column(modifier = Modifier
                             .fillMaxWidth()
-                            .weight(0.8f)
+                            .weight(0.6f)
                             .padding(8.dp),
                             verticalArrangement = Arrangement.Top,
                             horizontalAlignment = Alignment.CenterHorizontally)
@@ -278,7 +283,7 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
 
                         Column(modifier = Modifier
                             .fillMaxWidth()
-                            .weight(0.8f)
+                            .weight(0.7f)
                         ){
                             Row(
                                 modifier = Modifier
@@ -287,19 +292,36 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
                                 horizontalArrangement = Arrangement.SpaceEvenly
                             ) {
                                 Left(viewModel, isLandscape)
-                                Spacer(modifier = Modifier.weight(1f))
+                                Spacer(modifier = Modifier.weight(0.7f))
                                 Right(viewModel, isLandscape)
                             }
                         }
 
                         Column(modifier = Modifier
                             .fillMaxWidth()
-                            .weight(0.8f)
+                            .weight(0.6f)
                             .padding(8.dp),
                             verticalArrangement = Arrangement.Top,
                             horizontalAlignment = Alignment.CenterHorizontally)
                         {
                             Backward(viewModel, isLandscape)
+                        }
+                        
+                        // Positioning ('Extend' and 'Retract')
+                        Column(modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(0.5f)
+                        ){
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp),
+                                horizontalArrangement = Arrangement.SpaceEvenly
+                            ) {
+                                Extend(viewModel, isLandscape)
+                                Spacer(modifier = Modifier.weight(0.2f))
+                                Retract(viewModel, isLandscape)
+                            }
                         }
                     }
                 }
@@ -706,6 +728,56 @@ fun Right(viewModel: RobotControllerViewModel, isLandscape: Boolean){
 //                fontSize = NavFontSize,
 //                fontWeight = FontWeight.Bold)
 //        }
+}
+
+
+// (Arms) Positioning
+@Composable
+fun Extend(viewModel: RobotControllerViewModel, isLandscape: Boolean){
+    GlowingButton(
+        enabled = viewModel.isPowerOn.value,
+        text ="Extend" ,
+        icon = { /* in any */  },
+        btnColor = Color(extendBtnColor) ,
+        textColor = Color(TextColor),
+        fontSize = NavFontSize ,
+        onClick = {
+            if(viewModel.isPowerOn.value) {
+                viewModel.webSocketManager.sendMessage("Extend Arms")
+                viewModel.setDisplayText("Extending Arms...")
+            }
+        },
+        modifier = Modifier
+            .clip(CircleShape)
+            .background(Color(NavBtnColor)) // Set the button's background color
+            .fillMaxWidth(if (isLandscape) PosButtonMaxWidth else PosButtonMaxWidth + 0.23f)
+            .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
+            .width(ManipElevButtonWidth)
+    )
+}
+
+@Composable
+fun Retract(viewModel: RobotControllerViewModel, isLandscape: Boolean){
+    GlowingButton(
+        enabled = viewModel.isPowerOn.value,
+        text ="Retract" ,
+        icon = { /* in any */  },
+        btnColor = Color(retractBtnColor) ,
+        textColor = Color(TextColor),
+        fontSize = NavFontSize ,
+        onClick = {
+            if(viewModel.isPowerOn.value) {
+                viewModel.webSocketManager.sendMessage("Retract Arms")
+                viewModel.setDisplayText("Retracting Arms...")
+            }
+        },
+        modifier = Modifier
+            .clip(CircleShape)
+            .background(Color(NavBtnColor)) // Set the button's background color
+            .fillMaxWidth(if (isLandscape) PosButtonMaxWidth else PosButtonMaxWidth + 0.5f)
+            .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
+            .width(ManipElevButtonWidth)
+    )
 }
 
 // TODO: shortcut to turn on app when multiple taps detected

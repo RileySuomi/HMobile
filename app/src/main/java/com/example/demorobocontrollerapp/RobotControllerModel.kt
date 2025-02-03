@@ -8,8 +8,7 @@ data class RobotControllerModel(
 )
 
 class RobotControllerRepository{
-    private var _robotData = RobotControllerModel("Left lift with ease",true)
-
+    private var _robotData = RobotControllerModel("\"<camera stream>\"",false)
 
     val displayMessage: String = _robotData.displayMessage
     var isPowerOn: Boolean = _robotData.isPowerOn

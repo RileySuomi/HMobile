@@ -48,7 +48,7 @@ fun GlowingButton(
     val glowColor = btnColor.copy(alpha = 0.7f)
 
     // Track button's actual size dynamically
-    var buttonSize by remember { mutableStateOf(IntSize(0, 0)) }
+    val buttonSize by remember { mutableStateOf(IntSize(0, 0)) }
 
     // Animate button color when pressed
     val backgroundColor by animateColorAsState(
