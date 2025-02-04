@@ -1,11 +1,9 @@
 // ViewModel: Manages UI-related data and interacts with the Model to provide it to the View.
-
 package com.example.demorobocontrollerapp
 import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -14,6 +12,10 @@ import kotlinx.coroutines.launch
 
 // This class define and hold data belong to a robot to keep data state &  prevent data reset when view mode changes
 class RobotControllerViewModel : ViewModel() {
+    // TODO: data to send through Raspberry Pi
+    private val _robotState = MutableLiveData<String>()
+    val robotState: LiveData<String> get() = _robotState
+
     // Private mutable state (encapsulated)
     private val _repository: RobotControllerRepository = RobotControllerRepository()
     private var _displayMessage = mutableStateOf(_repository.displayMessage)
@@ -21,7 +23,7 @@ class RobotControllerViewModel : ViewModel() {
 
     // these belong to this class / viewModel
     private val _showDialog = mutableStateOf(false) // alert dialog to state that power is off
-    private val _dialogMessage = mutableStateOf("App is off")
+    private val _dialogMessage = mutableStateOf("")
     val showDialog: State<Boolean> get() = _showDialog
     val dialogMessage: State<String> get() = _dialogMessage
 

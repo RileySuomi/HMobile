@@ -18,16 +18,22 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -37,7 +43,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -45,15 +50,7 @@ import com.example.demorobocontrollerapp.ui.theme.DemoRoboControllerAppTheme
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.material.icons.filled.*
 import kotlinx.coroutines.delay
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.foundation.interaction.MutableInteractionSource
-
-
 
 // General setting
 const val TextColor = 0xFF212529 // dark gray // OxFF000000
@@ -81,102 +78,120 @@ const val NavButtonMaxWidth = 0.2f
 @Composable
 fun GreetingPreview() {
     DemoRoboControllerAppTheme {
-        DisplayApp(viewModel = RobotControllerViewModel()) // pass in the 'viewModel' class
+        DisplayApp(viewModel = RobotControllerViewModel(), onSettingPressed = {}) // pass in the 'viewModel' class
     }
 }
 
-
-
-
-
 @Composable // The whole app display
-fun DisplayApp(viewModel: RobotControllerViewModel) {
+fun DisplayApp(viewModel: RobotControllerViewModel, onSettingPressed: () -> Unit) {
     val configuration = LocalConfiguration.current // check view mode
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-    Column(
-        modifier = Modifier.fillMaxSize() // use the whole screen size
-    ) {
-        if (isLandscape) { //'Landscape' view design section
-            // Monitor sections
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth() // use allocated space as much as possible
-                    .weight(0.4f) // take portion of the space vertically - increase/decrease as needed
-            ){
-                ShowMonitor(viewModel.displayText.value) // .value gets it as string
-            }
 
-            // Manipulation, Navigation,  Elevation column
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth() // use allocated space as much as possible
-                    .weight(1.4f) // take portion of the space vertically - increase/decrease as needed
-                    .padding(2.dp)
-            ){
-
-                // Manipulation ('Grab' & 'Release' buttons) & Elevation ('Lift' & 'Lower' buttons)
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(2.dp),
-                    horizontalArrangement = Arrangement.SpaceAround // Updated to SpaceAround
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(2.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Column(modifier = Modifier
-                            .padding(3.dp)
-                        ) {
-                            Grab(viewModel, isLandscape)
-                        }
-                        Column(modifier = Modifier
-                            .padding(3.dp)
-                        ){
-                            Lift(viewModel, isLandscape)
-                        }
-                    }
-                    Column(
-                        modifier = Modifier
-                            .weight(1f),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Bottom
-                    ) {
-                        Power(viewModel, isLandscape)
-                    }
-                    Column(
-                        modifier = Modifier
-                            .weight(1f),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Column(modifier = Modifier
-                            .padding(3.dp)
-                        ) {
-                            Release(viewModel, isLandscape)
-                        }
-                        Column(modifier = Modifier
-                            .padding(3.dp)
-                        ){
-                            Lower(viewModel, isLandscape)
-                        }
+    Scaffold (
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text(text = "Home", fontSize = 22.sp) },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Black,
+                    titleContentColor = Color.White,
+                    actionIconContentColor = Color.White
+                ),
+                 actions = {
+                    IconButton(onClick = {onSettingPressed()}) {
+                        Icon(
+                            imageVector = Icons.Filled.Settings,
+                            contentDescription = "Localized description"
+                        )
                     }
                 }
+            )
+        },
 
-                //Navigation ('Forward','Backward','Left','Right' buttons) section
-                Column(modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(0.8f),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally)
-                {
-                    Forward(viewModel, isLandscape)
-                }
+        content = {
+            Column(
+                modifier = Modifier.fillMaxSize().padding(it) // use the whole screen size
+            ) {
+                if (isLandscape) { //'Landscape' view design section
+                    // Monitor sections
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth() // use allocated space as much as possible
+                            .weight(0.4f) // take portion of the space vertically - increase/decrease as needed
+                    ){
+                        ShowMonitor(viewModel.displayText.value) // .value gets it as string
+                    }
 
-                Column(modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(0.8f)
+                    // Manipulation, Navigation,  Elevation column
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth() // use allocated space as much as possible
+                            .weight(1.4f) // take portion of the space vertically - increase/decrease as needed
+                            .padding(2.dp)
+                    ){
+
+                        // Manipulation ('Grab' & 'Release' buttons) & Elevation ('Lift' & 'Lower' buttons)
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(2.dp),
+                            horizontalArrangement = Arrangement.SpaceAround // Updated to SpaceAround
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(2.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Column(modifier = Modifier
+                                    .padding(3.dp)
+                                ) {
+                                    Grab(viewModel, isLandscape)
+                                }
+                                Column(modifier = Modifier
+                                    .padding(3.dp)
+                                ){
+                                    Lift(viewModel, isLandscape)
+                                }
+                            }
+                            Column(
+                                modifier = Modifier
+                                    .weight(1f),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Bottom
+                            ) {
+                                Power(viewModel, isLandscape)
+                            }
+                            Column(
+                                modifier = Modifier
+                                    .weight(1f),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Column(modifier = Modifier
+                                    .padding(3.dp)
+                                ) {
+                                    Release(viewModel, isLandscape)
+                                }
+                                Column(modifier = Modifier
+                                    .padding(3.dp)
+                                ){
+                                    Lower(viewModel, isLandscape)
+                                }
+                            }
+                        }
+
+                        //Navigation ('Forward','Backward','Left','Right' buttons) section
+                        Column(modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(0.8f),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally)
+                        {
+                            Forward(viewModel, isLandscape)
+                        }
+
+                        Column(modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(0.8f)
                         ){
                             Row(
                                 modifier = Modifier
@@ -188,147 +203,142 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
                             }
                         }
 
-                Column(modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally)
-                {
-                    Backward(viewModel, isLandscape)
-                }
-            }
-        } else { //'Portrait' view design section
-            // Monitor section
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth() // use allocated space as much as possible
-                    .weight(0.7f) // take portion of the space vertically - increase/decrease as needed
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    ShowMonitor(viewModel.displayText.value) // .value makes it a string
-                }
-            }
+                        Column(modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally)
+                        {
+                            Backward(viewModel, isLandscape)
+                        }
+                    }
+                } else { //'Portrait' view design section
+                    // Monitor section
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth() // use allocated space as much as possible
+                            .weight(0.7f) // take portion of the space vertically - increase/decrease as needed
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            ShowMonitor(viewModel.displayText.value) // .value makes it a string
+                        }
+                    }
 
-            // Power button
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(0.3f),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ){
-                Power(viewModel,isLandscape)
-            }
-
-            // Manipulation section
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(0.4f),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Row(horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Grab(viewModel, isLandscape)
-                    Spacer(modifier = Modifier.width(32.dp)) // add spacing between buttons
-                    Release(viewModel, isLandscape)
-                }
-            }
-
-            // Elevation section
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(0.4f),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Row(horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Lift(viewModel, isLandscape)
-                    Spacer(modifier = Modifier.width(32.dp)) // add spacing between buttons
-                    Lower(viewModel, isLandscape)
-                }
-            }
-
-            // Navigation section
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1.2f),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Column(modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(0.8f)
-                    .padding(8.dp),
-                    verticalArrangement = Arrangement.Top,
-                    horizontalAlignment = Alignment.CenterHorizontally)
-                {
-                    Forward(viewModel, isLandscape)
-                }
-
-                Column(modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(0.8f)
-                ){
-                    Row(
+                    // Power button
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-
-
-                    ) {
-                        Left(viewModel, isLandscape)
-                        Spacer(modifier = Modifier.weight(1f))
-                        Right(viewModel, isLandscape)
+                            .weight(0.3f),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ){
+                        Power(viewModel,isLandscape)
                     }
-                }
 
-                Column(modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(0.8f)
-                    .padding(8.dp),
-                    verticalArrangement = Arrangement.Top,
-                    horizontalAlignment = Alignment.CenterHorizontally)
-                {
-                    Backward(viewModel, isLandscape)
+                    // Manipulation section
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(0.4f),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Row(horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Grab(viewModel, isLandscape)
+                            Spacer(modifier = Modifier.width(32.dp)) // add spacing between buttons
+                            Release(viewModel, isLandscape)
+                        }
+                    }
+
+                    // Elevation section
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(0.4f),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Row(horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Lift(viewModel, isLandscape)
+                            Spacer(modifier = Modifier.width(32.dp)) // add spacing between buttons
+                            Lower(viewModel, isLandscape)
+                        }
+                    }
+
+                    // Navigation section
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1.2f),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Column(modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(0.8f)
+                            .padding(8.dp),
+                            verticalArrangement = Arrangement.Top,
+                            horizontalAlignment = Alignment.CenterHorizontally)
+                        {
+                            Forward(viewModel, isLandscape)
+                        }
+
+                        Column(modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(0.8f)
+                        ){
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp),
+                                horizontalArrangement = Arrangement.SpaceEvenly
+                            ) {
+                                Left(viewModel, isLandscape)
+                                Spacer(modifier = Modifier.weight(1f))
+                                Right(viewModel, isLandscape)
+                            }
+                        }
+
+                        Column(modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(0.8f)
+                            .padding(8.dp),
+                            verticalArrangement = Arrangement.Top,
+                            horizontalAlignment = Alignment.CenterHorizontally)
+                        {
+                            Backward(viewModel, isLandscape)
+                        }
+                    }
                 }
             }
         }
-    }
+    )
 }
 
 // Power button to turn on/off connection
 @Composable
 fun Power(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
-    // Create an interactionSource to monitor the press state
-    val interactionSource = remember { MutableInteractionSource() }
-
     Button(
         onClick = {
             viewModel.switchPowerStatus()  // toggle power status
             viewModel.setDisplayText(
-                if (!viewModel.isPowerOn.value) "Let's lift with ease!" else "Tap on below to turn on!"
+                if (!viewModel.isPowerOn.value) "Let's lift with ease!" else "Rest mode!"
             )
         },
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(if (viewModel.isPowerOn.value) 0xFF4CAF50 else 0xFFFF5733), // green if on, red if off
-            contentColor = Color(TextColor),
-            disabledContainerColor = Color(0xFFCCCCCC), // add a disabled color if needed
-            disabledContentColor = Color(0xFF757575) // add disabled text color if needed
+            contentColor = Color(TextColor) //
         ),
-        interactionSource = interactionSource,
         modifier = Modifier
             .clip(CircleShape) // Make the button circular
-            .width(if (isLandscape) ManipElevButtonWidth else ManipElevButtonWidth - 20.dp)
+            .width(if (isLandscape) ManipElevButtonWidth else ManipElevButtonWidth - 55.dp)
             .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight - 2.dp)
     ) {
+        // Display button text and icon
         Text(
             if (viewModel.isPowerOn.value) "On" else "Off",
             fontSize = ManipElevFontSize,
@@ -457,185 +467,84 @@ fun Lower(viewModel: RobotControllerViewModel, isLandscape: Boolean){
 
 // Navigation: consists of 'Forward' 'Backward' 'Left' 'Right'
 @Composable
-
-fun Forward(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
-    val interactionSource = remember { MutableInteractionSource() }
-    var isPressed by remember { mutableStateOf(false) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth)
-    ) {
+fun Forward(viewModel: RobotControllerViewModel,isLandscape : Boolean) {
         Button(
-            onClick = {
-                isPressed = !isPressed  // Toggle pressed state
-                viewModel.setDisplayText("Moving Forward...")
-            },
+            onClick = { viewModel.setDisplayText( "Moving Forward...") },
             enabled = !viewModel.isPowerOn.value,
-            interactionSource = interactionSource,
             colors = ButtonDefaults.buttonColors(
-                containerColor = if (isPressed) Color(0xFF4CAF50) else Color(NavBtnColor),
-                contentColor = Color(TextColor),
-                disabledContainerColor = Color(OffButtonColor)
+                containerColor = Color(NavBtnColor),
+                contentColor = Color(TextColor)
             ),
             modifier = Modifier
+                .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth) // Take 20% of the screen width for landscape view
                 .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
                 .width(ManipElevButtonWidth)
-                .shadow(8.dp, CircleShape, ambientColor = Color(0xFFD3D3D3), spotColor = Color(0xFF4CAF50))
-
         ) {
-            Text(
-                "Forward ↑",
+            Text("Forward ↑",
                 fontSize = NavFontSize,
-                fontWeight = FontWeight.Bold
-            )
+                fontWeight = FontWeight.Bold)
         }
-    }
-
-    // Reset the pressed state after a delay
-    LaunchedEffect(isPressed) {
-        if (isPressed) {
-            delay(200)  // Show pressed state for 200ms
-            isPressed = false
-        }
-    }
-}
-
-
-@Composable
-fun Backward(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
-    val interactionSource = remember { MutableInteractionSource() }
-    var isPressed by remember { mutableStateOf(false) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth)
-    ) {
-        Button(
-            onClick = {
-                isPressed = !isPressed  // Toggle pressed state
-                viewModel.setDisplayText("Moving Backward...")
-            },
-            enabled = !viewModel.isPowerOn.value,
-            interactionSource = interactionSource,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = if (isPressed) Color(0xFF4CAF50) else Color(NavBtnColor),
-                contentColor = Color(TextColor),
-                disabledContainerColor = Color(OffButtonColor)
-            ),
-            modifier = Modifier
-                .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
-                .width(ManipElevButtonWidth)
-                .shadow(8.dp, CircleShape, ambientColor = Color(0xFFD3D3D3), spotColor = Color(0xFF4CAF50))
-
-        ) {
-            Text(
-                "Backward ↓",
-                fontSize = NavFontSize,
-                fontWeight = FontWeight.Bold
-            )
-        }
-    }
-
-    // Reset the pressed state after a delay
-    LaunchedEffect(isPressed) {
-        if (isPressed) {
-            delay(200)  // Show pressed state for 200ms
-            isPressed = false
-        }
-    }
 }
 
 @Composable
-fun Left(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
-    val interactionSource = remember { MutableInteractionSource() }
-    var isPressed by remember { mutableStateOf(false) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth)
-    ) {
+fun Backward(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         Button(
-            onClick = {
-                isPressed = !isPressed  // Toggle pressed state
-                viewModel.setDisplayText("Moving Left...")
-            },
+            onClick = { viewModel.setDisplayText("Moving Backward...")},
             enabled = !viewModel.isPowerOn.value,
-            interactionSource = interactionSource,
             colors = ButtonDefaults.buttonColors(
-                containerColor = if (isPressed) Color(0xFF4CAF50) else Color(NavBtnColor),
-                contentColor = Color(TextColor),
-                disabledContainerColor = Color(OffButtonColor)
+                containerColor = Color(NavBtnColor),
+                contentColor = Color(TextColor)
             ),
             modifier = Modifier
+                .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth)
                 .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
                 .width(ManipElevButtonWidth)
-                .shadow(8.dp, CircleShape, ambientColor = Color(0xFFD3D3D3), spotColor = Color(0xFF4CAF50))
-
         ) {
-            Text(
-                "← Left",
+            Text("Backward ↓",
                 fontSize = NavFontSize,
-                fontWeight = FontWeight.Bold
-            )
+                fontWeight = FontWeight.Bold)
         }
-    }
-
-    // Reset the pressed state after a delay
-    LaunchedEffect(isPressed) {
-        if (isPressed) {
-            delay(200)  // Show pressed state for 200ms
-            isPressed = false
-        }
-    }
 }
-
-
 
 @Composable
-fun Right(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
-    val interactionSource = remember { MutableInteractionSource() }
-    var isPressed by remember { mutableStateOf(false) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth)
-    ) {
+fun Left(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         Button(
-            onClick = {
-                isPressed = !isPressed  // Toggle pressed state
-                viewModel.setDisplayText("Moving Right...")
-            },
+            onClick = { viewModel.setDisplayText("Moving Left...") },
             enabled = !viewModel.isPowerOn.value,
-            interactionSource = interactionSource,
             colors = ButtonDefaults.buttonColors(
-                containerColor = if (isPressed) Color(0xFF4CAF50) else Color(NavBtnColor),
-                contentColor = Color(TextColor),
-                disabledContainerColor = Color(OffButtonColor)
+                containerColor = Color(NavBtnColor),
+                contentColor = Color(TextColor)
             ),
             modifier = Modifier
+                .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth)
                 .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
                 .width(ManipElevButtonWidth)
-                .shadow(8.dp, CircleShape, ambientColor = Color(0xFFD3D3D3), spotColor = Color(0xFF4CAF50))
-
         ) {
-            Text(
-                "→ Right",
+            Text("← Left",
                 fontSize = NavFontSize,
-                fontWeight = FontWeight.Bold
-            )
+                fontWeight = FontWeight.Bold)
         }
-    }
-
-    // Reset the pressed state after a delay
-    LaunchedEffect(isPressed) {
-        if (isPressed) {
-            delay(200)  // Show pressed state for 200ms
-            isPressed = false
-        }
-    }
 }
 
+@Composable
+fun Right(viewModel: RobotControllerViewModel, isLandscape: Boolean){
+        Button(
+            onClick = { viewModel.setDisplayText("Moving Right...") },
+            enabled = !viewModel.isPowerOn.value,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(NavBtnColor),
+                contentColor = Color(TextColor)
+            ),
+            modifier = Modifier
+                .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + 0.4f)
+                .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
+                .width(ManipElevButtonWidth)
+        ) {
+            Text("Right →",
+                fontSize = NavFontSize,
+                fontWeight = FontWeight.Bold)
+        }
+}
 
 
 // Alert dialog
