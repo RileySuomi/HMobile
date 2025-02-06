@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,6 +27,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 // TODO: Logo 'breathing' effect when app's initially opened
 
@@ -38,7 +42,8 @@ fun GlowingButton(
     btnColor: Color,
     textColor: Color,
     fontSize: TextUnit,
-    onClick: () -> Unit, // Click event
+    onPress: () -> Unit,
+    onRelease: () -> Unit, // Click event
     modifier: Modifier = Modifier // 🔹 Modifier stays flexible in MainActivity
 ) {
     // Track button press state
@@ -61,6 +66,8 @@ fun GlowingButton(
         targetValue = if (isPressed) 8.dp else (buttonSize.height * 0.20).dp,
         animationSpec = tween(durationMillis = 300)
     )
+    val coroutineScope = rememberCoroutineScope()
+    var job by remember { mutableStateOf<Job?>(null) }
 
     Box(
         modifier = modifier
@@ -75,10 +82,18 @@ fun GlowingButton(
                 if(enabled) {
                     detectTapGestures(
                         onPress = {
-                            isPressed = true  // Start glow effect
+                            isPressed = true
+                            onPress()
+                            job = coroutineScope.launch {
+                                while (isPressed) {
+                                    delay(100) // Adjust delay for message frequency
+                                    onPress()
+                                }
+                            }// Start glow effect
                             tryAwaitRelease() // Keep effect until release
-                            isPressed = false // Remove glow effect
-                            onClick() // Call actual click event
+                            isPressed = false
+                            job?.cancel()// Remove glow effect
+                            onRelease() // Call actual click event
                         }
                     )
                 }

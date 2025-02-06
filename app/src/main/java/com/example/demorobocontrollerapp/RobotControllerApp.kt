@@ -409,11 +409,14 @@ fun Grab(viewModel: RobotControllerViewModel , isLandscape: Boolean) {
             btnColor = Color(ManipBtnColor),
             textColor = Color(TextColor),
             fontSize = ManipElevFontSize,
-            onClick = {
+            onPress = {
                 if(viewModel.isPowerOn.value) {
                     viewModel.webSocketManager.sendMessage("Grab")
                     viewModel.setDisplayText("Grabbing item...")
                 }
+            },
+            onRelease = {
+                viewModel.setDisplayText("")
             },
             modifier = Modifier
                 .clip(CircleShape)
@@ -450,11 +453,14 @@ fun Release(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         btnColor = Color(ManipBtnColor) ,
         textColor = Color(TextColor),
         fontSize = ManipElevFontSize ,
-        onClick = {
+        onPress = {
             if(viewModel.isPowerOn.value) {
                 viewModel.webSocketManager.sendMessage("Release")
                 viewModel.setDisplayText("Releasing item...")
             }
+        },
+        onRelease = {
+            viewModel.setDisplayText("")
         },
         modifier = Modifier
             .clip(CircleShape)
@@ -489,11 +495,14 @@ fun Lift(viewModel: RobotControllerViewModel, isLandscape: Boolean) { // 'Lift' 
         btnColor = Color(ElevBtnColor) ,
         textColor = Color(TextColor),
         fontSize = ManipElevFontSize ,
-        onClick = {
+        onPress = {
             if(viewModel.isPowerOn.value) {
                 viewModel.webSocketManager.sendMessage("Lift")
                 viewModel.setDisplayText("Lifting item...")
             }
+        },
+        onRelease = {
+            viewModel.setDisplayText("")
         },
         modifier = Modifier
             .clip(CircleShape)
@@ -530,11 +539,14 @@ fun Lower(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         btnColor = Color(ElevBtnColor) ,
         textColor = Color(TextColor),
         fontSize = ManipElevFontSize ,
-        onClick = {
+        onPress = {
             if(viewModel.isPowerOn.value) {
                 viewModel.webSocketManager.sendMessage("Lower")
                 viewModel.setDisplayText("Lowering item...")
             }
+        },
+        onRelease = {
+            viewModel.setDisplayText("")
         },
         modifier = Modifier
             .clip(CircleShape)
@@ -571,11 +583,14 @@ fun Forward(viewModel: RobotControllerViewModel,isLandscape : Boolean) {
         btnColor = Color(NavBtnColor) ,
         textColor = Color(TextColor),
         fontSize = NavFontSize ,
-        onClick = {
+        onPress = {
             if(viewModel.isPowerOn.value) {
                 viewModel.webSocketManager.sendMessage("Forward")
-                viewModel.setDisplayText("Move Forward...")
+                viewModel.setDisplayText("Moving Forward...")
             }
+        },
+        onRelease = {
+            viewModel.setDisplayText("")
         },
         modifier = Modifier
             .clip(CircleShape)
@@ -613,11 +628,14 @@ fun Backward(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         btnColor = Color(NavBtnColor) ,
         textColor = Color(TextColor),
         fontSize = NavFontSize ,
-        onClick = {
+        onPress = {
             if(viewModel.isPowerOn.value) {
                 viewModel.webSocketManager.sendMessage("Backward")
-                viewModel.setDisplayText("Move Backward...")
+                viewModel.setDisplayText("Moving Backward...")
             }
+        },
+        onRelease = {
+            viewModel.setDisplayText("")
         },
         modifier = Modifier
             .clip(CircleShape)
@@ -655,11 +673,14 @@ fun Left(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         btnColor = Color(NavBtnColor) ,
         textColor = Color(TextColor),
         fontSize = NavFontSize ,
-        onClick = {
+        onPress = {
             if(viewModel.isPowerOn.value) {
                 viewModel.webSocketManager.sendMessage("Left")
-                viewModel.setDisplayText("Move Left...")
+                viewModel.setDisplayText("Moving Left...")
             }
+        },
+        onRelease = {
+            viewModel.setDisplayText("")
         },
         modifier = Modifier
             .clip(CircleShape)
@@ -697,11 +718,14 @@ fun Right(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         btnColor = Color(NavBtnColor) ,
         textColor = Color(TextColor),
         fontSize = NavFontSize ,
-        onClick = {
+        onPress = {
             if(viewModel.isPowerOn.value) {
                 viewModel.webSocketManager.sendMessage("Right")
-                viewModel.setDisplayText("Move Right...")
+                viewModel.setDisplayText("Moving Right...")
             }
+        },
+        onRelease = {
+            viewModel.setDisplayText("")
         },
         modifier = Modifier
             .clip(CircleShape)
@@ -741,11 +765,14 @@ fun Extend(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         btnColor = Color(extendBtnColor) ,
         textColor = Color(TextColor),
         fontSize = NavFontSize ,
-        onClick = {
+        onPress = {
             if(viewModel.isPowerOn.value) {
-                viewModel.webSocketManager.sendMessage("Extend Arms")
-                viewModel.setDisplayText("Extending Arms...")
+                viewModel.webSocketManager.sendMessage("Extend")
+                viewModel.setDisplayText("Extending...")
             }
+        },
+        onRelease = {
+            viewModel.setDisplayText("")
         },
         modifier = Modifier
             .clip(CircleShape)
@@ -765,11 +792,14 @@ fun Retract(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         btnColor = Color(retractBtnColor) ,
         textColor = Color(TextColor),
         fontSize = NavFontSize ,
-        onClick = {
+        onPress = {
             if(viewModel.isPowerOn.value) {
-                viewModel.webSocketManager.sendMessage("Retract Arms")
-                viewModel.setDisplayText("Retracting Arms...")
+                viewModel.webSocketManager.sendMessage("Retract")
+                viewModel.setDisplayText("Retracting item...")
             }
+        },
+        onRelease = {
+            viewModel.setDisplayText("")
         },
         modifier = Modifier
             .clip(CircleShape)
