@@ -50,6 +50,10 @@ import com.example.demorobocontrollerapp.ui.theme.DemoRoboControllerAppTheme
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import android.view.MotionEvent
+import androidx.compose.ui.input.pointer.pointerInteropFilter
 import kotlinx.coroutines.delay
 
 // General setting
@@ -198,7 +202,9 @@ fun DisplayApp(viewModel: RobotControllerViewModel, onSettingPressed: () -> Unit
                                     .fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceAround
                             ) {
+                                Spacer(modifier = Modifier.weight(1f))
                                 Left(viewModel, isLandscape)
+
                                 Right(viewModel, isLandscape)
                             }
                         }
@@ -297,8 +303,10 @@ fun DisplayApp(viewModel: RobotControllerViewModel, onSettingPressed: () -> Unit
                                     .padding(8.dp),
                                 horizontalArrangement = Arrangement.SpaceEvenly
                             ) {
+
                                 Left(viewModel, isLandscape)
-                                Spacer(modifier = Modifier.weight(1f))
+                                Spacer(modifier = Modifier.width(20.dp))
+
                                 Right(viewModel, isLandscape)
                             }
                         }
@@ -467,86 +475,100 @@ fun Lower(viewModel: RobotControllerViewModel, isLandscape: Boolean){
 
 // Navigation: consists of 'Forward' 'Backward' 'Left' 'Right'
 @Composable
-fun Forward(viewModel: RobotControllerViewModel,isLandscape : Boolean) {
-        Button(
-            onClick = { viewModel.setDisplayText( "Moving Forward...") },
-            enabled = !viewModel.isPowerOn.value,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(NavBtnColor),
-                contentColor = Color(TextColor)
-            ),
-            modifier = Modifier
-                .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth) // Take 20% of the screen width for landscape view
-                .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
-                .width(ManipElevButtonWidth)
-        ) {
-            Text("Forward ↑",
-                fontSize = NavFontSize,
-                fontWeight = FontWeight.Bold)
-        }
+fun Forward(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed = interactionSource.collectIsPressedAsState()
+
+    Button(
+        onClick = { viewModel.setDisplayText("Moving Forward...") },
+        enabled = !viewModel.isPowerOn.value,
+        interactionSource = interactionSource,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (isPressed.value) Color(0xFF4CAF50) else Color(NavBtnColor),
+            contentColor = Color(TextColor)
+        ),
+        modifier = Modifier
+            .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth)
+            .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
+            .width(ManipElevButtonWidth)
+    ) {
+        Text("Forward ↑",
+            fontSize = NavFontSize,
+            fontWeight = FontWeight.Bold)
+    }
 }
 
 @Composable
-fun Backward(viewModel: RobotControllerViewModel, isLandscape: Boolean){
-        Button(
-            onClick = { viewModel.setDisplayText("Moving Backward...")},
-            enabled = !viewModel.isPowerOn.value,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(NavBtnColor),
-                contentColor = Color(TextColor)
-            ),
-            modifier = Modifier
-                .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth)
-                .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
-                .width(ManipElevButtonWidth)
-        ) {
-            Text("Backward ↓",
-                fontSize = NavFontSize,
-                fontWeight = FontWeight.Bold)
-        }
+fun Backward(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed = interactionSource.collectIsPressedAsState()
+
+    Button(
+        onClick = { viewModel.setDisplayText("Moving Backward...") },
+        enabled = !viewModel.isPowerOn.value,
+        interactionSource = interactionSource,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (isPressed.value) Color(0xFF4CAF50) else Color(NavBtnColor),
+            contentColor = Color(TextColor)
+        ),
+        modifier = Modifier
+            .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth)
+            .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
+            .width(ManipElevButtonWidth)
+    ) {
+        Text("Backward ↓",
+            fontSize = NavFontSize,
+            fontWeight = FontWeight.Bold)
+    }
 }
 
 @Composable
-fun Left(viewModel: RobotControllerViewModel, isLandscape: Boolean){
-        Button(
-            onClick = { viewModel.setDisplayText("Moving Left...") },
-            enabled = !viewModel.isPowerOn.value,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(NavBtnColor),
-                contentColor = Color(TextColor)
-            ),
-            modifier = Modifier
-                .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth)
-                .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
-                .width(ManipElevButtonWidth)
-        ) {
-            Text("← Left",
-                fontSize = NavFontSize,
-                fontWeight = FontWeight.Bold)
-        }
+fun Left(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed = interactionSource.collectIsPressedAsState()
+
+    Button(
+        onClick = { viewModel.setDisplayText("Moving Left...") },
+        enabled = !viewModel.isPowerOn.value,
+        interactionSource = interactionSource,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (isPressed.value) Color(0xFF4CAF50) else Color(NavBtnColor),
+            contentColor = Color(TextColor)
+        ),
+        modifier = Modifier
+            .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth)
+            .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
+            .width(ManipElevButtonWidth)
+    ) {
+        Text("← Left",
+            fontSize = NavFontSize,
+            fontWeight = FontWeight.Bold)
+    }
 }
 
 @Composable
-fun Right(viewModel: RobotControllerViewModel, isLandscape: Boolean){
-        Button(
-            onClick = { viewModel.setDisplayText("Moving Right...") },
-            enabled = !viewModel.isPowerOn.value,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(NavBtnColor),
-                contentColor = Color(TextColor)
-            ),
-            modifier = Modifier
-                .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + 0.4f)
-                .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
-                .width(ManipElevButtonWidth)
-        ) {
-            Text("Right →",
-                fontSize = NavFontSize,
-                fontWeight = FontWeight.Bold)
-        }
+fun Right(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed = interactionSource.collectIsPressedAsState()
+
+    Button(
+        onClick = { viewModel.setDisplayText("Moving Right...") },
+        enabled = !viewModel.isPowerOn.value,
+        interactionSource = interactionSource,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (isPressed.value) Color(0xFF4CAF50) else Color(NavBtnColor),
+            contentColor = Color(TextColor)
+        ),
+        modifier = Modifier
+            .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + 0.4f) // Changed this line to match Left button
+            .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
+            .width(ManipElevButtonWidth)
+    ) {
+        Text("Right →",
+            fontSize = NavFontSize,
+            fontWeight = FontWeight.Bold)
+    }
 }
-
-
 // Alert dialog
 //    if (showDialog) {
 //        AlertDialog(
