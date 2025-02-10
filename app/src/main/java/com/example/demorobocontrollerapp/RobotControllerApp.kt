@@ -415,10 +415,11 @@ fun Grab(viewModel: RobotControllerViewModel , isLandscape: Boolean) {
             onPress = {
                 if(viewModel.isPowerOn.value) {
                     viewModel.webSocketManager.sendMessage("Grab")
+                    viewModel.setDisplayText("Grabbing item...")
                 }
             },
             onRelease = {
-                viewModel.setDisplayText("")
+                viewModel.setDisplayText("Grabbing Item...")
             },
             modifier = Modifier
                 .clip(CircleShape)
@@ -462,7 +463,7 @@ fun Release(viewModel: RobotControllerViewModel, isLandscape: Boolean){
             }
         },
         onRelease = {
-            viewModel.setDisplayText("")
+            viewModel.setDisplayText("Releasing item...")
         },
         modifier = Modifier
             .clip(CircleShape)
@@ -504,7 +505,7 @@ fun Lift(viewModel: RobotControllerViewModel, isLandscape: Boolean) { // 'Lift' 
             }
         },
         onRelease = {
-            viewModel.setDisplayText("")
+            viewModel.setDisplayText("Lifting item...")
         },
         modifier = Modifier
             .clip(CircleShape)
@@ -548,7 +549,7 @@ fun Lower(viewModel: RobotControllerViewModel, isLandscape: Boolean){
             }
         },
         onRelease = {
-            viewModel.setDisplayText("")
+            viewModel.setDisplayText("Lowering item...")
         },
         modifier = Modifier
             .clip(CircleShape)
@@ -592,7 +593,7 @@ fun Forward(viewModel: RobotControllerViewModel,isLandscape : Boolean) {
             }
         },
         onRelease = {
-            viewModel.setDisplayText("")
+            viewModel.setDisplayText("Moving Forward...")
         },
         modifier = Modifier
             .clip(CircleShape)
@@ -637,7 +638,7 @@ fun Backward(viewModel: RobotControllerViewModel, isLandscape: Boolean){
             }
         },
         onRelease = {
-            viewModel.setDisplayText("")
+            viewModel.setDisplayText("Moving Backward...")
         },
         modifier = Modifier
             .clip(CircleShape)
@@ -682,7 +683,7 @@ fun Left(viewModel: RobotControllerViewModel, isLandscape: Boolean){
             }
         },
         onRelease = {
-            viewModel.setDisplayText("")
+            viewModel.setDisplayText("Moving Left...")
         },
         modifier = Modifier
             .clip(CircleShape)
@@ -727,7 +728,7 @@ fun Right(viewModel: RobotControllerViewModel, isLandscape: Boolean){
             }
         },
         onRelease = {
-            viewModel.setDisplayText("")
+            viewModel.setDisplayText("Moving Right...")
         },
         modifier = Modifier
             .clip(CircleShape)
@@ -770,11 +771,11 @@ fun Extend(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         onPress = {
             if(viewModel.isPowerOn.value) {
                 viewModel.webSocketManager.sendMessage("Extend")
-                viewModel.setDisplayText("Extending...")
+                viewModel.setDisplayText("Extending arm...")
             }
         },
         onRelease = {
-            viewModel.setDisplayText("")
+            viewModel.setDisplayText("Extending arm...")
         },
         modifier = Modifier
             .clip(CircleShape)
@@ -797,11 +798,11 @@ fun Retract(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         onPress = {
             if(viewModel.isPowerOn.value) {
                 viewModel.webSocketManager.sendMessage("Retract")
-                viewModel.setDisplayText("Retracting item...")
+                viewModel.setDisplayText("Retracting arm...")
             }
         },
         onRelease = {
-            viewModel.setDisplayText("")
+            viewModel.setDisplayText("Retracting arm...")
         },
         modifier = Modifier
             .clip(CircleShape)
