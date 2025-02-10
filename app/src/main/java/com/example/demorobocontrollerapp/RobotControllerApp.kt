@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -333,6 +334,8 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
 // Power button to turn on/off connection
 @Composable
 fun Power(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
+    // Access the current context (Activity or Context)
+    val context = LocalContext.current
     Button(
         onClick = {
             viewModel.switchPowerStatus()  // Toggle power status
@@ -344,7 +347,7 @@ fun Power(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
 
             // Connect to WebSocket when power is turned on
             if (viewModel.isPowerOn.value) {
-                viewModel.webSocketManager.connect()  // Call the connect method when power is ON
+                viewModel.webSocketManager.connect(context)  // Call the connect method when power is ON
             } else {
                 viewModel.webSocketManager.disconnect()  // Optionally, close the connection when power is OFF
             }
@@ -412,7 +415,6 @@ fun Grab(viewModel: RobotControllerViewModel , isLandscape: Boolean) {
             onPress = {
                 if(viewModel.isPowerOn.value) {
                     viewModel.webSocketManager.sendMessage("Grab")
-                    viewModel.setDisplayText("Grabbing item...")
                 }
             },
             onRelease = {

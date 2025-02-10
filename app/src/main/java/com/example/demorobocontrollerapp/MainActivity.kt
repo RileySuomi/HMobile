@@ -10,8 +10,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MaterialTheme {
-                // AppNavHost()
-                DisplayApp(viewModel = RobotControllerViewModel())
+                AppNavHost()
             }
         }
     }

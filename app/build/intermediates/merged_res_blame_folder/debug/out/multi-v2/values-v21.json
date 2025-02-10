@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.demorobocontrollerapp-mergeDebugResources-57:/values-v21/values-v21.xml",
+            "outputFile": "com.example.demorobocontrollerapp-mergeDebugResources-58:/values-v21/values-v21.xml",
             "map": [
                 {
                     "source": "C:\\Users\\User\\.gradle\\caches\\8.12.1\\transforms\\86a6eb76a6c3df96582240a2ad2f2b78\\transformed\\core-1.15.0\\res\\values-v21\\values-v21.xml",
@@ -14,12 +14,31 @@
                         "endOffsets": "168,232,299,363,479,605,731,859,1031,1383"
                     },
                     "to": {
-                        "startLines": "2,3,4,5,264,265,266,267,268,271",
+                        "startLines": "2,3,4,5,264,265,266,267,286,289",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4",
-                        "startOffsets": "55,173,237,304,18655,18771,18897,19023,19151,19323",
-                        "endLines": "2,3,4,5,264,265,266,267,270,275",
+                        "startOffsets": "55,173,237,304,18655,18771,18897,19023,20107,20279",
+                        "endLines": "2,3,4,5,264,265,266,267,288,293",
                         "endColumns": "117,63,66,63,115,125,125,127,12,12",
-                        "endOffsets": "168,232,299,363,18766,18892,19018,19146,19318,19670"
+                        "endOffsets": "168,232,299,363,18766,18892,19018,19146,20274,20626"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\User\\.gradle\\caches\\8.12.1\\transforms\\ded10440da54de6d5b7574d0545bc655\\transformed\\core-1.6.1\\res\\values-v21\\values.xml",
+                    "from": {
+                        "startLines": "4,13",
+                        "startColumns": "0,0",
+                        "startOffsets": "146,621",
+                        "endLines": "12,21",
+                        "endColumns": "8,8",
+                        "endOffsets": "620,1093"
+                    },
+                    "to": {
+                        "startLines": "268,277",
+                        "startColumns": "4,4",
+                        "startOffsets": "19151,19630",
+                        "endLines": "276,285",
+                        "endColumns": "8,8",
+                        "endOffsets": "19625,20102"
                     }
                 },
                 {

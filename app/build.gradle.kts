@@ -65,6 +65,7 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("androidx.navigation:navigation-compose:2.8.5")
+    implementation("androidx.test.espresso:espresso-core:3.6.1")
 
     testImplementation("junit:junit:4.13.2")
 
@@ -75,6 +76,6 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     // add WebScoket Dependency
-    implementation ("com.squareup.okhttp3:okhttp:4.9.3")
-
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.10.0") // For logging
 }
