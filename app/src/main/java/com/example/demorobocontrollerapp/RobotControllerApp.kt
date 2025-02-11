@@ -419,7 +419,7 @@ fun Grab(viewModel: RobotControllerViewModel , isLandscape: Boolean) {
                 }
             },
             onRelease = {
-                viewModel.setDisplayText("Grabbing Item...")
+                viewModel.setDisplayText("Stopped")
             },
             modifier = Modifier
                 .clip(CircleShape)
@@ -463,7 +463,7 @@ fun Release(viewModel: RobotControllerViewModel, isLandscape: Boolean){
             }
         },
         onRelease = {
-            viewModel.setDisplayText("Releasing item...")
+            viewModel.setDisplayText("Stopped")
         },
         modifier = Modifier
             .clip(CircleShape)
@@ -505,7 +505,7 @@ fun Lift(viewModel: RobotControllerViewModel, isLandscape: Boolean) { // 'Lift' 
             }
         },
         onRelease = {
-            viewModel.setDisplayText("Lifting item...")
+            viewModel.setDisplayText("Stopped")
         },
         modifier = Modifier
             .clip(CircleShape)
@@ -549,7 +549,7 @@ fun Lower(viewModel: RobotControllerViewModel, isLandscape: Boolean){
             }
         },
         onRelease = {
-            viewModel.setDisplayText("Lowering item...")
+            viewModel.setDisplayText("Stopped")
         },
         modifier = Modifier
             .clip(CircleShape)
@@ -593,7 +593,7 @@ fun Forward(viewModel: RobotControllerViewModel,isLandscape : Boolean) {
             }
         },
         onRelease = {
-            viewModel.setDisplayText("Moving Forward...")
+            viewModel.setDisplayText("Stopped")
         },
         modifier = Modifier
             .clip(CircleShape)
@@ -638,7 +638,7 @@ fun Backward(viewModel: RobotControllerViewModel, isLandscape: Boolean){
             }
         },
         onRelease = {
-            viewModel.setDisplayText("Moving Backward...")
+            viewModel.setDisplayText("Stopped")
         },
         modifier = Modifier
             .clip(CircleShape)
@@ -683,7 +683,7 @@ fun Left(viewModel: RobotControllerViewModel, isLandscape: Boolean){
             }
         },
         onRelease = {
-            viewModel.setDisplayText("Moving Left...")
+            viewModel.setDisplayText("Stopped")
         },
         modifier = Modifier
             .clip(CircleShape)
@@ -728,7 +728,7 @@ fun Right(viewModel: RobotControllerViewModel, isLandscape: Boolean){
             }
         },
         onRelease = {
-            viewModel.setDisplayText("Moving Right...")
+            viewModel.setDisplayText("Stopped")
         },
         modifier = Modifier
             .clip(CircleShape)
@@ -775,7 +775,7 @@ fun Extend(viewModel: RobotControllerViewModel, isLandscape: Boolean){
             }
         },
         onRelease = {
-            viewModel.setDisplayText("Extending arm...")
+            viewModel.setDisplayText("Stopped")
         },
         modifier = Modifier
             .clip(CircleShape)
@@ -802,7 +802,7 @@ fun Retract(viewModel: RobotControllerViewModel, isLandscape: Boolean){
             }
         },
         onRelease = {
-            viewModel.setDisplayText("Retracting arm...")
+            viewModel.setDisplayText("Stopped")
         },
         modifier = Modifier
             .clip(CircleShape)
