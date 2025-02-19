@@ -31,6 +31,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.demorobocontrollerapp.ui.theme.DemoRoboControllerAppTheme
 import kotlinx.coroutines.delay
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.EaseOutQuad
+import androidx.compose.animation.core.EaseInOutQuad
+import androidx.compose.animation.core.EaseOutQuart
 
 //use as 'preview'
 @Preview(showBackground = true)
@@ -53,7 +59,7 @@ fun DisplayLoading(onTimeout: () -> Unit) {
     val fadeInAnim = remember { Animatable(0f) }
 
     LaunchedEffect(Unit) {
-        delay(2000) // Delay before transition
+        delay(3500) // Delay before transition
         onTimeout()
     }
 
@@ -61,11 +67,11 @@ fun DisplayLoading(onTimeout: () -> Unit) {
     LaunchedEffect(Unit) {
         bounceAnim.animateTo(
             targetValue = -100f, // Move up
-            animationSpec = tween(durationMillis = 500, easing = EaseOutBounce)
+            animationSpec = tween(durationMillis = 600, easing = EaseOutQuart)
         )
         bounceAnim.animateTo(
             targetValue = 0f, // Move back down
-            animationSpec = tween(durationMillis = 500, easing = EaseInOutSine)
+            animationSpec = tween(durationMillis = 800, easing = EaseInOutQuad)
         )
         fadeInAnim.animateTo(1f, animationSpec = tween(1000)) // Fade-in effect
     }
