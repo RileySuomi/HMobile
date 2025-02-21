@@ -1,6 +1,7 @@
 package com.example.demorobocontrollerapp
 
 import android.content.res.Configuration
+import android.widget.FrameLayout
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +27,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,7 +38,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import com.example.demorobocontrollerapp.ui.theme.DemoRoboControllerAppTheme
+import org.webrtc.SurfaceViewRenderer
+import android.view.ViewGroup
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.webrtc.EglBase
 
 // General setting
 const val TextColor = 0xFF212529 // dark gray // OxFF000000
@@ -113,7 +122,7 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
                             .fillMaxWidth() // use allocated space as much as possible
                             .weight(0.4f) // take portion of the space vertically - increase/decrease as needed
                     ){
-                        ShowMonitor(viewModel.displayText.value) // .value gets it as string
+                        ShowMonitor(viewModel) // .value gets it as string
                     }
 
                     // Manipulation, Navigation,  Elevation column
@@ -215,7 +224,7 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
                             .weight(0.7f) // take portion of the space vertically - increase/decrease as needed
                     ) {
                         Box(contentAlignment = Alignment.Center) {
-                            ShowMonitor(viewModel.displayText.value) // .value makes it a string
+                            ShowMonitor(viewModel) // .value makes it a string
                         }
                     }
 
@@ -339,17 +348,20 @@ fun Power(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
     Button(
         onClick = {
             viewModel.switchPowerStatus()  // Toggle power status
-
-            // Toggle the text based on the power status
             viewModel.setDisplayText(
                 if (viewModel.isPowerOn.value) "Let's lift with ease!" else "Rest mode!"
             )
 
-            // Connect to WebSocket when power is turned on
             if (viewModel.isPowerOn.value) {
-                viewModel.webSocketManager.connect(context)  // Call the connect method when power is ON
+                //viewModel.webSocketManager.connect(context)
+                // TEST
+                //viewModel.secureTlsManager.connect()
+                viewModel.unsecureTlsManager.connect()
             } else {
-                viewModel.webSocketManager.disconnect()  // Optionally, close the connection when power is OFF
+                //viewModel.webSocketManager.disconnect()
+                // TEST
+                //viewModel.secureTlsManager.disconnect()
+                viewModel.unsecureTlsManager.disconnect()
             }
         },
         colors = ButtonDefaults.buttonColors(
@@ -373,32 +385,75 @@ fun Power(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
 // TODO : This will be camera input, change it to do so ASAP
 // Temporarily a monitor: display text/action that's taking place/happening
 @Composable
-fun ShowMonitor(displayText: String){ //
+fun ShowMonitor(viewModel: RobotControllerViewModel) {
+    val context = LocalContext.current
+    val signalingUrl = "wss://10.0.2.2:8765/webrtc"  // Local WebRTC Server URL
+
+    // Create WebRTCClient & EGL Context (Only When Power is ON)
+    val webRTCClient = remember { WebRTCClient(context, signalingUrl) }
+    val eglBase = remember { EglBase.create() }  // Create EGLBase context
+
     Column(
-        // background
         modifier = Modifier
-            .fillMaxSize() // makes the column take up the full available space
+            .fillMaxSize()
             .background(Color(MonitorBgColor)),
-        verticalArrangement = Arrangement.SpaceEvenly, // evenly spaces the header, main, and footer
-        horizontalAlignment = Alignment.CenterHorizontally // centers horizontally (optional)
+        verticalArrangement = Arrangement.SpaceEvenly,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Monitor
+        // Monitor Box (Camera Stream or Text)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f) // assign how much space vertically
-                .height(100.dp) // sets the height of the Box to 200dp
-                .padding(16.dp) // adds padding around the Box (inside space)
-                .border(2.dp, Color(MonitorBgColor)) // to simulate a monitor border
+                .weight(1f)
+                .height(100.dp)
+                .padding(16.dp)
+                .border(2.dp, Color(MonitorBgColor))
                 .background(Color(MonitorBgColor)),
-            contentAlignment = Alignment.Center // center content
+            contentAlignment = Alignment.Center
         ) {
-            Text(displayText, fontSize = MonitorFontSize ,
-                color = Color(MonitorTextColor),
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.align(Alignment.Center) // center text horizontally & vertically
-            )
+            if (viewModel.isPowerOn.value) {
+                // Show WebRTC Camera Stream when Power is ON
+//                AndroidView(
+//                    modifier = Modifier.fillMaxSize(),
+//                    factory = { context ->
+//                        val surfaceViewRenderer = SurfaceViewRenderer(context).apply {
+//                            layoutParams = FrameLayout.LayoutParams(
+//                                ViewGroup.LayoutParams.MATCH_PARENT,
+//                                ViewGroup.LayoutParams.MATCH_PARENT,
+//                            )
+//                            init(eglBase.eglBaseContext, null)  // Fix: Use EGL Context
+//                            setMirror(true)  // Mirror effect
+//                        }
+//                        webRTCClient.init(surfaceViewRenderer)  // Attach WebRTC to SurfaceView
+//                        surfaceViewRenderer
+//                    }
+//                )
+                // Temporarily until tcp demo is done - Show Text When Power is ON
+                Text(
+                    text = "Active Mode ",
+                    fontSize = MonitorFontSize,
+                    color = Color(MonitorTextColor),
+                    fontWeight = FontWeight.Bold
+                )
+            } else {
+                // Show Text When Power is OFF
+                Text(
+                    text = "Rest Mode ",
+                    fontSize = MonitorFontSize,
+                    color = Color(MonitorTextColor),
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
+
+        // Display Monitor Text Below (For Status Updates)
+        Text(
+            text = viewModel.displayText.value,
+            fontSize = MonitorFontSize,
+            color = Color(MonitorTextColor),
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
     }
 }
 
@@ -413,10 +468,15 @@ fun Grab(viewModel: RobotControllerViewModel , isLandscape: Boolean) {
             textColor = Color(TextColor),
             fontSize = ManipElevFontSize,
             onPress = {
-                if(viewModel.isPowerOn.value) {
-                    viewModel.webSocketManager.sendMessage("Grab")
+                if (viewModel.isPowerOn.value) {
+                    // Secure communication with WebSocket
+                    // viewModel.webSocketManager.sendMessage("Grab")
+                    // TEST
+                    //viewModel.secureTlsManager.sendCommand("Grab - secure.")
+                    viewModel.unsecureTlsManager.sendCommand("Grab - unsecure")
                 }
-            },
+            }
+            ,
             onRelease = {
                 viewModel.setDisplayText("")
             },
@@ -425,7 +485,6 @@ fun Grab(viewModel: RobotControllerViewModel , isLandscape: Boolean) {
                 .background(Color(ManipBtnColor)) // Set the button's background color
                 .width(if (isLandscape) ManipElevButtonWidth else ManipElevButtonWidth + 10.dp)
                 .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp),
-
             )
 
     // TODO: Double check 'landscape' view

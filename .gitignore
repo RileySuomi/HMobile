@@ -1,6 +1,20 @@
-
 .gradle/buildOutputCleanup/cache.properties
 .gradle/config.properties
 .gradle/buildOutputCleanup/cache.properties
 .gradle/config.properties
 .gradle/buildOutputCleanup/cache.properties
+# Ignore Gradle files
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+ 
+# Ignore VS Code settings
+.vscode/
+ 
+# Ignore OS-specific files
+.DS_Store  # macOS
+Thumbs.db  # Windows
+ 
+# Ignore dependency caches and logs
+node_modules/
+*.log

@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.demorobocontrollerapp-mergeDebugResources-58:/values-v18/values-v18.xml",
+            "outputFile": "com.example.demorobocontrollerapp-mergeDebugResources-59:/values-v18/values-v18.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\User\\.gradle\\caches\\8.12.1\\transforms\\ded10440da54de6d5b7574d0545bc655\\transformed\\core-1.6.1\\res\\values-v18\\values.xml",
+                    "source": "C:\\Users\\User\\.gradle\\caches\\8.12.1\\transforms\\ac5dc64e4259cc97e5a82e10dac1bd32\\transformed\\core-1.6.1\\res\\values-v18\\values.xml",
                     "from": {
                         "startLines": "4,12",
                         "startColumns": "0,0",
@@ -23,7 +23,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\User\\.gradle\\caches\\8.12.1\\transforms\\e5d16de4d098b327032cd5c472cf7c9e\\transformed\\appcompat-1.7.0\\res\\values-v18\\values-v18.xml",
+                    "source": "C:\\Users\\User\\.gradle\\caches\\8.12.1\\transforms\\41b797da4df9a19340809428df80e7b9\\transformed\\appcompat-1.7.0\\res\\values-v18\\values-v18.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",

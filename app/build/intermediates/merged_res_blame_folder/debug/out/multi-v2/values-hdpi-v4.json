@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.demorobocontrollerapp-mergeDebugResources-58:/values-hdpi-v4/values-hdpi-v4.xml",
+            "outputFile": "com.example.demorobocontrollerapp-mergeDebugResources-59:/values-hdpi-v4/values-hdpi-v4.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\User\\.gradle\\caches\\8.12.1\\transforms\\e5d16de4d098b327032cd5c472cf7c9e\\transformed\\appcompat-1.7.0\\res\\values-hdpi-v4\\values-hdpi-v4.xml",
+                    "source": "C:\\Users\\User\\.gradle\\caches\\8.12.1\\transforms\\41b797da4df9a19340809428df80e7b9\\transformed\\appcompat-1.7.0\\res\\values-hdpi-v4\\values-hdpi-v4.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",
