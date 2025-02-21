@@ -75,8 +75,8 @@
 44        <!-- Set MainActivity as the launcher activity if it initializes AppNavHost -->
 45        <activity
 45-->C:\Users\Shukr\StudioProjects\HMobile\app\src\main\AndroidManifest.xml:24:9-33:20
-46            android:name="com.example.demorobocontrollerapp.AppNavHost"
-46-->C:\Users\Shukr\StudioProjects\HMobile\app\src\main\AndroidManifest.xml:25:13-39
+46            android:name="com.example.demorobocontrollerapp.MainActivity"
+46-->C:\Users\Shukr\StudioProjects\HMobile\app\src\main\AndroidManifest.xml:25:13-41
 47            android:exported="true"
 47-->C:\Users\Shukr\StudioProjects\HMobile\app\src\main\AndroidManifest.xml:26:13-36
 48            android:label="@string/app_name"

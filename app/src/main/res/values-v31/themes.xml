@@ -1,9 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <style name="Theme.RoboControllerApp" parent="android:Theme.Material.Light.NoActionBar">
-        <!-- Remove Android 12+ default splash screen -->
-        <item name="android:windowSplashScreenBackground">@android:color/transparent</item>
+        <!-- Set custom splash screen background color -->
+        <item name="android:windowSplashScreenBackground">#FFF0F7F3</item>
         <item name="android:windowSplashScreenAnimatedIcon">@null</item>
         <item name="android:windowSplashScreenIconBackgroundColor">@android:color/transparent</item>
         <item name="android:windowSplashScreenBrandingImage">@null</item>

@@ -147,7 +147,7 @@ MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\Sh
 		ADDED from C:\Users\Shukr\StudioProjects\HMobile\app\src\main\AndroidManifest.xml:10:9-65
 	android:usesCleartextTraffic
 		ADDED from C:\Users\Shukr\StudioProjects\HMobile\app\src\main\AndroidManifest.xml:17:9-44
-activity#com.example.demorobocontrollerapp.AppNavHost
+activity#com.example.demorobocontrollerapp.MainActivity
 ADDED from C:\Users\Shukr\StudioProjects\HMobile\app\src\main\AndroidManifest.xml:24:9-33:20
 	android:label
 		ADDED from C:\Users\Shukr\StudioProjects\HMobile\app\src\main\AndroidManifest.xml:27:13-45
@@ -156,7 +156,7 @@ ADDED from C:\Users\Shukr\StudioProjects\HMobile\app\src\main\AndroidManifest.xm
 	android:theme
 		ADDED from C:\Users\Shukr\StudioProjects\HMobile\app\src\main\AndroidManifest.xml:28:13-59
 	android:name
-		ADDED from C:\Users\Shukr\StudioProjects\HMobile\app\src\main\AndroidManifest.xml:25:13-39
+		ADDED from C:\Users\Shukr\StudioProjects\HMobile\app\src\main\AndroidManifest.xml:25:13-41
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
 ADDED from C:\Users\Shukr\StudioProjects\HMobile\app\src\main\AndroidManifest.xml:29:13-32:29
 action#android.intent.action.MAIN

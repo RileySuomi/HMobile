@@ -37,6 +37,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.EaseOutQuad
 import androidx.compose.animation.core.EaseInOutQuad
 import androidx.compose.animation.core.EaseOutQuart
+import androidx.compose.material3.MaterialTheme
 
 //use as 'preview'
 @Preview(showBackground = true)
@@ -79,7 +80,7 @@ fun DisplayLoading(onTimeout: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White),
+            .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -109,7 +110,7 @@ fun DisplayLoading(onTimeout: () -> Unit) {
         Text(
             text = "by RoboRangers",
             fontSize = 15.sp,
-            color = Color.Gray,
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 50.dp)

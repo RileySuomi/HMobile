@@ -39,7 +39,7 @@ import androidx.compose.ui.unit.sp
 import com.example.demorobocontrollerapp.ui.theme.DemoRoboControllerAppTheme
 
 // General setting
-const val TextColor = 0xFF212529 // dark gray // OxFF000000
+const val TextColor = 0xFFFFFFFF // dark gray // OxFF000000
 // const val OffButtonColor = 0xFF929292 // dark-ish gray to signify 'power off'
 
 // Monitor setting
@@ -48,20 +48,20 @@ const val MonitorBgColor = 0xFF212121 //-> dark gray
 const val MonitorTextColor = 0xFFF8F8F8 // off-white
 
 // Manipulation & Elevation setting
-const val ManipBtnColor = 0xFF007BFF// 0xFF3498DB  // sky blue
-const val ElevBtnColor = 0xFF1ABC9C // soft green
+const val ManipBtnColor = 0xFF022B3A// 0xFF3498DB  // sky blue
+const val ElevBtnColor = 0xFFCE7D81 // soft green
 val ManipElevFontSize = 21.sp // readability
 val ManipElevButtonWidth = 160.dp
 val ManipElevButtonHeight = 50.dp
 
 // Navigation setting
 val NavFontSize = 21.sp // 'nav' = 'navigation'
-const val NavBtnColor = 0xFFD3D3D3 // light gray
+const val NavBtnColor = 0xFF1F7A8C // light gray
 const val NavButtonMaxWidth = 0.2f
 
 // Positioning Setting (arms)
-val extendBtnColor = 0xFFFFE0B2
-val retractBtnColor = 0xFFFFCC80
+val extendBtnColor = 0xFFF6A6A1
+val retractBtnColor = 0xFFF6A6A1
 const val PosButtonMaxWidth = 0.2f
 
 //use as 'preview'
@@ -415,6 +415,7 @@ fun Grab(viewModel: RobotControllerViewModel , isLandscape: Boolean) {
             onPress = {
                 if(viewModel.isPowerOn.value) {
                     viewModel.webSocketManager.sendMessage("Grab")
+                    viewModel.setDisplayText("Grabbing item...")
                 }
             },
             onRelease = {
