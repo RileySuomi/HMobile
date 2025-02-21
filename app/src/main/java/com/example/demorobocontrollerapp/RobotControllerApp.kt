@@ -1,8 +1,12 @@
 package com.example.demorobocontrollerapp
 
 import android.content.res.Configuration
+import android.util.Log
+import android.view.MotionEvent
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,17 +29,24 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.PointerInputChange
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.createBitmap
+import androidx.test.espresso.util.filter
 import com.example.demorobocontrollerapp.ui.theme.DemoRoboControllerAppTheme
 
 // General setting
@@ -155,6 +166,7 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
                                 verticalArrangement = Arrangement.Bottom
                             ) {
                                 Power(viewModel, isLandscape)
+                                JoyStickToggle(viewModel, isLandscape)
                             }
                             Column(
                                 modifier = Modifier
@@ -220,13 +232,15 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
                     }
 
                     // Power button
-                    Column(
+                    Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .weight(0.2f),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
+                            .weight(0.3f),
+                          horizontalArrangement = Arrangement.SpaceEvenly
+//                        verticalArrangement = Arrangement.Center,
+//                        horizontalAlignment = Alignment.CenterHorizontally
                     ){
+                        JoyStickToggle(viewModel, isLandscape)
                         Power(viewModel,isLandscape)
                     }
 
@@ -272,41 +286,48 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Column(modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(0.6f)
-                            .padding(8.dp),
-                            verticalArrangement = Arrangement.Top,
-                            horizontalAlignment = Alignment.CenterHorizontally)
-                        {
-                            Forward(viewModel, isLandscape)
-                        }
 
-                        Column(modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(0.7f)
-                        ){
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(8.dp),
-                                horizontalArrangement = Arrangement.SpaceEvenly
-                            ) {
-                                Left(viewModel, isLandscape)
-                                Spacer(modifier = Modifier.weight(0.7f))
-                                Right(viewModel, isLandscape)
+                        if (!viewModel.usingJoystick.value) {
+                            Column(modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(0.6f)
+                                .padding(8.dp),
+                                verticalArrangement = Arrangement.Top,
+                                horizontalAlignment = Alignment.CenterHorizontally)
+                            {
+                                Forward(viewModel, isLandscape)
+                            }
+
+                            Column(modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(0.7f)
+                            ){
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(8.dp),
+                                    horizontalArrangement = Arrangement.SpaceEvenly
+                                ) {
+                                    Left(viewModel, isLandscape)
+                                    Spacer(modifier = Modifier.weight(0.7f))
+                                    Right(viewModel, isLandscape)
+                                }
+                            }
+
+                            Column(modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(0.6f)
+                                .padding(8.dp),
+                                verticalArrangement = Arrangement.Top,
+                                horizontalAlignment = Alignment.CenterHorizontally)
+                            {
+                                Backward(viewModel, isLandscape)
                             }
                         }
-
-                        Column(modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(0.6f)
-                            .padding(8.dp),
-                            verticalArrangement = Arrangement.Top,
-                            horizontalAlignment = Alignment.CenterHorizontally)
-                        {
-                            Backward(viewModel, isLandscape)
+                        else {
+                            JoyStick(RobotControllerViewModel())
                         }
+
                         
                         // Positioning ('Extend' and 'Retract')
                         Column(modifier = Modifier
@@ -329,6 +350,43 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
             }
         }
     )
+}
+
+
+@Composable
+fun JoyStickToggle(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
+    val context = LocalContext.current
+    Switch(
+        checked = viewModel.usingJoystick.value,
+        onCheckedChange = {
+            viewModel.switchJoystick()
+        },
+    )
+}
+
+@Composable
+fun JoyStick(viewModel: RobotControllerViewModel, filter: PointerEventType? = null) {
+    Canvas(modifier = Modifier
+        .fillMaxSize()
+        .drawWithContent
+        {
+            drawContent()
+            drawCircle(Color.Gray, radius = 100.dp.toPx())
+            drawCircle(Color.Black, radius = 30.dp.toPx())
+
+        }
+        .pointerInput(filter) {
+            detectDragGestures {_, _ -> Log.d("Debug", "Dragging")}
+            awaitPointerEventScope {
+                val event = awaitPointerEvent()
+
+                if (filter == null || event.type == filter) {
+                    Log.d("Debug", "${event.type}, ${event.changes.first().position}")
+                }
+            }
+        }) {
+
+    }
 }
 
 // Power button to turn on/off connection
@@ -414,6 +472,7 @@ fun Grab(viewModel: RobotControllerViewModel , isLandscape: Boolean) {
             fontSize = ManipElevFontSize,
             onPress = {
                 if(viewModel.isPowerOn.value) {
+                    viewModel.startCommunication()
                     viewModel.webSocketManager.sendMessage("Grab")
                 }
             },
@@ -462,6 +521,7 @@ fun Release(viewModel: RobotControllerViewModel, isLandscape: Boolean){
             }
         },
         onRelease = {
+            viewModel.endCommunication()
             viewModel.setDisplayText("")
         },
         modifier = Modifier
@@ -592,6 +652,7 @@ fun Forward(viewModel: RobotControllerViewModel,isLandscape : Boolean) {
             }
         },
         onRelease = {
+            viewModel.moveUp()
             viewModel.setDisplayText("")
         },
         modifier = Modifier
@@ -637,6 +698,7 @@ fun Backward(viewModel: RobotControllerViewModel, isLandscape: Boolean){
             }
         },
         onRelease = {
+            viewModel.moveDown()
             viewModel.setDisplayText("")
         },
         modifier = Modifier
@@ -678,6 +740,7 @@ fun Left(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         onPress = {
             if(viewModel.isPowerOn.value) {
                 viewModel.webSocketManager.sendMessage("Left")
+                viewModel.moveLeft()
                 viewModel.setDisplayText("Moving Left...")
             }
         },
@@ -722,6 +785,7 @@ fun Right(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         fontSize = NavFontSize ,
         onPress = {
             if(viewModel.isPowerOn.value) {
+                viewModel.moveRight()
                 viewModel.webSocketManager.sendMessage("Right")
                 viewModel.setDisplayText("Moving Right...")
             }
