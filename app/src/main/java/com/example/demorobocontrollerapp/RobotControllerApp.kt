@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.demorobocontrollerapp.ui.theme.DemoRoboControllerAppTheme
 
+// this is mergi check
 // General setting
 const val TextColor = 0xFFFFFFFF // dark gray // OxFF000000
 // const val OffButtonColor = 0xFF929292 // dark-ish gray to signify 'power off'

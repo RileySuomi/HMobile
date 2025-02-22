@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+// this is mergi checks
 // This class define and hold data belong to a robot to keep data state &  prevent data reset when view mode changes
 class RobotControllerViewModel : ViewModel() {
     val webSocketManager = WebSocketClient // com.example.demorobocontrollerapp.WebSocketManager is initialized
