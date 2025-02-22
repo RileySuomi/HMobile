@@ -40,12 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.example.demorobocontrollerapp.ui.theme.DemoRoboControllerAppTheme
-import org.webrtc.SurfaceViewRenderer
-import android.view.ViewGroup
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import org.webrtc.EglBase
 
 // General setting
 const val TextColor = 0xFF212529 // dark gray // OxFF000000
@@ -351,18 +345,11 @@ fun Power(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
             viewModel.setDisplayText(
                 if (viewModel.isPowerOn.value) "Let's lift with ease!" else "Rest mode!"
             )
-
-            if (viewModel.isPowerOn.value) {
-                //viewModel.webSocketManager.connect(context)
-                // TEST
-                //viewModel.secureTlsManager.connect()
-                viewModel.unsecureTlsManager.connect()
-            } else {
-                //viewModel.webSocketManager.disconnect()
-                // TEST
-                //viewModel.secureTlsManager.disconnect()
-                viewModel.unsecureTlsManager.disconnect()
-            }
+//            if (viewModel.isPowerOn.value) { // open connection when power on
+//                //viewModel.webSocketManager.connect(context)
+//            } else { // close connection when power off
+//                //viewModel.webSocketManager.disconnect()
+//            }
         },
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(if (viewModel.isPowerOn.value) 0xFFFF5733 else 0xFF4CAF50), // Green if on, red if off
@@ -382,7 +369,7 @@ fun Power(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
     }
 }
 
-// TODO : This will be camera input, change it to do so ASAP
+// TODO : This will be camera input, change it to do so once TCP's set up
 // Temporarily a monitor: display text/action that's taking place/happening
 @Composable
 fun ShowMonitor(viewModel: RobotControllerViewModel) {
@@ -390,8 +377,8 @@ fun ShowMonitor(viewModel: RobotControllerViewModel) {
     val signalingUrl = "wss://10.0.2.2:8765/webrtc"  // Local WebRTC Server URL
 
     // Create WebRTCClient & EGL Context (Only When Power is ON)
-    val webRTCClient = remember { WebRTCClient(context, signalingUrl) }
-    val eglBase = remember { EglBase.create() }  // Create EGLBase context
+//    val webRTCClient = remember { WebRTCClient(context, signalingUrl) }
+//    val eglBase = remember { EglBase.create() }  // Create EGLBase context
 
     Column(
         modifier = Modifier
@@ -412,7 +399,7 @@ fun ShowMonitor(viewModel: RobotControllerViewModel) {
             contentAlignment = Alignment.Center
         ) {
             if (viewModel.isPowerOn.value) {
-                // Show WebRTC Camera Stream when Power is ON
+                // TODO: Show WebRTC Camera Stream when Power is ON
 //                AndroidView(
 //                    modifier = Modifier.fillMaxSize(),
 //                    factory = { context ->
@@ -430,7 +417,7 @@ fun ShowMonitor(viewModel: RobotControllerViewModel) {
 //                )
                 // Temporarily until tcp demo is done - Show Text When Power is ON
                 Text(
-                    text = "Active Mode ",
+                    text = "<camera live>",
                     fontSize = MonitorFontSize,
                     color = Color(MonitorTextColor),
                     fontWeight = FontWeight.Bold
@@ -438,7 +425,7 @@ fun ShowMonitor(viewModel: RobotControllerViewModel) {
             } else {
                 // Show Text When Power is OFF
                 Text(
-                    text = "Rest Mode ",
+                    text = "<camera offline>",
                     fontSize = MonitorFontSize,
                     color = Color(MonitorTextColor),
                     fontWeight = FontWeight.Bold
@@ -470,10 +457,8 @@ fun Grab(viewModel: RobotControllerViewModel , isLandscape: Boolean) {
             onPress = {
                 if (viewModel.isPowerOn.value) {
                     // Secure communication with WebSocket
-                    // viewModel.webSocketManager.sendMessage("Grab")
-                    // TEST
-                    //viewModel.secureTlsManager.sendCommand("Grab - secure.")
-                    viewModel.unsecureTlsManager.sendCommand("Grab - unsecure")
+                    viewModel.webSocketManager.sendMessage("Grab")
+                    viewModel.setDisplayText("Grabbing item...")
                 }
             }
             ,
