@@ -21,11 +21,16 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -78,6 +83,7 @@ fun GreetingPreview() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable // The whole app display
 //fun DisplayApp(viewModel: RobotControllerViewModel) {
 fun DisplayApp(viewModel: RobotControllerViewModel, onSettingPressed: () -> Unit) {
@@ -85,24 +91,24 @@ fun DisplayApp(viewModel: RobotControllerViewModel, onSettingPressed: () -> Unit
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     Scaffold (
-//        topBar = {
-//            CenterAlignedTopAppBar(
-//                title = { Text(text = "Home", fontSize = 22.sp) },
-//                colors = TopAppBarDefaults.topAppBarColors(
-//                    containerColor = Color.Black,
-//                    titleContentColor = Color.White,
-//                    actionIconContentColor = Color.White
-//                ),
-//                 actions = {
-//                    IconButton(onClick = {onSettingPressed()}) {
-//                        Icon(
-//                            imageVector = Icons.Filled.Settings,
-//                            contentDescription = "Localized description"
-//                        )
-//                    }
-//                }
-//            )
-//        },
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text(text = "Home", fontSize = 22.sp) },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Black,
+                    titleContentColor = Color.White,
+                    actionIconContentColor = Color.White
+                ),
+                 actions = {
+                    IconButton(onClick = {onSettingPressed()}) {
+                        Icon(
+                            imageVector = Icons.Filled.Settings,
+                            contentDescription = "Localized description"
+                        )
+                    }
+                }
+            )
+        },
 
         content = {
             Column(
