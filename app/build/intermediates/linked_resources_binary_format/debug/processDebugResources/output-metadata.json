@@ -1,0 +1,28 @@
+{
+  "version": 3,
+  "artifactType": {
+<<<<<<<< HEAD:app/build/outputs/apk/debug/output-metadata.json
+    "type": "APK",
+========
+    "type": "LINKED_RESOURCES_BINARY_FORMAT",
+>>>>>>>> Shukra_2:app/build/intermediates/linked_resources_binary_format/debug/processDebugResources/output-metadata.json
+    "kind": "Directory"
+  },
+  "applicationId": "com.example.demorobocontrollerapp",
+  "variantName": "debug",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "attributes": [],
+      "versionCode": 1,
+      "versionName": "1.0",
+<<<<<<<< HEAD:app/build/outputs/apk/debug/output-metadata.json
+      "outputFile": "app-debug.apk"
+========
+      "outputFile": "linked-resources-binary-format-debug.ap_"
+>>>>>>>> Shukra_2:app/build/intermediates/linked_resources_binary_format/debug/processDebugResources/output-metadata.json
+    }
+  ],
+  "elementType": "File"
+}

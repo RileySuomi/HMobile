@@ -1,0 +1,52 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.example.demorobocontrollerapp-mergeDebugResources-58:/values-v31/values-v31.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\Shukr\\StudioProjects\\HMobile\\app\\src\\main\\res\\values-v31\\themes.xml",
+                    "from": {
+                        "startLines": "1",
+                        "startColumns": "4",
+                        "startOffsets": "17",
+                        "endLines": "7",
+                        "endColumns": "12",
+                        "endOffsets": "506"
+                    },
+                    "to": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "8",
+                        "endColumns": "12",
+                        "endOffsets": "488"
+                    }
+                }
+            ]
+        },
+        {
+            "outputFile": "C:\\Users\\Shukr\\.gradle\\daemon\\8.12.1\\com.example.demorobocontrollerapp-mergeDebugResources-58:\\values-v31\\values-v31.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\Shukr\\StudioProjects\\HMobile\\app\\src\\main\\res\\values-v31\\themes.xml",
+                    "from": {
+                        "startLines": "3",
+                        "startColumns": "4",
+                        "startOffsets": "59",
+                        "endLines": "6",
+                        "endColumns": "12",
+                        "endOffsets": "276"
+                    },
+                    "to": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "5",
+                        "endColumns": "12",
+                        "endOffsets": "220"
+                    }
+                }
+            ]
+        }
+    ]
+}

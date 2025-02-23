@@ -14,28 +14,27 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
-
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
-)
+import androidx.compose.ui.graphics.Color
+import android.util.Log
+import com.example.demorobocontrollerapp.ui.theme.Typography
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
+    primary = PrimaryColor,  // Use your defined color constants
     onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    secondary = SecondaryColor,
+    onSecondary = Color.Black,
+    background = BackgroundColor,
+    surface = SurfaceColor
 )
+private val DarkColorScheme = darkColorScheme(
+    primary = PrimaryColor,
+    onPrimary = Color.Black,
+    secondary = SecondaryColor,
+    onSecondary = Color.Black,
+    background = BackgroundColor, // Standard dark background
+    surface = SurfaceColor
+)
+
 
 @Composable
 fun DemoRoboControllerAppTheme(
