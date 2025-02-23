@@ -72,14 +72,14 @@ const val PosButtonMaxWidth = 0.2f
 @Composable
 fun GreetingPreview() {
     DemoRoboControllerAppTheme {
-        DisplayApp(viewModel = RobotControllerViewModel())
-        //DisplayApp(viewModel = RobotControllerViewModel(), onSettingPressed = {}) // pass in the 'viewModel' class
+        //DisplayApp(viewModel = RobotControllerViewModel())
+        DisplayApp(viewModel = RobotControllerViewModel(), onSettingPressed = {}) // pass in the 'viewModel' class
     }
 }
 
 @Composable // The whole app display
-fun DisplayApp(viewModel: RobotControllerViewModel) {
-    // fun DisplayApp(viewModel: RobotControllerViewModel, onSettingPressed: () -> Unit) {
+//fun DisplayApp(viewModel: RobotControllerViewModel) {
+fun DisplayApp(viewModel: RobotControllerViewModel, onSettingPressed: () -> Unit) {
     val configuration = LocalConfiguration.current // check view mode
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
