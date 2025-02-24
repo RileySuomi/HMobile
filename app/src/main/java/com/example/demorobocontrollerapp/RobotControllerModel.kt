@@ -1,5 +1,5 @@
 package com.example.demorobocontrollerapp
-// this is mergi check
+
 // Model: data and business logic of the application.
 
 data class RobotControllerModel(
@@ -8,7 +8,7 @@ data class RobotControllerModel(
 )
 
 class RobotControllerRepository{
-    private var _robotData = RobotControllerModel("Let's lift with ease!",false)
+    private var _robotData = RobotControllerModel("\"<camera stream>\"",false)
 
     val displayMessage: String = _robotData.displayMessage
     var isPowerOn: Boolean = _robotData.isPowerOn
