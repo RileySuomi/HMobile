@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.demorobocontrollerapp-mergeDebugResources-59:/values-v18/values-v18.xml",
+            "outputFile": "com.example.demorobocontrollerapp-mergeDebugResources-62:/values-v18/values-v18.xml",
             "map": [
                 {
                     "source": "C:\\Users\\User\\.gradle\\caches\\8.12.1\\transforms\\06c9eaa646d138d23030c69cb9e4904a\\transformed\\core-1.6.1\\res\\values-v18\\values.xml",

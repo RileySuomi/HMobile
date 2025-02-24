@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.demorobocontrollerapp"
-        minSdk = 24
+        minSdk = 25
         targetSdk = 35 // You can keep this as 34 or update to 35 if you wish to target the latest runtime behavior
         versionCode = 1
         versionName = "1.0"
@@ -71,7 +71,8 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:4.10.0") // For logging
     // web rtc
     implementation("androidx.webkit:webkit:1.7.0") //  Ensure WebRTC dependency works
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar")))) //  Load WebRTC
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
+    implementation("androidx.wear.compose:compose-material:1.4.1") //  Load WebRTC
     //implementation("org.webrtc:google-webrtc:1.0.32006") // Use a valid version
 
 

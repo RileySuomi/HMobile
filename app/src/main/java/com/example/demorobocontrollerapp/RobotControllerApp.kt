@@ -1,8 +1,13 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.example.demorobocontrollerapp
 
 import android.content.res.Configuration
+import android.util.Log
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,22 +25,31 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.wear.compose.material.Switch
 import com.example.demorobocontrollerapp.ui.theme.DemoRoboControllerAppTheme
 
 // General setting
@@ -69,36 +83,36 @@ const val PosButtonMaxWidth = 0.2f
 @Composable
 fun GreetingPreview() {
     DemoRoboControllerAppTheme {
-        DisplayApp(viewModel = RobotControllerViewModel())
-        //DisplayApp(viewModel = RobotControllerViewModel(), onSettingPressed = {}) // pass in the 'viewModel' class
+        //DisplayApp(viewModel = RobotControllerViewModel())
+        DisplayApp(viewModel = RobotControllerViewModel(), onSettingPressed = {}) // pass in the 'viewModel' class
     }
 }
 
 @Composable // The whole app display
-fun DisplayApp(viewModel: RobotControllerViewModel) {
-    // fun DisplayApp(viewModel: RobotControllerViewModel, onSettingPressed: () -> Unit) {
+//fun DisplayApp(viewModel: RobotControllerViewModel) {
+fun DisplayApp(viewModel: RobotControllerViewModel, onSettingPressed: () -> Unit) {
     val configuration = LocalConfiguration.current // check view mode
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     Scaffold (
-//        topBar = {
-//            CenterAlignedTopAppBar(
-//                title = { Text(text = "Home", fontSize = 22.sp) },
-//                colors = TopAppBarDefaults.topAppBarColors(
-//                    containerColor = Color.Black,
-//                    titleContentColor = Color.White,
-//                    actionIconContentColor = Color.White
-//                ),
-//                 actions = {
-//                    IconButton(onClick = {onSettingPressed()}) {
-//                        Icon(
-//                            imageVector = Icons.Filled.Settings,
-//                            contentDescription = "Localized description"
-//                        )
-//                    }
-//                }
-//            )
-//        },
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text(text = "Home", fontSize = 22.sp) },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Black,
+                    titleContentColor = Color.White,
+                    actionIconContentColor = Color.White
+                ),
+                actions = {
+                    IconButton(onClick = {onSettingPressed()}) {
+                        Icon(
+                            imageVector = Icons.Filled.Settings,
+                            contentDescription = "Localized description"
+                        )
+                    }
+                }
+            )
+        },
 
         content = {
             Column(
@@ -155,6 +169,7 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
                                 verticalArrangement = Arrangement.Bottom
                             ) {
                                 Power(viewModel, isLandscape)
+                                JoyStickToggle(viewModel, isLandscape)
                             }
                             Column(
                                 modifier = Modifier
@@ -220,13 +235,14 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
                     }
 
                     // Power button
-                    Column(
+                    Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .weight(0.2f),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
+                            .weight(0.3f),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        Alignment.CenterVertically,
                     ){
+                        JoyStickToggle(viewModel, isLandscape)
                         Power(viewModel,isLandscape)
                     }
 
@@ -272,42 +288,49 @@ fun DisplayApp(viewModel: RobotControllerViewModel) {
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Column(modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(0.6f)
-                            .padding(8.dp),
-                            verticalArrangement = Arrangement.Top,
-                            horizontalAlignment = Alignment.CenterHorizontally)
-                        {
-                            Forward(viewModel, isLandscape)
-                        }
 
-                        Column(modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(0.7f)
-                        ){
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(8.dp),
-                                horizontalArrangement = Arrangement.SpaceEvenly
-                            ) {
-                                Left(viewModel, isLandscape)
-                                Spacer(modifier = Modifier.weight(0.7f))
-                                Right(viewModel, isLandscape)
+                        if (!viewModel.usingJoystick.value) {
+                            Column(modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(0.6f)
+                                .padding(8.dp),
+                                verticalArrangement = Arrangement.Top,
+                                horizontalAlignment = Alignment.CenterHorizontally)
+                            {
+                                Forward(viewModel, isLandscape)
+                            }
+
+                            Column(modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(0.7f)
+                            ){
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(8.dp),
+                                    horizontalArrangement = Arrangement.SpaceEvenly
+                                ) {
+                                    Left(viewModel, isLandscape)
+                                    Spacer(modifier = Modifier.weight(0.7f))
+                                    Right(viewModel, isLandscape)
+                                }
+                            }
+
+                            Column(modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(0.6f)
+                                .padding(8.dp),
+                                verticalArrangement = Arrangement.Top,
+                                horizontalAlignment = Alignment.CenterHorizontally)
+                            {
+                                Backward(viewModel, isLandscape)
                             }
                         }
-
-                        Column(modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(0.6f)
-                            .padding(8.dp),
-                            verticalArrangement = Arrangement.Top,
-                            horizontalAlignment = Alignment.CenterHorizontally)
-                        {
-                            Backward(viewModel, isLandscape)
+                        else {
+                            JoyStick(RobotControllerViewModel())
                         }
-                        
+
+
                         // Positioning ('Extend' and 'Retract')
                         Column(modifier = Modifier
                             .fillMaxWidth()
@@ -342,7 +365,7 @@ fun Power(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
 
             // Toggle the text based on the power status
             viewModel.setDisplayText(
-                if (viewModel.isPowerOn.value) "Let's lift with ease!" else "Rest mode!"
+                if (viewModel.isPowerOn.value) "<camera live>" else "<camera Offline>"
             )
 
             // Connect to WebSocket when power is turned on
@@ -367,6 +390,42 @@ fun Power(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
             fontWeight = FontWeight.Bold
         )
         Icon(Icons.Default.PlayArrow, contentDescription = "On and Off button")
+    }
+}
+
+@Composable
+fun JoyStickToggle(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
+    val context = LocalContext.current
+    Switch(
+        checked = viewModel.usingJoystick.value,
+        onCheckedChange = {
+            viewModel.switchJoystick()
+        },
+    )
+}
+
+@Composable
+fun JoyStick(viewModel: RobotControllerViewModel, filter: PointerEventType? = null) {
+    Canvas(modifier = Modifier
+        .fillMaxSize()
+        .drawWithContent
+        {
+            drawContent()
+            drawCircle(Color.Gray, radius = 100.dp.toPx())
+            drawCircle(Color.Black, radius = 30.dp.toPx())
+
+        }
+        .pointerInput(filter) {
+            detectDragGestures {_, _ -> Log.d("Debug", "Dragging")}
+            awaitPointerEventScope {
+                val event = awaitPointerEvent()
+
+                if (filter == null || event.type == filter) {
+                    Log.d("Debug", "${event.type}, ${event.changes.first().position}")
+                }
+            }
+        }) {
+
     }
 }
 
