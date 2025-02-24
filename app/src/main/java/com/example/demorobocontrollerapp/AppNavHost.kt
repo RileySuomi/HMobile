@@ -41,9 +41,9 @@ fun NavigationGraph() {
             DisplayApp(
                 viewModel = RobotControllerViewModel(),
                 // Uncomment when needed
-                // onSettingPressed = {
-                //     navController.navigate("settings")
-                // }
+                 onSettingPressed = {
+                     navController.navigate("settings")
+                 }
             )
         }
 
