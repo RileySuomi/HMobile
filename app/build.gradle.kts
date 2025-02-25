@@ -72,7 +72,8 @@ dependencies {
     // web rtc
     implementation("androidx.webkit:webkit:1.7.0") //  Ensure WebRTC dependency works
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.aar"))))
-    implementation("androidx.wear.compose:compose-material:1.4.1") //  Load WebRTC
+    implementation("androidx.wear.compose:compose-material:1.4.1")
+    implementation("androidx.wear.compose:compose-material-core:1.4.1") //  Load WebRTC
     //implementation("org.webrtc:google-webrtc:1.0.32006") // Use a valid version
 
 

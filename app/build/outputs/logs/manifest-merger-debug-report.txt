@@ -14,8 +14,8 @@ MERGED from [androidx.compose.material3:material3:1.1.1] C:\Users\User\.gradle\c
 MERGED from [androidx.appcompat:appcompat-resources:1.7.0] C:\Users\User\.gradle\caches\8.12.1\transforms\f107ef7b4c0e7a615f0024fdeea691bb\transformed\appcompat-resources-1.7.0\AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.appcompat:appcompat:1.7.0] C:\Users\User\.gradle\caches\8.12.1\transforms\1d5664f4d4dd847fa2daf42750daa8b2\transformed\appcompat-1.7.0\AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.fragment:fragment:1.5.4] C:\Users\User\.gradle\caches\8.12.1\transforms\76af935d67a609b6314f5f7c84ef5b53\transformed\fragment-1.5.4\AndroidManifest.xml:17:1-24:12
-MERGED from [androidx.wear.compose:compose-material-core:1.4.1] C:\Users\User\.gradle\caches\8.12.1\transforms\9fa6e3402071650b7ce9dc2f184a7af2\transformed\compose-material-core-1.4.1\AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.wear.compose:compose-foundation:1.4.1] C:\Users\User\.gradle\caches\8.12.1\transforms\6b0f8d3f66e030159f4b1d7e4cf904d2\transformed\compose-foundation-1.4.1\AndroidManifest.xml:17:1-28:12
+MERGED from [androidx.wear.compose:compose-material-core:1.4.1] C:\Users\User\.gradle\caches\8.12.1\transforms\9fa6e3402071650b7ce9dc2f184a7af2\transformed\compose-material-core-1.4.1\AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.wear.compose:compose-material:1.4.1] C:\Users\User\.gradle\caches\8.12.1\transforms\351ee72d6aae12aed08693e16beaa1fd\transformed\compose-material-1.4.1\AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.compose.foundation:foundation-android:1.7.2] C:\Users\User\.gradle\caches\8.12.1\transforms\563840fccb12c8f8edbb650fcd55eb6e\transformed\foundation-release\AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.compose.foundation:foundation-layout-android:1.7.2] C:\Users\User\.gradle\caches\8.12.1\transforms\c385e4dd3c50f4f0118c0959c3df828a\transformed\foundation-layout-release\AndroidManifest.xml:2:1-7:12
@@ -198,10 +198,10 @@ MERGED from [androidx.appcompat:appcompat:1.7.0] C:\Users\User\.gradle\caches\8.
 MERGED from [androidx.appcompat:appcompat:1.7.0] C:\Users\User\.gradle\caches\8.12.1\transforms\1d5664f4d4dd847fa2daf42750daa8b2\transformed\appcompat-1.7.0\AndroidManifest.xml:5:5-44
 MERGED from [androidx.fragment:fragment:1.5.4] C:\Users\User\.gradle\caches\8.12.1\transforms\76af935d67a609b6314f5f7c84ef5b53\transformed\fragment-1.5.4\AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.fragment:fragment:1.5.4] C:\Users\User\.gradle\caches\8.12.1\transforms\76af935d67a609b6314f5f7c84ef5b53\transformed\fragment-1.5.4\AndroidManifest.xml:20:5-22:41
-MERGED from [androidx.wear.compose:compose-material-core:1.4.1] C:\Users\User\.gradle\caches\8.12.1\transforms\9fa6e3402071650b7ce9dc2f184a7af2\transformed\compose-material-core-1.4.1\AndroidManifest.xml:5:5-44
-MERGED from [androidx.wear.compose:compose-material-core:1.4.1] C:\Users\User\.gradle\caches\8.12.1\transforms\9fa6e3402071650b7ce9dc2f184a7af2\transformed\compose-material-core-1.4.1\AndroidManifest.xml:5:5-44
 MERGED from [androidx.wear.compose:compose-foundation:1.4.1] C:\Users\User\.gradle\caches\8.12.1\transforms\6b0f8d3f66e030159f4b1d7e4cf904d2\transformed\compose-foundation-1.4.1\AndroidManifest.xml:20:5-44
 MERGED from [androidx.wear.compose:compose-foundation:1.4.1] C:\Users\User\.gradle\caches\8.12.1\transforms\6b0f8d3f66e030159f4b1d7e4cf904d2\transformed\compose-foundation-1.4.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.wear.compose:compose-material-core:1.4.1] C:\Users\User\.gradle\caches\8.12.1\transforms\9fa6e3402071650b7ce9dc2f184a7af2\transformed\compose-material-core-1.4.1\AndroidManifest.xml:5:5-44
+MERGED from [androidx.wear.compose:compose-material-core:1.4.1] C:\Users\User\.gradle\caches\8.12.1\transforms\9fa6e3402071650b7ce9dc2f184a7af2\transformed\compose-material-core-1.4.1\AndroidManifest.xml:5:5-44
 MERGED from [androidx.wear.compose:compose-material:1.4.1] C:\Users\User\.gradle\caches\8.12.1\transforms\351ee72d6aae12aed08693e16beaa1fd\transformed\compose-material-1.4.1\AndroidManifest.xml:5:5-44
 MERGED from [androidx.wear.compose:compose-material:1.4.1] C:\Users\User\.gradle\caches\8.12.1\transforms\351ee72d6aae12aed08693e16beaa1fd\transformed\compose-material-1.4.1\AndroidManifest.xml:5:5-44
 MERGED from [androidx.compose.foundation:foundation-android:1.7.2] C:\Users\User\.gradle\caches\8.12.1\transforms\563840fccb12c8f8edbb650fcd55eb6e\transformed\foundation-release\AndroidManifest.xml:5:5-44

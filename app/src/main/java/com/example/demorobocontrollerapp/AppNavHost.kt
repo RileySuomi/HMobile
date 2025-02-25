@@ -9,17 +9,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.demorobocontrollerapp.ui.theme.DemoRoboControllerAppTheme
 
-class AppNavHost : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            DemoRoboControllerAppTheme {
-                NavigationGraph()
-            }
-        }
-    }
-}
-
 @Composable
 fun NavigationGraph() {
     val navController = rememberNavController()
