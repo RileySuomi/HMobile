@@ -1,64 +1,91 @@
 package com.example.demorobocontrollerapp
 
-
-
-// TODO: Update this file once the app is ready for production
+import android.content.Context
 import android.util.Log
+import okhttp3.Dns
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
-import okio.ByteString
+import java.net.InetAddress
+import javax.net.ssl.SSLSocketFactory
+import javax.net.ssl.X509TrustManager
 
-// WebSocketClient class handles WebSocket operations
-class WebSocketClient {
-
+object WebSocketClient {
     private var webSocket: WebSocket? = null
-    private val client = OkHttpClient()
+    private var client: OkHttpClient? = null
 
-    // Listener that handles WebSocket events (onOpen, onMessage, onFailure, etc.)
-    val listener = object : WebSocketListener() {
+    fun connect(context: Context) {
+        // Retrieve the SSL socket factory and trust manager from our SSLHelper using our certificate resource.
+        val sslSocketFactory: SSLSocketFactory? = SSLHelper.getSocketFactory(context, R.raw.websocket)
+        val trustManager: X509TrustManager? = SSLHelper.getTrustManager(context, R.raw.websocket)
 
-        override fun onOpen(webSocket: WebSocket, response: okhttp3.Response) {
-            super.onOpen(webSocket, response)
-            Log.d("WebSocket", "Connected to server") // Connection success
-        }
+        // demo only: val request = Request.Builder().url("ws://10.0.2.2:8765").build()
+        if (sslSocketFactory != null && trustManager != null) {
+            // Create a custom DNS resolver that maps the hostname "Robo" to the emulator's host IP (10.0.2.2).
+            val customDns = object : Dns {
+                override fun lookup(hostname: String): List<InetAddress> {
+                    return if (hostname.equals("Robo", ignoreCase = true)) { // change 'Robo' to Raspberry PI later
+                        listOf(InetAddress.getByName("10.0.2.2"))
+                    } else {
+                        Dns.SYSTEM.lookup(hostname)
+                    }
+                }
+            }
 
-        override fun onMessage(webSocket: WebSocket, text: String) {
-            super.onMessage(webSocket, text)
-            Log.d("WebSocket", "Message from server: $text") // Message received from server
-        }
+            // Build the OkHttpClient with:
+            // - Custom DNS to resolve "Robo"
+            // - A hostname verifier that accepts "Robo" (matches our certificate)
+            // - The SSL settings from our certificate.
+            client = OkHttpClient.Builder()
+                .dns(customDns)
+                .hostnameVerifier { hostname, _ ->
+                    // Verify that the hostname is "Robo"
+                    hostname.equals("Robo", ignoreCase = true)
+                }
+                .sslSocketFactory(sslSocketFactory, trustManager)
+                .build()
 
-        override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
-            super.onMessage(webSocket, bytes)
-            Log.d("WebSocket", "Message from server: ${bytes.hex()}") // Message received as ByteString
-        }
+            // Create a WebSocket request using the hostname "Robo".
+            val request = Request.Builder().url("wss://Robo:8765").build()
 
-        override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
-            super.onClosing(webSocket, code, reason)
-            Log.d("WebSocket", "Closing: $reason") // Connection closing
-        }
+            // Connect to the WebSocket server and set up event listeners.
+            webSocket = client?.newWebSocket(request, object : WebSocketListener() {
+                override fun onOpen(webSocket: WebSocket, response: okhttp3.Response) {
+                    Log.d("WebSocketManager", "WebSocket Opened: ${response.message}")
+                    // Send an initial message when the connection is established.
+                    webSocket.send("Hello, server!")
+                }
 
-        override fun onFailure(webSocket: WebSocket, t: Throwable, response: okhttp3.Response?) {
-            super.onFailure(webSocket, t, response)
-            Log.d("WebSocket", "Error: ${t.message}") // Error during WebSocket communication
+                override fun onMessage(webSocket: WebSocket, text: String) {
+                    Log.d("WebSocketManager", "Received message: $text")
+                }
+
+                override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
+                    Log.d("WebSocketManager", "WebSocket closing: $code / $reason")
+                    webSocket.close(code, reason)
+                }
+
+                override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
+                    Log.d("WebSocketManager", "WebSocket closed: $code / $reason")
+                }
+
+                override fun onFailure(webSocket: WebSocket, t: Throwable, response: okhttp3.Response?) {
+                    Log.e("WebSocketManager", "WebSocket error: ${t.message}", t)
+                }
+            })
+        } else {
+            Log.e("WebSocketManager", "Failed to set up SSL connection")
         }
     }
 
-    // Starts WebSocket connection to the server
-    fun startWebSocketConnection(url: String) {
-        val request = Request.Builder().url(url).build()
-        webSocket = client.newWebSocket(request, listener) // Open connection
-    }
-
-    // Sends a message to the WebSocket server
+    // Send a message through the connected WebSocket.
     fun sendMessage(message: String) {
-        webSocket?.send(message) // Send message over WebSocket
+        webSocket?.send(message) ?: Log.e("WebSocketManager", "WebSocket is not connected.")
     }
 
-    // Closes the WebSocket connection
-    fun closeConnection() {
-        webSocket?.close(1000, "Closing connection") // Close the WebSocket with code 1000 (normal closure)
+    // Close the WebSocket connection gracefully.
+    fun disconnect() {
+        webSocket?.close(1000, "Closing Connection")
     }
 }
-

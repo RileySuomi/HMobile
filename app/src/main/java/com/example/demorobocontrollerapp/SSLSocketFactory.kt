@@ -14,7 +14,6 @@ import javax.net.ssl.X509TrustManager
 object SSLHelper {
 
     private const val TAG = "SSLHelper"
-
     /**
      * Creates an SSLSocketFactory that trusts the certificate specified by the raw resource.
      *
