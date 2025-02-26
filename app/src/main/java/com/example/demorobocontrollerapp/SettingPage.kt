@@ -2,27 +2,43 @@
 
 package com.example.demorobocontrollerapp
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -98,6 +114,8 @@ fun DisplaySetting(viewModel: SettingViewModel, onBackPressed: () -> Unit) {
                 WirelessConnection("wifi_name")
                 Divider(color = Color.LightGray)
                 Port()
+                Divider(color = Color.LightGray)
+                AdvMode()
             }
         }
     )
@@ -145,27 +163,92 @@ fun WirelessConnection(wifi: String) {
     }
 }
 
+//editable port
 @Composable
-fun Port () {
+fun Port (portID: MutableState<String> = remember { mutableStateOf("22") }) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(0.dp, 10.dp),
+            .padding(vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            modifier = Modifier.padding(10.dp, 0.dp),
+            modifier = Modifier.padding(start = 10.dp).weight(1f),
             text = "Port:",
             color = Color.Black,
         )
-//        TextField(
-//            modifier = Modifier.padding(21.dp, 0.dp, 0.dp, 0.dp).width(80.dp),
-//            TextFieldColors = Color.DarkGray,
-//            value = port,
-//            onValueChange = {newText ->
-//                port = newText},
-//            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-//            singleLine = true
-//        )
+        Row(Modifier.weight(2f).padding(0.dp), verticalAlignment = Alignment.CenterVertically)
+        {
+            var inputPort by remember { mutableStateOf(portID.value) }
+            BasicTextField(
+                modifier = Modifier
+                    .width(80.dp)
+                    .background(Color.DarkGray)
+                    .padding(bottom = 1.dp)
+                    .background(Color.White),
+                textStyle = LocalTextStyle.current.copy(fontSize = 18.sp),
+                value = inputPort,
+                onValueChange = { inputPort = it },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                singleLine = true,
+                decorationBox = { innerTextField ->
+                    Row(
+                        Modifier
+                            .padding(horizontal = 5.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        innerTextField()
+                    }
+                }
+            )
+
+            CustomButton(
+                if (portID.value != inputPort) "Save" else "Saved",
+                (portID.value != inputPort),
+                PaddingValues(start = 15.dp),
+                onClick = { portID.value = inputPort }
+            )
+        }
+    }
+}
+
+//advanced mode switch
+@Composable
+fun AdvMode(state: MutableState<Boolean> = remember { mutableStateOf(false) }){
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ){
+        Text(
+            modifier = Modifier.padding(end = 20.dp),
+            text = "Advanced Mode"
+        )
+        Switch(
+            checked = state.value,
+            onCheckedChange = {
+                state.value = it
+                //add advanced display sheet (collapsable) / mask on top of screen
+            },
+            thumbContent = if (state.value) {
+                {
+                    Icon(
+                        imageVector = Icons.Filled.Check,
+                        "",
+                        Modifier.size(SwitchDefaults.IconSize),
+                        tint = Color.White
+                    )
+                }
+            }else{
+                null
+            },
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = MaterialTheme.colorScheme.primary,
+                checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
+                uncheckedThumbColor = MaterialTheme.colorScheme.secondary,
+                uncheckedTrackColor = MaterialTheme.colorScheme.secondaryContainer,
+            )
+        )
     }
 }

@@ -4,12 +4,15 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -112,4 +116,29 @@ fun GlowingButton(
     }
 }
 
+@Composable
+fun CustomButton(
+    text: String,
+    isEnabled: Boolean,
+    padding: PaddingValues = PaddingValues(0.dp),
+    onClick: () -> Unit){
+    val backgroundColor by animateColorAsState(
+        if (isEnabled) Color.Blue else Color.LightGray
+    )
+    val contentColor by animateColorAsState(
+        if (isEnabled) Color.White else Color.Black
+    )
 
+    Box(Modifier
+        .padding(padding)
+        .background(backgroundColor, RoundedCornerShape(20))
+        .clickable(onClick = onClick)
+    ){
+        Text(
+            text,
+            Modifier.align(Alignment.Center).padding(5.dp),
+            color = contentColor,
+            fontSize = 16.sp
+        )
+    }
+}
