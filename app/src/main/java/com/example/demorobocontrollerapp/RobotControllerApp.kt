@@ -11,6 +11,7 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,8 +35,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,8 +57,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.wear.compose.material.Switch
 import com.example.demorobocontrollerapp.ui.theme.DemoRoboControllerAppTheme
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 
 //******* Preset 1 ************
 // General setting
@@ -111,14 +123,30 @@ const val PosButtonMaxWidth = 0.2f
 @Composable
 fun GreetingPreview() {
     DemoRoboControllerAppTheme {
-        DisplayApp(viewModel = RobotControllerViewModel(), onSettingPressed = {}) // pass in the 'viewModel' class
+        val fakeRepo = object : DataStoreRepo {
+            override suspend fun putString(key: String, value: String) {}
+            override suspend fun putBoolean(key: String, value: Boolean) {}
+            override suspend fun getString(key: String): Flow<String> {
+                return flow { emit("mocked_string_value")}
+            }
+            override suspend fun getBoolean(key: String): Flow<Boolean> {
+                return flow { emit(false)}
+            }
+            override suspend fun clearPReferences(key: String) {}
+        }
+
+        val fakeViewModel = RobotControllerViewModel(fakeRepo)
+
+        DisplayApp(viewModel = fakeViewModel, onSettingPressed = {}) // pass in the 'viewModel' class
     }
 }
 
 @Composable // The whole app display
-fun DisplayApp(viewModel: RobotControllerViewModel, onSettingPressed: () -> Unit) {
+fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(), onSettingPressed: () -> Unit) {
     val configuration = LocalConfiguration.current // check view mode
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val isAdvancedMode by viewModel.isAdvancedMode.collectAsState()
+    val showFirstContent = remember { mutableStateOf(true) }
 
     Scaffold (
         topBar = {
@@ -196,6 +224,8 @@ fun DisplayApp(viewModel: RobotControllerViewModel, onSettingPressed: () -> Unit
                             ) {
                                 Power(viewModel, isLandscape)
                                 JoyStickToggle(viewModel, isLandscape)
+                                Advance(viewModel, isLandscape,
+                                    onClick = { showFirstContent.value = !showFirstContent.value })
                             }
                             Column(
                                 modifier = Modifier
@@ -270,65 +300,98 @@ fun DisplayApp(viewModel: RobotControllerViewModel, onSettingPressed: () -> Unit
                     ){
                         JoyStickToggle(viewModel, isLandscape)
                         Power(viewModel,isLandscape)
+                        Advance(viewModel, isLandscape,
+                            onClick = { showFirstContent.value = !showFirstContent.value })
                     }
 
-                    // Manipulation section
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(0.3f),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Row(horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Grab(viewModel, isLandscape)
-                            Spacer(modifier = Modifier.width(32.dp)) // add spacing between buttons
-                            Release(viewModel, isLandscape)
-                        }
-                    }
-
-                    // Elevation section
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(0.3f),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Row(horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Lift(viewModel, isLandscape)
-                            Spacer(modifier = Modifier.width(32.dp)) // add spacing between buttons
-                            Lower(viewModel, isLandscape)
-                        }
-                    }
-
-                    // Navigation section
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1.2f),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-
-                        if (!viewModel.usingJoystick.value) {
-                            Column(modifier = Modifier
+                    if(showFirstContent.value){
+                        // Manipulation section
+                        Column(
+                            modifier = Modifier
                                 .fillMaxWidth()
-                                .weight(0.6f)
-                                .padding(8.dp),
-                                verticalArrangement = Arrangement.Top,
-                                horizontalAlignment = Alignment.CenterHorizontally)
-                            {
-                                Forward(viewModel, isLandscape)
+                                .weight(0.3f),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Row(horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Grab(viewModel, isLandscape)
+                                Spacer(modifier = Modifier.width(32.dp)) // add spacing between buttons
+                                Release(viewModel, isLandscape)
+                            }
+                        }
+
+                        // Elevation section
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(0.3f),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Row(horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Lift(viewModel, isLandscape)
+                                Spacer(modifier = Modifier.width(32.dp)) // add spacing between buttons
+                                Lower(viewModel, isLandscape)
+                            }
+                        }
+
+                        // Navigation section
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1.2f),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            if (!viewModel.usingJoystick.value) {
+                                Column(modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(0.6f)
+                                    .padding(8.dp),
+                                    verticalArrangement = Arrangement.Top,
+                                    horizontalAlignment = Alignment.CenterHorizontally)
+                                {
+                                    Forward(viewModel, isLandscape)
+                                }
+
+                                Column(modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(0.7f)
+                                ){
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(8.dp),
+                                        horizontalArrangement = Arrangement.SpaceEvenly
+                                    ) {
+                                        Left(viewModel, isLandscape)
+                                        Spacer(modifier = Modifier.weight(0.7f))
+                                        Right(viewModel, isLandscape)
+                                    }
+                                }
+
+                                Column(modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(0.6f)
+                                    .padding(8.dp),
+                                    verticalArrangement = Arrangement.Top,
+                                    horizontalAlignment = Alignment.CenterHorizontally)
+                                {
+                                    Backward(viewModel, isLandscape)
+                                }
+                            }
+                            else {
+                                JoyStick(viewModel)
                             }
 
+                            // Positioning ('Extend' and 'Retract')
                             Column(modifier = Modifier
                                 .fillMaxWidth()
-                                .weight(0.7f)
+                                .weight(0.5f)
                             ){
                                 Row(
                                     modifier = Modifier
@@ -336,48 +399,58 @@ fun DisplayApp(viewModel: RobotControllerViewModel, onSettingPressed: () -> Unit
                                         .padding(8.dp),
                                     horizontalArrangement = Arrangement.SpaceEvenly
                                 ) {
-                                    Left(viewModel, isLandscape)
-                                    Spacer(modifier = Modifier.weight(0.7f))
-                                    Right(viewModel, isLandscape)
+                                    Extend(viewModel, isLandscape)
+                                    Spacer(modifier = Modifier.weight(0.2f))
+                                    Retract(viewModel, isLandscape)
                                 }
                             }
-
-                            Column(modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(0.6f)
-                                .padding(8.dp),
-                                verticalArrangement = Arrangement.Top,
-                                horizontalAlignment = Alignment.CenterHorizontally)
-                            {
-                                Backward(viewModel, isLandscape)
-                            }
                         }
-                        else {
-                            JoyStick(RobotControllerViewModel())
-                        }
-
-
-                        // Positioning ('Extend' and 'Retract')
-                        Column(modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(0.5f)
-                        ){
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(8.dp),
-                                horizontalArrangement = Arrangement.SpaceEvenly
-                            ) {
-                                Extend(viewModel, isLandscape)
-                                Spacer(modifier = Modifier.weight(0.2f))
-                                Retract(viewModel, isLandscape)
-                            }
-                        }
+                    }else{
+                        ScrollableList("")
+                        InputData(hiltViewModel())
                     }
                 }
             }
         }
     )
+}
+
+@Composable
+fun ScrollableList(messages: String){
+
+}
+
+@Composable
+fun InputData(viewModel: RobotControllerViewModel){
+    var textInput: String by rememberSaveable { mutableStateOf("") }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ){
+        TextField(
+            value = textInput,
+            onValueChange = { newText ->
+                textInput = newText
+            },
+            placeholder = {
+                Text(text = "Data input")
+            }
+        )
+        CustomButton(
+            text = "Send",
+            isEnabled = true,
+            PaddingValues(start = 15.dp),
+            onClick = {
+                if(viewModel.isPowerOn.value) {
+                    viewModel.webSocketManager.sendMessage(textInput)
+                    viewModel.setDisplayText("Message sent")
+                }
+            }
+        )
+    }
 }
 
 // Power button to turn on/off connection
@@ -431,7 +504,7 @@ fun JoyStickToggle(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
 }
 
 @Composable
-fun JoyStick(viewModel: RobotControllerViewModel, filter: PointerEventType? = null) {
+fun JoyStick(viewModel: RobotControllerViewModel = hiltViewModel(), filter: PointerEventType? = null) {
     Canvas(modifier = Modifier
         .fillMaxSize()
         .drawWithContent
@@ -453,6 +526,23 @@ fun JoyStick(viewModel: RobotControllerViewModel, filter: PointerEventType? = nu
         }) {
 
     }
+}
+
+@Composable
+fun Advance(viewModel: RobotControllerViewModel, isLandscape: Boolean, onClick: () -> Unit){
+    // This will hold the current state of whether the button is clicked
+    val isAdvancedMode = viewModel.isAdvancedMode.collectAsState().value
+
+    // Function to toggle the advanced mode when clicked
+    val onClickToggle = {
+        viewModel.toggleAdvancedMode()
+    }
+
+    CustomButton(
+        text = if (isAdvancedMode) "Normal" else "Advance",
+        isEnabled = true,
+        onClick = onClickToggle
+    )
 }
 
 // TODO : This will be camera input, change it to do so ASAP

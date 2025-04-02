@@ -7,14 +7,25 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 // this is mergi checks
 // This class define and hold data belong to a robot to keep data state &  prevent data reset when view mode changes
-class RobotControllerViewModel : ViewModel() {
+@HiltViewModel
+class RobotControllerViewModel @Inject constructor(
+    private val dataStore: DataStoreRepo
+): ViewModel() {
     val webSocketManager = WebSocketClient // com.example.demorobocontrollerapp.WebSocketManager is initialized
 
     // TODO: data to send through Raspberry Pi
@@ -40,7 +51,76 @@ class RobotControllerViewModel : ViewModel() {
     val isPowerOn: State<Boolean> = _isPowerOn
     val usingJoystick: State<Boolean> = _usingJoystick
 
+    // Access to DataStore
+
+    private val _phoneIp = MutableStateFlow("")
+    val phoneIp = _phoneIp.asStateFlow()
+
+    private val _robotIp = MutableStateFlow("")
+    val robotIp = _robotIp.asStateFlow()
+
+    private val _wifiName = MutableStateFlow("")
+    val wifiName = _wifiName.asStateFlow()
+
+    private val _portNumber = MutableStateFlow("")
+    val portNumber = _portNumber.asStateFlow()
+
+    private val _isAdvancedMode = MutableStateFlow(false)
+    val isAdvancedMode = _isAdvancedMode.asStateFlow()
+
+    init {
+        loadData()
+    }
+
+    private fun loadData() {
+        viewModelScope.launch {
+            _phoneIp.value = (dataStore.getString("phone_ip") ?: "").toString()
+            _robotIp.value = (dataStore.getString("robot_ip") ?: "").toString()
+            _wifiName.value = (dataStore.getString("wifi_name") ?: "").toString()
+            _portNumber.value = (dataStore.getString("port_number") ?: "").toString()
+            dataStore.getBoolean("advanced_mode").collect { advancedMode ->
+                _isAdvancedMode.value = advancedMode
+            }
+        }
+    }
+
+    fun savePhoneIp(ip: String) {
+        viewModelScope.launch {
+            dataStore.putString("phone_ip", ip)
+            _phoneIp.value = ip
+        }
+    }
+
+    fun saveRobotIp(ip: String) {
+        viewModelScope.launch {
+            dataStore.putString("robot_ip", ip)
+            _robotIp.value = ip
+        }
+    }
+
+    fun saveWifiName(name: String) {
+        viewModelScope.launch {
+            dataStore.putString("wifi_name", name)
+            _wifiName.value = name
+        }
+    }
+
+    fun savePortNumber(port: String) {
+        viewModelScope.launch {
+            dataStore.putString("port_number", port)
+            _portNumber.value = port
+        }
+    }
+
+    fun toggleAdvancedMode() {
+        viewModelScope.launch {
+            val currentMode = isAdvancedMode.value
+            dataStore.putBoolean("advanced_mode", !currentMode)
+        }
+    }
+
     private var connection = RobotConnection();
+
 
     // Public method to update the display text
     fun switchPowerStatus(){

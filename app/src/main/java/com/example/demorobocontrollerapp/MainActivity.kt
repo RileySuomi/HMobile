@@ -13,9 +13,10 @@ import androidx.compose.material3.Typography
 import androidx.compose.ui.graphics.Color
 import androidx.compose.material3.Text
 import com.example.demorobocontrollerapp.NavigationGraph
+import dagger.hilt.android.AndroidEntryPoint
 
 
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,5 +29,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-

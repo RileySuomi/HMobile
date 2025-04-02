@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -28,7 +29,7 @@ fun NavigationGraph() {
         // Main Screen
         composable("main") {
             DisplayApp(
-                viewModel = RobotControllerViewModel(),
+                viewModel = hiltViewModel(),
                 // Uncomment when needed
                  onSettingPressed = {
                      navController.navigate("settings")
@@ -39,7 +40,7 @@ fun NavigationGraph() {
         // Settings Screen
         composable("settings") {
             DisplaySetting(
-                viewModel = SettingViewModel(),
+                viewModel = hiltViewModel(),
                 onBackPressed = {
                     navController.popBackStack() // Go back to main screen
                 }

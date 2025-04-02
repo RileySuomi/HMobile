@@ -1,37 +1,80 @@
 package com.example.demorobocontrollerapp
 
-import android.content.Context
-import android.content.Context.WIFI_SERVICE
-import android.net.ConnectivityManager
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import android.net.wifi.WifiManager
-import android.text.format.Formatter.formatIpAddress
-import androidx.core.content.ContextCompat.getSystemService
-import java.util.Formatter
+import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SettingViewModel : ViewModel(){
-    private val _deviceIP = MutableLiveData<String>()
-    val deviceIP: LiveData<String> = _deviceIP
+@HiltViewModel
+class SettingViewModel @Inject constructor(
+    private val dataStore: DataStoreRepo
+): ViewModel() {
+    private val _phoneIp = MutableStateFlow("")
+    val phoneIp = _phoneIp.asStateFlow()
 
-    private val _wifiName = MutableLiveData<String>()
-    val wifiName: LiveData<String> = _wifiName
+    private val _robotIp = MutableStateFlow("")
+    val robotIp = _robotIp.asStateFlow()
 
-    private val _portCode = MutableLiveData<String>()
-    val portCode: LiveData<String> = _portCode
+    private val _wifiName = MutableStateFlow("")
+    val wifiName = _wifiName.asStateFlow()
 
-//    init {
-//        fetchDeviceIP()
-//        fetchWifiName()
-//    }
-//
-//    fun updatePortCode(newPortCode: Code){
-//        _portCode.value = newPortCode
-//    }
-//
-//    private fun fetchDeviceIP(){
-//        val wifiManager = getSystemService(Context.WIFI_SERVICE) as WifiManager
-//        _deviceIP.value = formatIpAddress(wifiManager.connectionInfo.ipAddress)
-//    }
+    private val _portNumber = MutableStateFlow("")
+    val portNumber = _portNumber.asStateFlow()
+
+    private val _isAdvancedMode = MutableStateFlow(false)
+    val isAdvancedMode = _isAdvancedMode.asStateFlow()
+
+    init {
+        loadData()
+    }
+
+    private fun loadData() {
+        viewModelScope.launch {
+            _phoneIp.value = (dataStore.getString("phone_ip") ?: "").toString()
+            _robotIp.value = (dataStore.getString("robot_ip") ?: "").toString()
+            _wifiName.value = (dataStore.getString("wifi_name") ?: "").toString()
+            _portNumber.value = (dataStore.getString("port_number") ?: "").toString()
+            dataStore.getBoolean("advanced_mode").collect { advancedMode ->
+                _isAdvancedMode.value = advancedMode
+            }
+        }
+    }
+
+    fun savePhoneIp(ip: String) {
+        viewModelScope.launch {
+            dataStore.putString("phone_ip", ip)
+            _phoneIp.value = ip
+        }
+    }
+
+    fun saveRobotIp(ip: String) {
+        viewModelScope.launch {
+            dataStore.putString("robot_ip", ip)
+            _robotIp.value = ip
+        }
+    }
+
+    fun saveWifiName(name: String) {
+        viewModelScope.launch {
+            dataStore.putString("wifi_name", name)
+            _wifiName.value = name
+        }
+    }
+
+    fun savePortNumber(port: String) {
+        viewModelScope.launch {
+            dataStore.putString("port_number", port)
+            _portNumber.value = port
+        }
+    }
+
+    fun toggleAdvancedMode(enabled: Boolean) {
+        viewModelScope.launch {
+            dataStore.putBoolean("advanced_mode", enabled)
+            _isAdvancedMode.value = enabled
+        }
+    }
 }
