@@ -32,6 +32,9 @@ fun NavigationGraph() {
                 // Uncomment when needed
                  onSettingPressed = {
                      navController.navigate("settings")
+                 },
+                 onMapPressed = {
+                    navController.navigate("map")
                  }
             )
         }
@@ -40,6 +43,15 @@ fun NavigationGraph() {
         composable("settings") {
             DisplaySetting(
                 viewModel = SettingViewModel(),
+                onBackPressed = {
+                    navController.popBackStack() // Go back to main screen
+                }
+            )
+        }
+
+        composable("map") {
+            MapScreen(
+                viewModel = NavigationModel(),
                 onBackPressed = {
                     navController.popBackStack() // Go back to main screen
                 }

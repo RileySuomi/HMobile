@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -111,12 +112,16 @@ const val PosButtonMaxWidth = 0.2f
 @Composable
 fun GreetingPreview() {
     DemoRoboControllerAppTheme {
-        DisplayApp(viewModel = RobotControllerViewModel(), onSettingPressed = {}) // pass in the 'viewModel' class
+        DisplayApp(viewModel = RobotControllerViewModel(),
+            onSettingPressed = {},
+            onMapPressed = {}) // pass in the 'viewModel' class
     }
 }
 
 @Composable // The whole app display
-fun DisplayApp(viewModel: RobotControllerViewModel, onSettingPressed: () -> Unit) {
+fun DisplayApp(viewModel: RobotControllerViewModel,
+               onSettingPressed: () -> Unit,
+               onMapPressed: () -> Unit) {
     val configuration = LocalConfiguration.current // check view mode
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
@@ -134,6 +139,12 @@ fun DisplayApp(viewModel: RobotControllerViewModel, onSettingPressed: () -> Unit
                         Icon(
                             imageVector = Icons.Filled.Settings,
                             contentDescription = "Localized description"
+                        )
+                    }
+                    IconButton(onClick = { onMapPressed() }) {
+                        Icon(
+                            imageVector = Icons.Filled.Search,
+                            contentDescription = "Go to Map Controls"
                         )
                     }
                 }
@@ -500,8 +511,9 @@ fun Grab(viewModel: RobotControllerViewModel , isLandscape: Boolean) {
             fontSize = ManipElevFontSize,
             onPress = {
                 if(viewModel.isPowerOn.value) {
-                    viewModel.webSocketManager.sendMessage("Grab")
                     viewModel.setDisplayText("Grabbing item...")
+                    viewModel.startCommunication()
+                    viewModel.webSocketManager.sendMessage("Grab")
                 }
             },
             onRelease = {

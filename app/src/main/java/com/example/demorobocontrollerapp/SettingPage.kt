@@ -60,6 +60,7 @@ fun SettingPreview() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DisplaySetting(viewModel: SettingViewModel, onBackPressed: () -> Unit) {
     //val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
