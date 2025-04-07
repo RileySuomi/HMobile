@@ -302,7 +302,7 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(), onSettingP
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .weight(0.5f),
+                                .weight(0.3f),
                             horizontalArrangement = Arrangement.SpaceEvenly,
                             Alignment.CenterVertically,
                         ){
@@ -315,7 +315,7 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(), onSettingP
                             // Manipulation section
                             Row(horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.weight(0.5f)
+                                modifier = Modifier.weight(0.4f).fillMaxWidth()
                             ) {
                                 Grab(viewModel, isLandscape)
                                 Spacer(modifier = Modifier.width(32.dp)) // add spacing between buttons
@@ -325,7 +325,7 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(), onSettingP
                             // Elevation section
                             Row(horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.weight(0.5f)
+                                modifier = Modifier.weight(0.4f).fillMaxWidth()
                             ) {
                                 Lift(viewModel, isLandscape)
                                 Spacer(modifier = Modifier.width(32.dp)) // add spacing between buttons
@@ -333,20 +333,18 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(), onSettingP
                             }
 
                             // Navigation section
-                            Box(modifier = Modifier.weight(1f).fillMaxWidth())
+                            Box(modifier = Modifier.weight(1.2f).fillMaxWidth().padding(bottom = 40.dp, end = 8.dp, start = 8.dp))
                             {
                                 if (!viewModel.usingJoystick.value) {
                                     Box(
                                         modifier = Modifier.align(Alignment.TopCenter)
-                                            .fillMaxWidth()
                                     ) {
                                         Forward(viewModel, isLandscape)
                                     }
                                     Row(
                                         modifier = Modifier
                                             .align(Alignment.Center)
-                                            .fillMaxWidth()
-                                            .padding(8.dp),
+                                            .fillMaxWidth(),
                                         horizontalArrangement = Arrangement.SpaceEvenly
                                     ) {
                                         Left(viewModel, isLandscape)
@@ -355,7 +353,6 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(), onSettingP
                                     }
                                     Box(
                                         modifier = Modifier.align(Alignment.BottomCenter)
-                                            .fillMaxWidth()
                                     ) {
                                         Backward(viewModel, isLandscape)
                                     }
@@ -364,9 +361,16 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(), onSettingP
                                 }
                             }
                         }else{
-                            Column (modifier = Modifier.fillMaxWidth().weight(2.5f)){
-                                ScrollableList(logLines)
-                                InputData(hiltViewModel())
+                            Column (
+                                modifier = Modifier.fillMaxWidth().weight(2.3f),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ){
+                                Box(modifier = Modifier.weight(5f)){
+                                    ScrollableList(logLines)
+                                }
+                                Box(modifier = Modifier.weight(1f)){
+                                    InputData(hiltViewModel())
+                                }
                             }
                         }
                     }
@@ -387,8 +391,9 @@ fun ScrollableList(logLines: List<String>){
     LazyColumn(
         state = listState,
         modifier = Modifier
-            .fillMaxWidth()
-            .height(100.dp)
+            .fillMaxSize()
+            .padding(10.dp)
+            .background(color = Color.LightGray)
     ) {
         items(logLines) { logLine ->
             Text(text = logLine)
