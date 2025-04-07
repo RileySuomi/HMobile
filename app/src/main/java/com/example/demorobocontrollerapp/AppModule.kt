@@ -2,6 +2,7 @@ package com.example.demorobocontrollerapp
 
 import android.content.Context
 import androidx.test.espresso.core.internal.deps.dagger.Provides
+import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -10,10 +11,10 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object AppModule {
+abstract class AppModule {
+    @Binds
     @Singleton
-    @Provides
-    fun provideDataStoreRepo(@ApplicationContext context: Context): DataStoreRepo {
-        return DataStoreRepoImpl(context)
-    }
+    abstract fun bindDataStoreRepo(
+        impl: DataStoreRepoImpl
+    ): DataStoreRepo
 }

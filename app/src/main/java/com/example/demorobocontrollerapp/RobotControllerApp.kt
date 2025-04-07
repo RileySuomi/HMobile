@@ -155,8 +155,7 @@ fun GreetingPreview() {
 fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(), onSettingPressed: () -> Unit) {
     val configuration = LocalConfiguration.current // check view mode
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-    val isAdvancedMode by viewModel.isAdvancedMode.collectAsState()
-    val showFirstContent = remember { mutableStateOf(isAdvancedMode) }
+    val isAdvancedMode = viewModel.isAdvancedMode.collectAsState()
     val logLines by viewModel.logLines.collectAsState()
 
     Scaffold (
@@ -235,8 +234,7 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(), onSettingP
                             ) {
                                 Power(viewModel, isLandscape)
                                 JoyStickToggle(viewModel, isLandscape)
-                                Advance(viewModel, isLandscape,
-                                    onClick = { showFirstContent.value = !showFirstContent.value })
+                                Advance(viewModel, isLandscape)
                             }
                             Column(
                                 modifier = Modifier
@@ -310,11 +308,10 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(), onSettingP
                         ){
                             JoyStickToggle(viewModel, isLandscape)
                             Power(viewModel,isLandscape)
-                            Advance(viewModel, isLandscape,
-                                onClick = {viewModel.toggleAdvancedMode()})
+                            Advance(viewModel, isLandscape)
                         }
 
-                        if(showFirstContent.value){
+                        if(!isAdvancedMode.value){
                             // Manipulation section
                             Row(horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.CenterVertically,
@@ -509,7 +506,7 @@ fun JoyStick(viewModel: RobotControllerViewModel = hiltViewModel(), filter: Poin
 }
 
 @Composable
-fun Advance(viewModel: RobotControllerViewModel, isLandscape: Boolean, onClick: () -> Unit){
+fun Advance(viewModel: RobotControllerViewModel, isLandscape: Boolean){
     // This will hold the current state of whether the button is clicked
     val isAdvancedMode = viewModel.isAdvancedMode.collectAsState().value
 
