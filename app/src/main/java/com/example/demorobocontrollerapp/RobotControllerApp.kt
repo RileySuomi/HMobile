@@ -333,7 +333,7 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(), onSettingP
                             }
 
                             // Navigation section
-                            Box(modifier = Modifier.weight(1.2f).fillMaxWidth().padding(bottom = 40.dp, end = 8.dp, start = 8.dp))
+                            Box(modifier = Modifier.weight(1f).fillMaxWidth().padding(horizontal = 8.dp))
                             {
                                 if (!viewModel.usingJoystick.value) {
                                     Box(
@@ -359,6 +359,16 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(), onSettingP
                                 } else {
                                     JoyStick(viewModel)
                                 }
+                            }
+
+                            // Retract section
+                            Row(horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.weight(0.4f).fillMaxWidth()
+                            ) {
+                                Extend(viewModel, isLandscape)
+                                Spacer(modifier = Modifier.width(32.dp)) // add spacing between buttons
+                                Retract(viewModel, isLandscape)
                             }
                         }else{
                             Column (
@@ -482,6 +492,7 @@ fun JoyStickToggle(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
         onCheckedChange = {
             viewModel.switchJoystick()
         },
+        enabled = viewModel.isAdvancedMode.collectAsState().value
     )
 }
 
@@ -940,9 +951,8 @@ fun Extend(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         modifier = Modifier
             .clip(CircleShape)
             .background(Color(NavBtnColor)) // Set the button's background color
-            .fillMaxWidth(if (isLandscape) PosButtonMaxWidth else PosButtonMaxWidth + 0.23f)
+            .width(if (isLandscape) ManipElevButtonWidth else ManipElevButtonWidth + 10.dp)
             .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
-            .width(ManipElevButtonWidth)
     )
 }
 
@@ -967,9 +977,8 @@ fun Retract(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         modifier = Modifier
             .clip(CircleShape)
             .background(Color(NavBtnColor)) // Set the button's background color
-            .fillMaxWidth(if (isLandscape) PosButtonMaxWidth else PosButtonMaxWidth + 0.5f)
+            .width(if (isLandscape) ManipElevButtonWidth else ManipElevButtonWidth + 10.dp)
             .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
-            .width(ManipElevButtonWidth)
     )
 }
 
