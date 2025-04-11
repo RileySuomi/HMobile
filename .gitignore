@@ -7,6 +7,10 @@
 .gradle/
 build/
 !gradle/wrapper/gradle-wrapper.jar
+
+# Ignore Gradle cache and local configs
+.gradle/
+local.properties
  
 # Ignore VS Code settings
 .vscode/
