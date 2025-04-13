@@ -121,18 +121,22 @@ fun CustomButton(
     text: String,
     isEnabled: Boolean,
     padding: PaddingValues = PaddingValues(0.dp),
-    onClick: () -> Unit){
+    color: Color = Color.Blue,
+    onClick: () -> Unit
+) {
     val backgroundColor by animateColorAsState(
-        if (isEnabled) Color.Blue else Color.LightGray
+        if (isEnabled) color else Color.LightGray
     )
     val contentColor by animateColorAsState(
         if (isEnabled) Color.White else Color.Black
     )
 
-    Box(Modifier
-        .padding(padding)
-        .background(backgroundColor, RoundedCornerShape(20))
-        .clickable(onClick = onClick)
+    Box(
+        Modifier
+            .padding(padding)
+            .background(backgroundColor, RoundedCornerShape(20))
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center
     ){
         Text(
             text,

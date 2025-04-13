@@ -4,6 +4,7 @@ package com.example.demorobocontrollerapp
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -200,14 +201,17 @@ fun Port (currentValue: String, onSave: (String) -> Unit) {
             text = "Port:",
             color = Color.Black,
         )
-        Row(Modifier
-            .weight(2f)
-            .padding(0.dp), verticalAlignment = Alignment.CenterVertically)
+        Row(
+            Modifier
+                .weight(2f)
+                .padding(0.dp),
+            verticalAlignment = Alignment.CenterVertically
+        )
         {
             var inputPort by remember { mutableStateOf(currentValue) }
             BasicTextField(
                 modifier = Modifier
-                    .width(80.dp)
+                    .weight(1f)
                     .background(Color.DarkGray)
                     .padding(bottom = 1.dp)
                     .background(Color.White),
@@ -218,8 +222,7 @@ fun Port (currentValue: String, onSave: (String) -> Unit) {
                 singleLine = true,
                 decorationBox = { innerTextField ->
                     Row(
-                        Modifier
-                            .padding(horizontal = 5.dp),
+                        modifier = Modifier.padding(horizontal = 5.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
@@ -228,12 +231,14 @@ fun Port (currentValue: String, onSave: (String) -> Unit) {
                 }
             )
 
-            CustomButton(
-                text = if (currentValue != inputPort) "Save" else "Saved",
-                isEnabled = (currentValue != inputPort),
-                padding = PaddingValues(start = 15.dp),
-                onClick = {onSave(inputPort)}
-            )
+            Box(modifier = Modifier.weight(1f)){
+                CustomButton(
+                    text = if (currentValue != inputPort) "Save" else "Saved",
+                    isEnabled = (currentValue != inputPort),
+                    padding = PaddingValues(start = 15.dp),
+                    onClick = {onSave(inputPort)}
+                )
+            }
         }
     }
 }

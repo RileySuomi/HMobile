@@ -311,7 +311,7 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(), onSettingP
                             Advance(viewModel, isLandscape)
                         }
 
-                        if(!isAdvancedMode.value){
+                        if(isAdvancedMode.value){
                             // Manipulation section
                             Row(horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.CenterVertically,
@@ -375,11 +375,15 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(), onSettingP
                                 modifier = Modifier.fillMaxWidth().weight(2.3f),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ){
-                                Box(modifier = Modifier.weight(5f)){
+                                Box(modifier = Modifier.weight(1f)){
                                     ScrollableList(logLines)
                                 }
-                                Box(modifier = Modifier.weight(1f)){
-                                    InputData(hiltViewModel())
+                                Box(
+                                    modifier = Modifier.weight(1f),
+                                    contentAlignment = Alignment.Center
+                                ){
+                                    
+                                    InputData(viewModel)
                                 }
                             }
                         }
@@ -419,7 +423,8 @@ fun InputData(viewModel: RobotControllerViewModel){
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly
     ){
         TextField(
             value = textInput,
