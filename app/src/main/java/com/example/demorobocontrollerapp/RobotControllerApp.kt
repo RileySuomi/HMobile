@@ -445,7 +445,8 @@ fun PacketMenuSpinner(viewModel: RobotControllerViewModel){
             }
             DropdownMenu(
                 expanded = isExpanded,
-                onDismissRequest = {isExpanded = false}
+                onDismissRequest = {isExpanded = false},
+                modifier = Modifier.background(Color.White).fillMaxWidth()
             ){
                 packetList.forEachIndexed { index, item ->
                     DropdownMenuItem(
