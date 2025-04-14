@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,7 +26,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.PlayArrow
@@ -33,6 +36,8 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -378,13 +383,15 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(), onSettingP
                                 Box(modifier = Modifier.weight(1f)){
                                     ScrollableList(logLines)
                                 }
-                                Box(
-                                    modifier = Modifier.weight(1f),
-                                    contentAlignment = Alignment.Center
-                                ){
-                                    
-                                    InputData(viewModel)
+                                Box(modifier = Modifier.weight(1f)){
+                                    PacketMenuSpinner(viewModel)
                                 }
+//                                Box(
+//                                    modifier = Modifier.weight(1f),
+//                                    contentAlignment = Alignment.Center
+//                                ){
+//                                    InputData(viewModel)
+//                                }
                             }
                         }
                     }
@@ -392,6 +399,66 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(), onSettingP
             }
         }
     )
+}
+
+@Composable
+fun PacketMenuSpinner(viewModel: RobotControllerViewModel){
+    var isExpanded by remember {mutableStateOf(false)}
+    val itemPosition = remember {mutableStateOf(0)}
+    val packetList = viewModel.packetList
+
+    Column(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ){
+        Box(Modifier.fillMaxWidth()){
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.align(Alignment.TopCenter)
+            ) {
+                Text(
+                    modifier = Modifier.weight(5f).clickable {
+                        isExpanded = true
+                    },
+                    text = packetList[itemPosition.value],
+                    color = Color.Black
+                )
+                Icon(
+                    modifier = Modifier.weight(1f).clickable {
+                        isExpanded = true
+                    },
+                    imageVector = Icons.Filled.ArrowDropDown,
+                    contentDescription = "Localized description",
+                    tint = Color.Black
+                )
+                IconButton(modifier = Modifier.weight(1f), onClick = {
+                    // help pop-up
+                }) {
+                    Icon(
+                        imageVector = Icons.Filled.Info,
+                        contentDescription = "Localized description",
+                        tint = Color.Black
+                    )
+                }
+            }
+            DropdownMenu(
+                expanded = isExpanded,
+                onDismissRequest = {isExpanded = false}
+            ){
+                packetList.forEachIndexed { index, item ->
+                    DropdownMenuItem(
+                        text = {Text(text = item)},
+                        onClick = {
+                            isExpanded = false
+                            itemPosition.value = index
+                        }
+                    )
+                }
+            }
+        }
+    }
 }
 
 @Composable

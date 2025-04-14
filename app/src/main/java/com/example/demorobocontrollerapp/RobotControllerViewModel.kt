@@ -135,12 +135,15 @@ class RobotControllerViewModel @Inject constructor(
         _displayMessage.value = newDisplayMessage // update the state
     }
 
+    //log display
     private val _logLines = MutableStateFlow<List<String>>(emptyList())
     val logLines: StateFlow<List<String>> = _logLines.asStateFlow()
 
     fun addLogMessage(message: String) {
         _logLines.value += message
     }
+
+    val packetList = _repository.packetList
 
     fun displayDialog(message: String){
         _dialogMessage.value = message
