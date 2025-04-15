@@ -1,9 +1,16 @@
 package com.example.demorobocontrollerapp
 
 import android.util.Log
+import org.json.JSONArray
 import java.io.IOException
 import java.io.PrintWriter
 import java.net.Socket
+import org.json.JSONObject
+import android.graphics.Bitmap
+import android.graphics.Color
+import android.widget.ImageView
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
 data class RobotControllerModel(
     var displayMessage: String,
@@ -40,30 +47,119 @@ class RobotControllerRepository{
 class RobotConnection {
     var socketConnection = Socket()
     var writer: PrintWriter? = null
+    var reader: BufferedReader? = null
     private var openConnection = false
+    private var isListening = false
 
     private var panicking = false
 
     fun startConnection() {
-        try {
-            socketConnection = Socket("72.233.179.204", 65432)
-            val stream = socketConnection.getOutputStream()
-            writer = PrintWriter(stream)
+        Thread {
+            try {
+                socketConnection = Socket("72.233.179.204", 65432)
+                val stream = socketConnection.getOutputStream()
+                writer = PrintWriter(stream)
+                reader = BufferedReader(InputStreamReader(socketConnection.getInputStream()))
+
+                writer?.write("First message!\n")
+                writer?.flush()
+                openConnection = true
+
+            } catch (e: IOException) {
+                Log.d("RobotController", "Exception")
+            }
+        }.start()
+    }
+
+    fun startListeningForMap(imageView: ImageView) {
+        if (!openConnection) {
+            Log.e("RobotConnection", "Not connected to the server!")
+            return
         }
-        catch (e: IOException) {
-            Log.d("RobotController","Exception")
+        if (isListening) {
+            Log.d("RobotConnection", "Already listening for map data")
+            return
         }
 
-        writer?.write("First message!\n")
-        writer?.flush()
-        openConnection = true
+        isListening = true
+
+        Thread {
+            listenForMapData(imageView)  // Call the private function safely
+        }.start()
     }
+
+    private fun listenForMapData(imageView: ImageView) {
+        Thread {
+            try {
+                val inputStream = socketConnection.getInputStream()
+                val reader = BufferedReader(InputStreamReader(inputStream))
+
+                while (true) {
+                    val line = reader.readLine()
+                    if (line != null) {
+                        val json = JSONObject(line)
+                        val width = json.getInt("width")
+                        val height = json.getInt("height")
+                        val resolution = json.getDouble("resolution")
+                        val data = json.getJSONArray("data")
+
+                        Log.d("RobotConnection", "Received Map: ${width}x${height}, Resolution: $resolution")
+                        updateMapUI(width, height, data, imageView)
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }.start()
+    }
+
+
+    private fun updateMapUI(width: Int, height: Int, data: JSONArray, imageView: ImageView) {
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+
+        for (y in 0 until height) {
+            for (x in 0 until width) {
+                val index = y * width + x
+                val value = data.getInt(index) // Get occupancy value (-1, 0-100)
+
+                // Convert occupancy value to a grayscale color
+                val color = when {
+                    value == -1 -> Color.GRAY  // Unknown area
+                    value == 0 -> Color.WHITE  // Free space
+                    value in 1..100 -> Color.BLACK // Occupied space
+                    else -> Color.RED  // Should never happen
+                }
+
+                bitmap.setPixel(x, height - y - 1, color) // Flip vertically
+            }
+        }
+
+        // Update the ImageView on the UI thread
+        imageView.post {
+            imageView.setImageBitmap(bitmap)
+        }
+    }
+
+    fun requestMap() {
+        if (openConnection && writer != null) {
+            writer?.apply {
+                write("GET_MAP\n")  // Send request with newline
+                flush()
+            }
+            Log.d("RobotConnection", "Sent GET_MAP request")
+        } else {
+            Log.e("RobotConnection", "Connection is not open or writer is null")
+        }
+    }
+
+
 
     fun EndConnection() {
         writer?.write("disconnect\n")
         writer?.flush()
         socketConnection.close()
         writer?.close()
+        reader?.close()
         openConnection = false
     }
 

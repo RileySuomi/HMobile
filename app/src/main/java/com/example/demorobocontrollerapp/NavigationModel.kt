@@ -5,4 +5,5 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class NavigationModel : ViewModel(){
+    val robotConnection = RobotConnection()
 }

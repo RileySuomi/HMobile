@@ -562,6 +562,7 @@ fun Release(viewModel: RobotControllerViewModel, isLandscape: Boolean){
             }
         },
         onRelease = {
+            viewModel.endCommunication()
             viewModel.setDisplayText("Stopped")
         },
         modifier = Modifier
