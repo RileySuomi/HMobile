@@ -143,7 +143,22 @@ class RobotControllerViewModel @Inject constructor(
         _logLines.value += message
     }
 
+    //packet spinner
     val packetList = _repository.packetList
+    private val _selectedPacket = MutableStateFlow<String>(packetList[0])
+    private val _currPacketInfo = mutableStateOf(_repository.packetData[_selectedPacket.value]?: PacketInfo(emptyList(), "No instruction found."))
+    val currPacketInfo: State<PacketInfo> get() = _currPacketInfo
+
+    fun onSelectPacket(packet: String){
+        _selectedPacket.value = packet
+        _currPacketInfo.value = _repository.packetData[_selectedPacket.value]?: PacketInfo(emptyList(), "No instruction found.")
+    }
+    fun getParameter(): List<String>{
+        return currPacketInfo.value.parameters
+    }
+    fun getInstruct(): String{
+        return currPacketInfo.value.help
+    }
 
     fun displayDialog(message: String){
         _dialogMessage.value = message

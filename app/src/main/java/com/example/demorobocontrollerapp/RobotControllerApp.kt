@@ -4,7 +4,9 @@ package com.example.demorobocontrollerapp
 
 import android.content.res.Configuration
 import android.util.Log
+import androidx.compose.foundation.BasicTooltipBox
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -41,14 +43,17 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.PlainTooltipBox
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -64,8 +69,10 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Popup
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import androidx.wear.compose.material.Switch
@@ -383,8 +390,14 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(), onSettingP
                                 Box(modifier = Modifier.weight(1f)){
                                     ScrollableList(logLines)
                                 }
-                                Box(modifier = Modifier.weight(1f)){
-                                    PacketMenuSpinner(viewModel)
+                                Column(
+                                    modifier = Modifier.weight(1f).fillMaxWidth().padding(horizontal = 10.dp)
+                                ){
+                                    PacketMenuSpinner(
+                                        packetList = viewModel.packetList,
+                                        packetInstruct = viewModel.getInstruct(),
+                                        onSelect = {selectPacket -> viewModel.onSelectPacket(selectPacket)}
+                                    )
                                 }
 //                                Box(
 //                                    modifier = Modifier.weight(1f),
@@ -402,60 +415,75 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(), onSettingP
 }
 
 @Composable
-fun PacketMenuSpinner(viewModel: RobotControllerViewModel){
-    var isExpanded by remember {mutableStateOf(false)}
-    val itemPosition = remember {mutableStateOf(0)}
-    val packetList = viewModel.packetList
+fun ParameterField(){}
 
-    Column(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+@Composable
+fun PacketMenuSpinner(
+    packetList: List<String>,
+    packetInstruct: String,
+    onSelect: (String) -> Unit
+){
+    var isExpanded by remember {mutableStateOf(false)}
+    val itemPosition = remember {mutableIntStateOf(0)}
+    var isVisible by remember { mutableStateOf(false) }
+
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(
+            modifier = Modifier.weight(5f).clickable {
+                isExpanded = true
+            },
+            text = packetList[itemPosition.intValue],
+            color = Color.Black
+        )
+        Icon(
+            modifier = Modifier.weight(1f).clickable {
+                isExpanded = true
+            },
+            imageVector = Icons.Filled.ArrowDropDown,
+            contentDescription = "Localized description",
+            tint = Color.Black
+        )
+        IconButton(
+            modifier = Modifier.weight(1f),
+            onClick = {isVisible = !isVisible}
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Info,
+                contentDescription = "View Packet Information",
+                tint = Color.Black
+            )
+        }
+    }
+
+    DropdownMenu(
+        expanded = isExpanded,
+        onDismissRequest = {isExpanded = false},
+        modifier = Modifier.background(Color.White).fillMaxWidth()
     ){
-        Box(Modifier.fillMaxWidth()){
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.align(Alignment.TopCenter)
-            ) {
-                Text(
-                    modifier = Modifier.weight(5f).clickable {
-                        isExpanded = true
-                    },
-                    text = packetList[itemPosition.value],
-                    color = Color.Black
-                )
-                Icon(
-                    modifier = Modifier.weight(1f).clickable {
-                        isExpanded = true
-                    },
-                    imageVector = Icons.Filled.ArrowDropDown,
-                    contentDescription = "Localized description",
-                    tint = Color.Black
-                )
-                IconButton(modifier = Modifier.weight(1f), onClick = {
-                    // help pop-up
-                }) {
-                    Icon(
-                        imageVector = Icons.Filled.Info,
-                        contentDescription = "Localized description",
-                        tint = Color.Black
-                    )
+        packetList.forEachIndexed { index, item ->
+            DropdownMenuItem(
+                text = {Text(text = item)},
+                onClick = {
+                    isExpanded = false
+                    itemPosition.intValue = index
+                    onSelect(item)
                 }
-            }
-            DropdownMenu(
-                expanded = isExpanded,
-                onDismissRequest = {isExpanded = false},
-                modifier = Modifier.background(Color.White).fillMaxWidth()
-            ){
-                packetList.forEachIndexed { index, item ->
-                    DropdownMenuItem(
-                        text = {Text(text = item)},
-                        onClick = {
-                            isExpanded = false
-                            itemPosition.value = index
-                        }
-                    )
+            )
+        }
+    }
+
+    Box(Modifier.fillMaxWidth()){
+        if(isVisible){
+            Popup(
+                alignment = Alignment.CenterEnd,
+                onDismissRequest = { isVisible = false }
+            ) {
+                Box(Modifier.background(Color.DarkGray)) {
+                    Text(packetInstruct, color = Color.White)
                 }
             }
         }
