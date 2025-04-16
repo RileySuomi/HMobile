@@ -49,7 +49,7 @@ class RobotNetworkDataSource @Inject constructor() : NetworkResultDataSource {
     }
 
     override fun sendGrabber(value: Int, grabber: GrabberInstruction) {
-        checkNetworkStart();
+        checkNetworkStart()
         val grab = NetworkGrabberInstruction(value, grabber)
         sendMessage(grab.toString())
     }
@@ -60,7 +60,7 @@ class RobotNetworkDataSource @Inject constructor() : NetworkResultDataSource {
     }
 
     override fun endConnections() {
-        endConnection();
+        endConnection()
     }
 
     private fun endConnection() {

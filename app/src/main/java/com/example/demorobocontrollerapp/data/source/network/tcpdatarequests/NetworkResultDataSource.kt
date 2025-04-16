@@ -1,7 +1,7 @@
 package com.example.demorobocontrollerapp.data.source.network.tcpdatarequests
 
 interface NetworkResultDataSource {
-    enum class GrabberStatus;
+    enum class GrabberStatus
 
     fun sendMovement(speed: Float, angular: Float)
 
