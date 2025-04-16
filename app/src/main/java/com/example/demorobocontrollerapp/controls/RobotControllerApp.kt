@@ -72,9 +72,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import androidx.wear.compose.material.Switch
 import com.example.demorobocontrollerapp.extracompose.CustomButton
-import com.example.demorobocontrollerapp.data.source.local.datastore.DataStoreRepo
+import com.example.demorobocontrollerapp.data.source.local.settings.DataStoreRepo
 import com.example.demorobocontrollerapp.extracompose.GlowingButton
-import com.example.demorobocontrollerapp.controls.RobotControllerViewModel
 import com.example.demorobocontrollerapp.data.source.network.unused.WebSocketClient
 import com.example.demorobocontrollerapp.ui.theme.DemoRoboControllerAppTheme
 import kotlinx.coroutines.flow.Flow
