@@ -1,0 +1,84 @@
+package com.example.demorobocontrollerapp.settings
+
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.demorobocontrollerapp.data.RobotInfoRepository
+import com.example.demorobocontrollerapp.data.source.local.settings.DataStoreRepo
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+class SettingViewModel @Inject constructor(
+    private val robotRepository: RobotInfoRepository,
+    private val savedStateHandle: SavedStateHandle
+): ViewModel() {
+    private val _phoneIp = MutableStateFlow("")
+    val phoneIp = _phoneIp.asStateFlow()
+
+    private val _robotIp = MutableStateFlow("")
+    val robotIp = _robotIp.asStateFlow()
+
+    private val _wifiName = MutableStateFlow("")
+    val wifiName = _wifiName.asStateFlow()
+
+    private val _portNumber = MutableStateFlow("")
+    val portNumber = _portNumber.asStateFlow()
+
+    private val _isAdvancedMode = MutableStateFlow(false)
+    val isAdvancedMode = _isAdvancedMode.asStateFlow()
+
+    init {
+        loadData()
+    }
+
+    private fun loadData() {
+        viewModelScope.launch {
+            _phoneIp.value = (robotRepository.getSetting("phone_ip") ?: "").toString()
+            _robotIp.value = (robotRepository.getSetting("robot_ip") ?: "").toString()
+            _wifiName.value = (robotRepository.getSetting("wifi_name") ?: "").toString()
+            _portNumber.value = (robotRepository.getSetting("port_number") ?: "").toString()
+            robotRepository.getSetting("advanced_mode").collect { advancedMode ->
+                _isAdvancedMode.value = advancedMode.toBoolean()
+            }
+        }
+    }
+
+    fun savePhoneIp(ip: String) {
+        viewModelScope.launch {
+            robotRepository.updateSettings("phone_ip", ip)
+            _phoneIp.value = ip
+        }
+    }
+
+    fun saveRobotIp(ip: String) {
+        viewModelScope.launch {
+            robotRepository.updateSettings("robot_ip", ip)
+            _robotIp.value = ip
+        }
+    }
+
+    fun saveWifiName(name: String) {
+        viewModelScope.launch {
+            robotRepository.updateSettings("wifi_name", name)
+            _wifiName.value = name
+        }
+    }
+
+    fun savePortNumber(port: String) {
+        viewModelScope.launch {
+            robotRepository.updateSettings("port_number", port)
+            _portNumber.value = port
+        }
+    }
+
+    fun toggleAdvancedMode(enabled: Boolean) {
+        viewModelScope.launch {
+            robotRepository.updateSettings("advanced_mode", enabled.toString())
+            _isAdvancedMode.value = enabled
+        }
+    }
+}
