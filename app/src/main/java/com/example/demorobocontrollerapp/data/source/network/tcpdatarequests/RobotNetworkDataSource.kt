@@ -24,19 +24,13 @@ class RobotNetworkDataSource @Inject constructor() : NetworkResultDataSource {
         }
     }
 
-    private fun startSecureConnection() {
-        try {
-            val context = SSLSocketFactory.getDefault()
-            context.createSocket("72.233.179.204", 65432)
-        }
-
-        insecure = false
-        openConnection = true
-    }
 
     private fun startConnection() {
         try {
-            socketConnection = Socket("72.233.179.204", 65432)
+            val context = SSLSocketFactory.getDefault()
+            val underConnection = Socket("72.233.179.204", 65432)
+
+            socketConnection = context.createSocket("72.233.179.204", 65432)
             val stream = socketConnection.getOutputStream()
 
             writer = PrintWriter(stream)
