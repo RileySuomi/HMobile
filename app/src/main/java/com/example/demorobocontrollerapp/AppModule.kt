@@ -1,7 +1,7 @@
 package com.example.demorobocontrollerapp
 
-import com.example.demorobocontrollerapp.data.source.local.settings.DataStoreRepo
-import com.example.demorobocontrollerapp.data.source.local.settings.DataStoreRepoImpl
+import com.example.demorobocontrollerapp.data.source.local.settings.prefversion.DataStoreRepo
+import com.example.demorobocontrollerapp.data.source.local.settings.prefversion.DataStoreRepoImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

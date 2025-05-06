@@ -1,10 +1,11 @@
-package com.example.demorobocontrollerapp.data.source.local.settings
+package com.example.demorobocontrollerapp.data.source.local.settings.prefversion
 
 import android.content.Context
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.example.demorobocontrollerapp.data.source.local.settings.prefversion.dataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -24,6 +25,12 @@ class DataStoreRepoImpl @Inject constructor(@ApplicationContext context: Context
     override suspend fun putBoolean(key: String, value: Boolean) {
         dataStore.edit { preferences ->
             preferences[booleanPreferencesKey(key)] = value
+        }
+    }
+
+    override fun getAllStrings(): Flow<Pair<String, String>> {
+        return dataStore.data.map {
+            Pair(it.asMap().keys.toString(), it.asMap().values.toString())
         }
     }
 

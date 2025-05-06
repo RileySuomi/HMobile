@@ -1,4 +1,4 @@
-package com.example.demorobocontrollerapp.extracompose
+package com.example.demorobocontrollerapp.helpers
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState

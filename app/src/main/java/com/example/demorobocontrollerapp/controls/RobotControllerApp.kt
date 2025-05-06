@@ -71,9 +71,9 @@ import androidx.compose.ui.window.Popup
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import androidx.wear.compose.material.Switch
-import com.example.demorobocontrollerapp.extracompose.CustomButton
-import com.example.demorobocontrollerapp.data.source.local.settings.DataStoreRepo
-import com.example.demorobocontrollerapp.extracompose.GlowingButton
+import com.example.demorobocontrollerapp.helpers.CustomButton
+import com.example.demorobocontrollerapp.data.source.local.settings.prefversion.DataStoreRepo
+import com.example.demorobocontrollerapp.helpers.GlowingButton
 import com.example.demorobocontrollerapp.data.source.network.unused.WebSocketClient
 import com.example.demorobocontrollerapp.ui.theme.DemoRoboControllerAppTheme
 import kotlinx.coroutines.flow.Flow
@@ -145,6 +145,10 @@ fun GreetingPreview() {
             override suspend fun putBoolean(key: String, value: Boolean) {}
             override suspend fun getString(key: String): Flow<String>{
                 return flow { emit("mocked_string_value")}
+            }
+
+            override fun getAllStrings(): Flow<Pair<String, String>>{
+                return flow { emit(Pair("value a", "Mock values"))}
             }
             override suspend fun getBoolean(key: String): Flow<Boolean>{
                 return flow { emit(false)}

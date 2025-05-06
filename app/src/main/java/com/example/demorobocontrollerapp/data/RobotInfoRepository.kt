@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface RobotInfoRepository {
 
-    suspend fun updateSettings(key: String, value: String): Int
+    suspend fun updateSettings(key: String, screenName: String, value: String): Int
 
     suspend fun sendMovement(speed: Float, angular: Float)
 
@@ -13,5 +13,7 @@ interface RobotInfoRepository {
 
     fun getUpdates(): Flow<List<Command>>
 
-    suspend fun getSetting(key: String): Flow<String>
+    suspend fun getSetting(key: String): Flow<Setting>
+
+    fun getSettings(): Flow<List<Setting>>
 }

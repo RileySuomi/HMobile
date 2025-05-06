@@ -1,4 +1,14 @@
 package com.example.demorobocontrollerapp.data
 
 import com.example.demorobocontrollerapp.data.source.local.command.LocalCommand
-// TODO - Convert commands directly to local.
+import com.example.demorobocontrollerapp.data.source.local.settings.daoversion.LocalSetting
+
+
+fun LocalSetting.toExternal() = Setting(
+    settingName = settingName,
+    settingDisplayName = settingDisplayName,
+    settingValue = settingValue
+)
+
+@JvmName("localToExternal")
+fun List<LocalSetting>.toExternal() = map(LocalSetting::toExternal)

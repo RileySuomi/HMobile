@@ -25,7 +25,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,50 +33,47 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.compose.rememberNavController
-import com.example.demorobocontrollerapp.extracompose.CustomButton
-import com.example.demorobocontrollerapp.data.source.local.settings.DataStoreRepo
-import com.example.demorobocontrollerapp.controls.RobotControllerViewModel
-import com.example.demorobocontrollerapp.ui.theme.DemoRoboControllerAppTheme
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.demorobocontrollerapp.helpers.CustomButton
 
 
-//use as 'preview'
-@Preview(showBackground = true)
+////use as 'preview'
+//@Preview(showBackground = true)
+//@Composable
+//fun SettingPreview() {
+//    val navController = rememberNavController()
+//
+//    DemoRoboControllerAppTheme {
+//
+//        val fakeRepo = DataStoreRepo {
+//            override suspend fun putString(key: String, value: String) {}
+//            override suspend fun putBoolean(key: String, value: Boolean) {}
+//            override suspend fun getString(key: String): Flow<String>{
+//                return flow { emit("Mocked string value")}
+//            }
+//            override suspend fun getBoolean(key: String) : Flow<Boolean> {
+//                return flow { emit(false)}
+//            }
+//
+//            override suspend fun clearPReferences(key: String) {
+//                TODO("Not yet implemented")
+//            }
+//        }
+//
+//        val fakeViewModel = RobotControllerViewModel(fakeRepo)
+//
+//        DisplaySetting(
+//            viewModel = fakeViewModel,
+//            onBackPressed = { navController.navigate("home") }
+//        )
+//    }
+//}
+
 @Composable
-fun SettingPreview() {
-    val navController = rememberNavController()
-
-    DemoRoboControllerAppTheme {
-        val fakeRepo = object : DataStoreRepo {
-            override suspend fun putString(key: String, value: String) {}
-            override suspend fun putBoolean(key: String, value: Boolean) {}
-            override suspend fun getString(key: String): Flow<String>{
-                return flow { emit("mocked_string_value")}
-            }
-            override suspend fun getBoolean(key: String): Flow<Boolean>{
-                return flow { emit(false)}
-            }
-            override suspend fun clearPReferences(key: String) {}
-        }
-
-        val fakeViewModel = RobotControllerViewModel(fakeRepo)
-
-        DisplaySetting(
-            viewModel = fakeViewModel,
-            onBackPressed = { navController.navigate("home") }
-        )
-    }
-}
-
-@Composable
-fun DisplaySetting(viewModel: RobotControllerViewModel = hiltViewModel(), onBackPressed: () -> Unit) {
-    val portFromViewModel by viewModel.portNumber.collectAsState()
+fun DisplaySetting(viewModel: SettingViewModel = hiltViewModel(), onBackPressed: () -> Unit) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -105,23 +101,48 @@ fun DisplaySetting(viewModel: RobotControllerViewModel = hiltViewModel(), onBack
                     .fillMaxSize()
                     .padding(0.dp, 10.dp, 0.dp, 10.dp)
             ) {
-                RobotIP(viewModel.robotIp.toString())
-                Divider(color = Color.LightGray)
-                PhoneIP(viewModel.phoneIp.toString())
-                Divider(color = Color.LightGray)
-                WirelessConnection(viewModel.wifiName.toString())
-                Divider(color = Color.LightGray)
-                Port(
-                    currentValue = portFromViewModel,
-                    onSave = { newPort ->
-                        viewModel.savePortNumber(newPort)
-                    }
-                )
-//                Divider(color = Color.LightGray)
-//                AdvMode()
+                val settings by viewModel.uiState.collectAsStateWithLifecycle()
+                if (settings is SettingsModelUiState.Success) {
+                    InternalSettingsSection(
+                        items = (settings as SettingsModelUiState.Success).data
+                    )
+                }
+
             }
         }
     )
+}
+
+@Composable
+internal fun InternalSettingsSection(
+    items: List<SettingsProperty>
+) {
+    items.forEach {
+        SettingPair(it.screenName, it.currentValue)
+    }
+
+    Divider(color = Color.LightGray)
+}
+
+@Composable
+internal fun SettingPair(display: String, setting: String) {
+    Row (
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(0.dp, 10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            modifier = Modifier.padding(10.dp,0.dp),
+            text = display,
+            color = Color.Black,
+        )
+        Text(
+            modifier = Modifier.padding(20.dp,0.dp,0.dp,0.dp),
+            text = setting,
+            color = Color.DarkGray,
+        )
+    }
 }
 
 @Composable
