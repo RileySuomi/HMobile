@@ -17,7 +17,13 @@ interface SettingsDao {
     @Upsert
     suspend fun upsert(setting: LocalSetting)
 
+    @Query("UPDATE settingsObjects SET settingValue = :newValue WHERE settingName = :settingName")
+    suspend fun updateSettingValue(settingName: String, newValue: String)
+
     @Query("DELETE FROM settingsObjects WHERE settingName = :settingName")
     suspend fun deletedById(settingName: String): Int
+
+    @Query("DELETE FROM settingsObjects")
+    fun clearTable()
 
 }

@@ -2,11 +2,14 @@
 package com.example.demorobocontrollerapp.controls
 import android.util.Log
 import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
+import com.example.demorobocontrollerapp.data.RobotInfoRepository
 import com.example.demorobocontrollerapp.data.source.local.settings.prefversion.DataStoreRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -18,10 +21,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.example.demorobocontrollerapp.data.source.network.unused.WebSocketClient
+import kotlinx.coroutines.flow.first
 
 @HiltViewModel
 class RobotControllerViewModel @Inject constructor(
-    private val dataStore: DataStoreRepo
+    private val dataStore: DataStoreRepo,
+    private val robotRepository: RobotInfoRepository
 ): ViewModel() {
     val webSocketManager = WebSocketClient // com.example.demorobocontrollerapp.WebSocketManager is initialized
 
@@ -170,7 +175,17 @@ class RobotControllerViewModel @Inject constructor(
     }
     fun startCommunication() {
         viewModelScope.launch(Dispatchers.IO) {
-            connection.startConnection();
+            val a = robotRepository.getSetting("robotIp")
+            try {
+                Log.d("Connections", "Opened connection with IP: ${a.first().settingValue}")
+            }
+            catch (e: NoSuchElementException) {
+                Log.d("Error connection", "Error connection")
+            }
+//
+//
+//            connection.startConnection(robotRepository.getSetting("robotIp").first().settingValue);
+
         }
     }
 

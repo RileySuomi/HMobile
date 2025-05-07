@@ -134,36 +134,36 @@ const val PosButtonMaxWidth = 0.2f
 //const val PosButtonMaxWidth = 0.2f
 //*******************
 //use as 'preview'
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    val navController = rememberNavController()
+//@Preview(showBackground = true)
+//@Composable
+//fun GreetingPreview() {
+//    val navController = rememberNavController()
 
-    DemoRoboControllerAppTheme {
-        val fakeRepo = object : DataStoreRepo {
-            override suspend fun putString(key: String, value: String) {}
-            override suspend fun putBoolean(key: String, value: Boolean) {}
-            override suspend fun getString(key: String): Flow<String>{
-                return flow { emit("mocked_string_value")}
-            }
-
-            override fun getAllStrings(): Flow<Pair<String, String>>{
-                return flow { emit(Pair("value a", "Mock values"))}
-            }
-            override suspend fun getBoolean(key: String): Flow<Boolean>{
-                return flow { emit(false)}
-            }
-            override suspend fun clearPReferences(key: String) {}
-        }
-
-        val fakeViewModel = RobotControllerViewModel(fakeRepo)
-
-        DisplayApp(
-            viewModel = fakeViewModel,
-            onSettingPressed = {navController.navigate("setting")}
-        ) // pass in the 'viewModel' class
-    }
-}
+//    DemoRoboControllerAppTheme {
+////        val fakeRepo = object : DataStoreRepo {
+////            override suspend fun putString(key: String, value: String) {}
+////            override suspend fun putBoolean(key: String, value: Boolean) {}
+////            override suspend fun getString(key: String): Flow<String>{
+////                return flow { emit("mocked_string_value")}
+////            }
+////
+////            override fun getAllStrings(): Flow<Pair<String, String>>{
+////                return flow { emit(Pair("value a", "Mock values"))}
+////            }
+////            override suspend fun getBoolean(key: String): Flow<Boolean>{
+////                return flow { emit(false)}
+////            }
+////            override suspend fun clearPReferences(key: String) {}
+////        }
+//        // Fake repo destoryed.
+//        val fakeViewModel = RobotControllerViewModel()
+//
+//        DisplayApp(
+//            viewModel = fakeViewModel,
+//            onSettingPressed = {navController.navigate("setting")}
+//        ) // pass in the 'viewModel' class
+//    }
+//}
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -690,6 +690,7 @@ fun Grab(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
             onPress = {
                 if(viewModel.isPowerOn.value) {
                     WebSocketClient.sendMessage("Grab")
+                    viewModel.startCommunication()
                 }
             },
             onRelease = {
@@ -735,6 +736,7 @@ fun Release(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         onPress = {
             if(viewModel.isPowerOn.value) {
                 WebSocketClient.sendMessage("Release")
+                viewModel.endCommunication()
                 viewModel.setDisplayText("Releasing item...")
             }
         },
@@ -868,6 +870,7 @@ fun Forward(viewModel: RobotControllerViewModel, isLandscape : Boolean) {
         fontSize = NavFontSize ,
         onPress = {
             if(viewModel.isPowerOn.value) {
+                viewModel.moveUp()
                 WebSocketClient.sendMessage("Forward")
                 viewModel.setDisplayText("Moving Forward...")
             }
@@ -913,6 +916,7 @@ fun Backward(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         fontSize = NavFontSize ,
         onPress = {
             if(viewModel.isPowerOn.value) {
+                viewModel.moveDown()
                 WebSocketClient.sendMessage("Backward")
                 viewModel.setDisplayText("Moving Backward...")
             }
@@ -958,6 +962,7 @@ fun Left(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         fontSize = NavFontSize ,
         onPress = {
             if(viewModel.isPowerOn.value) {
+                viewModel.moveLeft()
                 WebSocketClient.sendMessage("Left")
                 viewModel.setDisplayText("Moving Left...")
             }
@@ -1003,6 +1008,7 @@ fun Right(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         fontSize = NavFontSize ,
         onPress = {
             if(viewModel.isPowerOn.value) {
+                viewModel.moveRight()
                 WebSocketClient.sendMessage("Right")
                 viewModel.setDisplayText("Moving Right...")
             }

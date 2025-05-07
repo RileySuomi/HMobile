@@ -31,8 +31,8 @@ class DefaultRobotInfoRepository @Inject constructor(
 ) : RobotInfoRepository {
     private var commandIndex = 0
 
-    override suspend fun updateSettings(key: String, screenName: String, value: String): Int {
-        settingsDataSource.upsert(LocalSetting(key, screenName, value))
+    override suspend fun updateSettings(key: String, screenName: String, value: String, editable: Boolean): Int {
+        settingsDataSource.upsert(LocalSetting(key, screenName, value, editable))
         return 1
     }
 
@@ -42,8 +42,16 @@ class DefaultRobotInfoRepository @Inject constructor(
         }
     }
 
+    override suspend fun updateSetting(key: String, value: String) {
+        settingsDataSource.updateSettingValue(key, value)
+    }
+
     override fun getSettings(): Flow<List<Setting>> {
         return settingsDataSource.observeSettings().map { item -> item.toExternal() }
+    }
+
+    override fun clearSettings() {
+        return settingsDataSource.clearTable()
     }
 
     override suspend fun sendMovement(speed: Float, angular: Float) {

@@ -7,7 +7,8 @@ import com.example.demorobocontrollerapp.data.source.local.settings.daoversion.L
 fun LocalSetting.toExternal() = Setting(
     settingName = settingName,
     settingDisplayName = settingDisplayName,
-    settingValue = settingValue
+    settingValue = settingValue,
+    editable = editable,
 )
 
 @JvmName("localToExternal")

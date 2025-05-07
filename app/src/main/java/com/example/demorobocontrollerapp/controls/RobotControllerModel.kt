@@ -99,9 +99,9 @@ class RobotConnection {
     private var openConnection = false
     private var panicking = false
 
-    fun startConnection() {
+    fun startConnection(ip: String = "72.233.179.204") {
         try {
-            socketConnection = Socket("72.233.179.204", 65432)
+            socketConnection = Socket(ip, 65432)
             val stream = socketConnection.getOutputStream()
             writer = PrintWriter(stream)
         }

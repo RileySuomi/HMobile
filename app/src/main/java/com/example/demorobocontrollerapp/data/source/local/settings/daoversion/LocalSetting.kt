@@ -10,4 +10,5 @@ data class LocalSetting (
     @PrimaryKey val settingName: String,
     val settingDisplayName: String,
     val settingValue: String,
+    val editable: Boolean
 )

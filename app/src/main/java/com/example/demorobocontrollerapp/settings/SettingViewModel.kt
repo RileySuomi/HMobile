@@ -15,12 +15,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.junit.Test
 import javax.inject.Inject
 
 data class SettingsProperty (
     var screenName: String = "Default ScreenName",
     val currentValue: String = "Default setting",
-    val dataKey: String = "noData"
+    val dataKey: String = "noData",
+    val editable: Boolean = false
 )
 
 sealed interface SettingsModelUiState {
@@ -38,7 +40,14 @@ class SettingViewModel @Inject constructor(
     val uiState: StateFlow<SettingsModelUiState> = robotRepository
         .getSettings().map {
             SettingsModelUiState.Success(
-                data = it.map{ settingItem -> SettingsProperty(settingItem.settingDisplayName, settingItem.settingValue, settingItem.settingName )}
+                data = it.map { settingItem ->
+                    SettingsProperty(
+                        settingItem.settingDisplayName,
+                        settingItem.settingValue,
+                        settingItem.settingName,
+                        settingItem.editable
+                    )
+                }
             )
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), SettingsModelUiState.Loading)
@@ -62,13 +71,19 @@ class SettingViewModel @Inject constructor(
         loadData()
     }
 
+    fun updateById(id: String, newValue: String): Unit {
+        viewModelScope.launch {
+            robotRepository.updateSetting(id, newValue)
+        }
+    }
+
     private fun loadData() {
         viewModelScope.launch {
 
-            robotRepository.updateSettings("phoneIp", "Phone IP", "Newer better value")
-            robotRepository.updateSettings("robotIp", "Robot IP", "Don't ask")
-            robotRepository.updateSettings("test", "Yooooooo!", "Don't ask")
-            robotRepository.updateSettings("test", "Very decent settings value", "Indeed")
+//            robotRepository.updateSettings("phoneIp", "Phone IP", "Newer better value")
+//            robotRepository.updateSettings("robotIp", "Robot IP", "Don't ask")
+//            robotRepository.updateSettings("test", "Yooooooo!", "Don't ask")
+//            robotRepository.updateSettings("test", "Very decent settings value", "Indeed")
 
 
             _phoneIp.value = (robotRepository.getSetting("phone_ip") ?: "").toString()

@@ -22,3 +22,7 @@ Thumbs.db  # Windows
 # Ignore dependency caches and logs
 node_modules/
 *.log
+
+
+.gradle
+.idea

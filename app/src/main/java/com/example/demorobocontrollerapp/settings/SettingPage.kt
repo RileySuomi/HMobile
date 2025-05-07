@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -23,6 +24,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,7 +36,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -104,7 +111,8 @@ fun DisplaySetting(viewModel: SettingViewModel = hiltViewModel(), onBackPressed:
                 val settings by viewModel.uiState.collectAsStateWithLifecycle()
                 if (settings is SettingsModelUiState.Success) {
                     InternalSettingsSection(
-                        items = (settings as SettingsModelUiState.Success).data
+                        items = (settings as SettingsModelUiState.Success).data,
+                        viewModel
                     )
                 }
 
@@ -115,13 +123,52 @@ fun DisplaySetting(viewModel: SettingViewModel = hiltViewModel(), onBackPressed:
 
 @Composable
 internal fun InternalSettingsSection(
-    items: List<SettingsProperty>
+    items: List<SettingsProperty>,
+    viewModel: SettingViewModel
 ) {
     items.forEach {
-        SettingPair(it.screenName, it.currentValue)
+        if (it.editable) {
+            EditableSettingsPair(viewModel, it.dataKey, it.screenName, it.currentValue)
+        }
+        else {
+            SettingPair(it.screenName, it.currentValue)
+        }
+
+        Divider(color = Color.LightGray)
     }
 
-    Divider(color = Color.LightGray)
+
+}
+
+@Composable
+internal fun EditableSettingsPair(viewModel: SettingViewModel, key: String, display: String, setting: String) {
+    Row (
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(0.dp, 10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            modifier = Modifier.padding(10.dp,0.dp),
+            text = display,
+            color = Color.Black,
+        )
+        TextField(
+            value = TextFieldValue(setting, selection = TextRange(setting.length)),
+            onValueChange = { newValue: TextFieldValue ->
+                viewModel.updateById(key, newValue.text)
+            },
+            modifier = Modifier.padding(20.dp,0.dp,0.dp,0.dp),
+            colors = TextFieldDefaults.colors(
+
+            ),
+            keyboardOptions = KeyboardOptions(
+                capitalization = KeyboardCapitalization.None,
+                autoCorrectEnabled = false,
+                keyboardType = KeyboardType.Number,
+                showKeyboardOnFocus = true)
+        )
+    }
 }
 
 @Composable
