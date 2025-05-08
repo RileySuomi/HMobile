@@ -12,6 +12,9 @@ interface SettingsDao {
     fun observeSettings(): Flow<List<LocalSetting>>
 
     @Query("SELECT * FROM settingsObjects WHERE settingName = :settingName LIMIT 1")
+    fun observeSingleSetting(settingName: String): LocalSetting
+
+    @Query("SELECT * FROM settingsObjects WHERE settingName = :settingName LIMIT 1")
     fun observeSetting(settingName: String): Flow<LocalSetting>
 
     @Upsert

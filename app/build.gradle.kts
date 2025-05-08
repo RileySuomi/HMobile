@@ -11,7 +11,7 @@ android {
     compileSdk = 35 // Updated from 34 to 35
 
     defaultConfig {
-        applicationId = "com.example.svprobocontrollerapp"
+        applicationId = "com.example.robocontroldatastore"
         minSdk = 25
         targetSdk = 35 // You can keep this as 34 or update to 35 if you wish to target the latest runtime behavior
         versionCode = 1
@@ -82,6 +82,7 @@ dependencies {
     // Room
     implementation("androidx.room:room-runtime:2.7.0")
     implementation("androidx.room:room-ktx:2.7.0")
+    implementation("androidx.media3:media3-common-ktx:1.6.1")
     ksp("androidx.room:room-compiler:2.7.0")
 
     // Hilt

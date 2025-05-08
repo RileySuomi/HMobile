@@ -1,6 +1,7 @@
 package com.example.demorobocontrollerapp.data
 
 import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.demorobocontrollerapp.data.source.local.command.CommandDao
 import com.example.demorobocontrollerapp.data.source.local.command.LocalCommand
 import com.example.demorobocontrollerapp.data.source.local.settings.daoversion.LocalSetting
@@ -15,11 +16,14 @@ import com.example.demorobocontrollerapp.scoping.DefaultDispatcher
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
-
+import android.util.Log
 
 @Singleton
 class DefaultRobotInfoRepository @Inject constructor(
@@ -52,6 +56,21 @@ class DefaultRobotInfoRepository @Inject constructor(
 
     override fun clearSettings() {
         return settingsDataSource.clearTable()
+    }
+
+
+
+    override fun beginCommunication() {
+        var host: String = ""
+        host = settingsDataSource.observeSingleSetting("robotIp").settingValue
+        Log.d("NetworkData","Getting Port")
+        val port: Int = settingsDataSource.observeSingleSetting("robotPort").settingValue.toInt()
+        Log.d("NetworkData","Host is: ${host}")
+        networkResultDataSource.startConnection(host, port)
+    }
+
+    override fun endCommunication() {
+        networkResultDataSource.endConnections()
     }
 
     override suspend fun sendMovement(speed: Float, angular: Float) {

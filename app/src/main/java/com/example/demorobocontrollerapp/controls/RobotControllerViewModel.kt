@@ -53,66 +53,8 @@ class RobotControllerViewModel @Inject constructor(
     val isPowerOn: State<Boolean> = _isPowerOn
     val usingJoystick: State<Boolean> = _usingJoystick
 
-    // Access to DataStore
-
-    private val _phoneIp = MutableStateFlow("")
-    val phoneIp = _phoneIp.asStateFlow()
-
-    private val _robotIp = MutableStateFlow("")
-    val robotIp = _robotIp.asStateFlow()
-
-    private val _wifiName = MutableStateFlow("")
-    val wifiName = _wifiName.asStateFlow()
-
-    private val _portNumber = MutableStateFlow("")
-    val portNumber = _portNumber.asStateFlow()
-
-    private val _isAdvancedMode = MutableStateFlow(false)
+    private val _isAdvancedMode = MutableStateFlow(true)
     val isAdvancedMode = _isAdvancedMode.asStateFlow()
-
-    init {
-        loadData()
-    }
-
-    private fun loadData() {
-        viewModelScope.launch {
-            _phoneIp.value = (dataStore.getString("phone_ip") ?: "").toString()
-            _robotIp.value = (dataStore.getString("robot_ip") ?: "").toString()
-            _wifiName.value = (dataStore.getString("wifi_name") ?: "").toString()
-            _portNumber.value = (dataStore.getString("port_number") ?: "").toString()
-            dataStore.getBoolean("advanced_mode").collect { advancedMode ->
-                _isAdvancedMode.value = advancedMode
-            }
-        }
-    }
-
-    fun savePhoneIp(ip: String) {
-        viewModelScope.launch {
-            dataStore.putString("phone_ip", ip)
-            _phoneIp.value = ip
-        }
-    }
-
-    fun saveRobotIp(ip: String) {
-        viewModelScope.launch {
-            dataStore.putString("robot_ip", ip)
-            _robotIp.value = ip
-        }
-    }
-
-    fun saveWifiName(name: String) {
-        viewModelScope.launch {
-            dataStore.putString("wifi_name", name)
-            _wifiName.value = name
-        }
-    }
-
-    fun savePortNumber(port: String) {
-        viewModelScope.launch {
-            dataStore.putString("port_number", port)
-            _portNumber.value = port
-        }
-    }
 
     fun toggleAdvancedMode() {
         viewModelScope.launch {
@@ -173,50 +115,44 @@ class RobotControllerViewModel @Inject constructor(
             _showDialog.value = false
         }
     }
+
+    fun openConnection() {
+
+    }
+
     fun startCommunication() {
         viewModelScope.launch(Dispatchers.IO) {
-            val a = robotRepository.getSetting("robotIp")
-            try {
-                Log.d("Connections", "Opened connection with IP: ${a.first().settingValue}")
-            }
-            catch (e: NoSuchElementException) {
-                Log.d("Error connection", "Error connection")
-            }
-//
-//
-//            connection.startConnection(robotRepository.getSetting("robotIp").first().settingValue);
-
+            robotRepository.beginCommunication()
         }
     }
 
     fun endCommunication() {
         viewModelScope.launch(Dispatchers.IO) {
-            connection.EndConnection();
+            robotRepository.endCommunication()
         }
     }
 
     fun moveUp() {
         viewModelScope.launch(Dispatchers.IO) {
-            connection.SendMessage("forward");
-            Log.d("ViewModel", "Up message sent!")
+            robotRepository.sendMovement(0.5f, 0f)
         }
     }
 
     fun moveDown() {
         viewModelScope.launch(Dispatchers.IO) {
-            connection.SendMessage("backward");
+            robotRepository.sendMovement(-0.5f, 0f)
         }
     }
 
     fun moveLeft() {
         viewModelScope.launch(Dispatchers.IO) {
-            connection.SendMessage("Left\n");
+            robotRepository.sendMovement(0.3f, 0.3f)
         }
     }
 
     fun moveRight() {
         viewModelScope.launch(Dispatchers.IO) {
-            connection.SendMessage("Right\n");
+            robotRepository.sendMovement(0.3f, -0.3f)
         }
     }
 }

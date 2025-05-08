@@ -5,6 +5,10 @@ import kotlinx.coroutines.flow.Flow
 
 interface RobotInfoRepository {
 
+    fun beginCommunication()
+
+    fun endCommunication()
+
     suspend fun updateSettings(key: String, screenName: String, value: String, editable: Boolean = true): Int
 
     suspend fun updateSetting(key: String, value: String)

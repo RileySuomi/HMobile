@@ -541,7 +541,7 @@ fun InputData(viewModel: RobotControllerViewModel){
             PaddingValues(start = 15.dp),
             onClick = {
                 if(viewModel.isPowerOn.value) {
-                    WebSocketClient.sendMessage(textInput)
+                    //WebSocketClient.sendMessage(textInput)
                     viewModel.setDisplayText("Message sent")
                     viewModel.addLogMessage(textInput)
                 }
@@ -566,9 +566,11 @@ fun Power(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
 
             // Connect to WebSocket when power is turned on
             if (viewModel.isPowerOn.value) {
-                WebSocketClient.connect(context)  // Call the connect method when power is ON
+                viewModel.startCommunication()
+                //WebSocketClient.connect(context)  // Call the connect method when power is ON
             } else {
-                WebSocketClient.disconnect()  // Optionally, close the connection when power is OFF
+                viewModel.endCommunication()
+                //WebSocketClient.disconnect()  // Optionally, close the connection when power is OFF
             }
         },
         colors = ButtonDefaults.buttonColors(
@@ -689,7 +691,8 @@ fun Grab(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
             fontSize = ManipElevFontSize,
             onPress = {
                 if(viewModel.isPowerOn.value) {
-                    WebSocketClient.sendMessage("Grab")
+                    //WebSocketClient.sendMessage("Grab")
+                    Log.d("View", "Power is on, beginning communication.")
                     viewModel.startCommunication()
                 }
             },
@@ -735,7 +738,7 @@ fun Release(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         fontSize = ManipElevFontSize ,
         onPress = {
             if(viewModel.isPowerOn.value) {
-                WebSocketClient.sendMessage("Release")
+                //WebSocketClient.sendMessage("Release")
                 viewModel.endCommunication()
                 viewModel.setDisplayText("Releasing item...")
             }
@@ -780,7 +783,7 @@ fun Lift(viewModel: RobotControllerViewModel, isLandscape: Boolean) { // 'Lift' 
         fontSize = ManipElevFontSize ,
         onPress = {
             if(viewModel.isPowerOn.value) {
-                WebSocketClient.sendMessage("Lift")
+                //WebSocketClient.sendMessage("Lift")
                 viewModel.setDisplayText("Lifting item...")
             }
         },
@@ -826,7 +829,7 @@ fun Lower(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         fontSize = ManipElevFontSize ,
         onPress = {
             if(viewModel.isPowerOn.value) {
-                WebSocketClient.sendMessage("Lower")
+                //WebSocketClient.sendMessage("Lower")
                 viewModel.setDisplayText("Lowering item...")
             }
         },
@@ -871,7 +874,7 @@ fun Forward(viewModel: RobotControllerViewModel, isLandscape : Boolean) {
         onPress = {
             if(viewModel.isPowerOn.value) {
                 viewModel.moveUp()
-                WebSocketClient.sendMessage("Forward")
+                //WebSocketClient.sendMessage("Forward")
                 viewModel.setDisplayText("Moving Forward...")
             }
         },
@@ -917,7 +920,7 @@ fun Backward(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         onPress = {
             if(viewModel.isPowerOn.value) {
                 viewModel.moveDown()
-                WebSocketClient.sendMessage("Backward")
+                //WebSocketClient.sendMessage("Backward")
                 viewModel.setDisplayText("Moving Backward...")
             }
         },
@@ -963,7 +966,7 @@ fun Left(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         onPress = {
             if(viewModel.isPowerOn.value) {
                 viewModel.moveLeft()
-                WebSocketClient.sendMessage("Left")
+                //WebSocketClient.sendMessage("Left")
                 viewModel.setDisplayText("Moving Left...")
             }
         },
@@ -1009,7 +1012,7 @@ fun Right(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         onPress = {
             if(viewModel.isPowerOn.value) {
                 viewModel.moveRight()
-                WebSocketClient.sendMessage("Right")
+                //WebSocketClient.sendMessage("Right")
                 viewModel.setDisplayText("Moving Right...")
             }
         },
@@ -1056,7 +1059,7 @@ fun Extend(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         fontSize = NavFontSize ,
         onPress = {
             if(viewModel.isPowerOn.value) {
-                WebSocketClient.sendMessage("Extend")
+                //WebSocketClient.sendMessage("Extend")
                 viewModel.setDisplayText("Extending...")
             }
         },
@@ -1082,7 +1085,7 @@ fun Retract(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         fontSize = NavFontSize ,
         onPress = {
             if(viewModel.isPowerOn.value) {
-                WebSocketClient.sendMessage("Retract")
+                //WebSocketClient.sendMessage("Retract")
                 viewModel.setDisplayText("Retracting item...")
             }
         },

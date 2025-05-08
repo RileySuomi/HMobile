@@ -43,6 +43,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import android.util.Log;
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.demorobocontrollerapp.helpers.CustomButton
 
@@ -156,7 +157,8 @@ internal fun EditableSettingsPair(viewModel: SettingViewModel, key: String, disp
         TextField(
             value = TextFieldValue(setting, selection = TextRange(setting.length)),
             onValueChange = { newValue: TextFieldValue ->
-                viewModel.updateById(key, newValue.text)
+                viewModel.updateById(key, newValue.text);
+                Log.d("Settings", "Updated field ${key} to value ${newValue.text}")
             },
             modifier = Modifier.padding(20.dp,0.dp,0.dp,0.dp),
             colors = TextFieldDefaults.colors(
