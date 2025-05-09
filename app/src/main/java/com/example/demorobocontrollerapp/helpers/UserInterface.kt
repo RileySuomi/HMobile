@@ -8,11 +8,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,6 +32,8 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -40,15 +47,19 @@ import kotlinx.coroutines.launch
 // Button 'glow' effect when it's pressed
 @Composable
 fun GlowingButton(
-    enabled: Boolean,
-    text: String, // Button text
+    modifier: Modifier = Modifier, // 🔹 Modifier stays flexible in MainActivity
+    enabled: Boolean = true,
+    isHorizontal: Boolean = true,
+    text: String? = null, // Button text
     icon: @Composable (() -> Unit)? = null, // Optional icon
+    postText: String? = null,
     btnColor: Color,
-    textColor: Color,
-    fontSize: TextUnit,
+    textColor: Color = Color.Unspecified,
+    fontSize: TextUnit = 0.sp,
     onPress: () -> Unit,
     onRelease: () -> Unit, // Click event
-    modifier: Modifier = Modifier // 🔹 Modifier stays flexible in MainActivity
+    paddingVal: Dp = 10.dp,
+    shape: RoundedCornerShape = CircleShape
 ) {
     // Track button press state
     var isPressed by remember { mutableStateOf(false) }
@@ -57,7 +68,7 @@ fun GlowingButton(
     val glowColor = btnColor.copy(alpha = 0.7f)
 
     // Track button's actual size dynamically
-    val buttonSize by remember { mutableStateOf(IntSize(0, 0)) }
+    val glowSize by remember { mutableStateOf(IntSize(0, 0)) }
 
     // Animate button color when pressed
     val backgroundColor by animateColorAsState(
@@ -67,7 +78,7 @@ fun GlowingButton(
 
     // Animate shadow size for the glowing effect
     val shadowSize by animateDpAsState(
-        targetValue = if (isPressed) 8.dp else (buttonSize.height * 0.20).dp,
+        targetValue = if (isPressed) 8.dp else (glowSize.height * 0.20).dp,
         animationSpec = tween(durationMillis = 300)
     )
     val coroutineScope = rememberCoroutineScope()
@@ -76,10 +87,10 @@ fun GlowingButton(
     Box(
         modifier = modifier
             .alpha(if (enabled) 1f else 0.5f) // Reduce transparency when disabled
-            .background(backgroundColor, shape = CircleShape) // 🔹 Uses existing color
+            .background(backgroundColor, shape = shape) // 🔹 Uses existing color
             .shadow(
                 elevation = shadowSize, // Larger shadow for the glowing effect
-                shape = CircleShape, // Circular shape for the shadow
+                shape = shape, // Circular shape for the shadow
                 clip = false
             )
             .pointerInput(Unit) { // Detect touch gestures
@@ -102,16 +113,28 @@ fun GlowingButton(
                     )
                 }
             }
-            .padding(16.dp), // Inner padding for content
+            .padding(paddingVal), // Inner padding for content
         contentAlignment = Alignment.Center
     ) {
         // Use Row to align text and icon horizontally
-        Row(
-            verticalAlignment = Alignment.CenterVertically, // Align vertically center
-            horizontalArrangement = Arrangement.Center // Center horizontally
-        ) {
-            Text(text, fontSize = fontSize, fontWeight = FontWeight.Bold, color = textColor)
-            icon?.invoke() // Show icon if provided
+        if (isHorizontal){
+            Row(
+                verticalAlignment = Alignment.CenterVertically, // Align vertically center
+                horizontalArrangement = Arrangement.Center // Center horizontally
+            ) {
+                text?.let { Text(it, fontSize = fontSize, fontWeight = FontWeight.Bold, color = textColor) }
+                icon?.invoke() // Show icon if provided
+                postText?.let { Text(postText, fontSize = fontSize, fontWeight = FontWeight.Bold, color = textColor)}
+            }
+        }else{
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally, // Align vertically center
+                verticalArrangement = Arrangement.Center // Center horizontally
+            ) {
+                text?.let { Text(it, fontSize = fontSize, fontWeight = FontWeight.Bold, color = textColor) }
+                icon?.invoke() // Show icon if provided
+                postText?.let { Text(postText, fontSize = fontSize, fontWeight = FontWeight.Bold, color = textColor)}
+            }
         }
     }
 }
@@ -144,5 +167,51 @@ fun CustomButton(
             color = contentColor,
             fontSize = 16.sp
         )
+    }
+}
+
+
+@Composable
+fun CustomInputField(
+    modifier: Modifier = Modifier,
+    inputLabel: String,
+    currentValue: String,
+    keyboardType: KeyboardType = KeyboardType.Unspecified,
+    onValueChange: (String) -> Unit
+){
+    Row(modifier = modifier){
+        Text(
+            modifier = Modifier.weight(1f),
+            text = inputLabel,
+            color = Color.Black,
+        )
+        Row(
+            Modifier
+                .weight(2f)
+                .padding(0.dp),
+            verticalAlignment = Alignment.CenterVertically
+        )
+        {
+            BasicTextField(
+                modifier = Modifier
+                    .background(Color.DarkGray)
+                    .padding(bottom = 1.dp)
+                    .background(Color.White),
+                textStyle = LocalTextStyle.current.copy(fontSize = 18.sp),
+                value = currentValue,
+                onValueChange = {newValue -> onValueChange(newValue)},
+                keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+                singleLine = true,
+                decorationBox = { innerTextField ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(0.9f),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        innerTextField()
+                    }
+                }
+            )
+        }
     }
 }
