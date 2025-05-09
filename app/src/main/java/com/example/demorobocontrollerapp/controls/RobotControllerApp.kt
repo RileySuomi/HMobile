@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -78,6 +79,8 @@ import com.example.demorobocontrollerapp.data.source.network.unused.WebSocketCli
 import com.example.demorobocontrollerapp.ui.theme.DemoRoboControllerAppTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlin.math.roundToInt
+import androidx.compose.ui.unit.IntOffset
 
 //******* Preset 1 ************
 // General setting
@@ -627,6 +630,20 @@ fun JoyStick(viewModel: RobotControllerViewModel = hiltViewModel(), filter: Poin
 
     }
 }
+
+//@Composable
+//fun JoystickNub(viewModel: RobotControllerViewModel = hiltViewModel()) {
+//    val offsetX = remember { mutableStateOf(0f) }
+//    val offsetY = remember { mutableStateOf(0f) }
+//    Box(
+//        Modifier.offset{ IntOffset(offsetX.value.roundToInt(), offsetY.value.roundToInt())}
+//            .size(50.dp)
+//            .background(Color.Blue)
+//            .pointerInput(Unit) {
+//                detectDrageGesturess {}
+//            }
+//    )
+//}
 
 @Composable
 fun Advance(viewModel: RobotControllerViewModel, isLandscape: Boolean){

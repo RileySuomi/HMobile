@@ -94,6 +94,11 @@ dependencies {
     // DataStore
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 
+    // get more icons!
+    implementation("androidx.compose.material:material-icons-extended")
+
+    // Remove this if we can work without it
+    implementation("com.google.accompanist:accompanist-permissions:0.32.0")
 
     testImplementation("junit:junit:4.13.2")
 
