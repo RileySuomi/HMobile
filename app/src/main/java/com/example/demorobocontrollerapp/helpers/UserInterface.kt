@@ -158,7 +158,7 @@ fun CustomButton(
         Modifier
             .padding(padding)
             .background(backgroundColor, RoundedCornerShape(20))
-            .clickable(onClick = onClick),
+            .clickable(onClick = onClick, enabled = isEnabled),
         contentAlignment = Alignment.Center
     ){
         Text(

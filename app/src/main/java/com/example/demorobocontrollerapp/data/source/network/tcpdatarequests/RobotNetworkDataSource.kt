@@ -1,6 +1,9 @@
 package com.example.demorobocontrollerapp.data.source.network.tcpdatarequests
 
 import android.util.Log
+import com.google.gson.Gson
+import com.google.gson.JsonElement
+import com.google.gson.JsonObject
 import org.json.JSONObject
 import java.io.IOException
 import java.io.PrintWriter
@@ -18,6 +21,7 @@ class RobotNetworkDataSource @Inject constructor() : NetworkResultDataSource {
     private var openConnection = false
     private var panicking = false
     private var insecure = false
+    private val gson = Gson()
 
     var defaultHost: String = "10.10.10.10"
     var defaultPort: Int = 65432
@@ -64,13 +68,22 @@ class RobotNetworkDataSource @Inject constructor() : NetworkResultDataSource {
     override fun sendMovement(speed: Float, angular: Float) {
         checkNetworkStart()
         val move = NetworkMovementInstruction(speed, angular)
-        sendMessage(move.toString())
+        val movementElement: JsonObject = gson.toJsonTree(move) as JsonObject
+        movementElement.addProperty("type", "movement")
+        sendMessage(gson.toJson(move) + "\n")
     }
 
-    override fun sendGrabber(value: Int, grabber: GrabberInstruction) {
+    override fun sendLifter(value: Float) {
         checkNetworkStart()
-        val grab = NetworkGrabberInstruction(value, grabber)
-        sendMessage(grab.toString())
+        var movementElement: JsonObject = gson.toJsonTree(NetworkLiftInstruction(value)) as JsonObject
+        movementElement.addProperty("type", "elevator")
+        sendMessage(gson.toJson(movementElement) + "\n")
+    }
+
+    override fun sendGrabber(value: GrabberInstruction) {
+        checkNetworkStart()
+        val grab: JsonObject = gson.toJsonTree(NetworkGrabberInstruction(value)) as JsonObject
+        sendMessage(gson.toJson(grab) + "\n")
     }
 
     override fun updateRobotStatus() {

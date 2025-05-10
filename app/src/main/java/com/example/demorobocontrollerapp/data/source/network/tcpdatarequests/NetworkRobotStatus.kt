@@ -1,5 +1,6 @@
 package com.example.demorobocontrollerapp.data.source.network.tcpdatarequests
 
+
 data class NetworkMovementInstruction(
     val speed: Float,
     val angle: Float,
@@ -7,8 +8,11 @@ data class NetworkMovementInstruction(
 )
 
 data class NetworkGrabberInstruction(
-    val height: Int,
     val grabStatus: GrabberInstruction
+)
+
+data class NetworkLiftInstruction(
+    val heightIncrement: Float
 )
 
 data class RobotUpdate(

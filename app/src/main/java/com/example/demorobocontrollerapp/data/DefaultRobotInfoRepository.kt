@@ -82,13 +82,16 @@ class DefaultRobotInfoRepository @Inject constructor(
         commandIndex += 1
     }
 
-    override suspend fun sendGrabber(height: Int, instruction: com.example.demorobocontrollerapp.data.source.network.tcpdatarequests.GrabberInstruction) {
-        networkResultDataSource.sendGrabber(height, instruction)
-        localCommandDataSource.upsert(LocalCommand(commandIndex, com.example.demorobocontrollerapp.data.source.network.tcpdatarequests.NetworkGrabberInstruction(
-            height,
+    override suspend fun sendGrabber(instruction: GrabberInstruction) {
+        networkResultDataSource.sendGrabber(instruction)
+        localCommandDataSource.upsert(LocalCommand(commandIndex, NetworkGrabberInstruction(
             instruction
         ).toString()))
         commandIndex += 1
+    }
+
+    override suspend fun sendLiftLower(height: Float) {
+        networkResultDataSource.sendLifter(height)
     }
 
     override fun getUpdates(): Flow<List<Command>> {

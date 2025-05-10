@@ -15,33 +15,51 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowDropUp
+import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Help
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Rotate90DegreesCcw
+import androidx.compose.material.icons.filled.Rotate90DegreesCw
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Mic
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -51,6 +69,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -60,12 +79,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.fromHtml
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
@@ -81,101 +108,74 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlin.math.roundToInt
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import androidx.wear.compose.material.SwitchDefaults
+import com.example.demorobocontrollerapp.helpers.CustomInputField
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.rpc.Help
 
 //******* Preset 1 ************
 // General setting
-const val TextColor = 0xFFFFFFFF // dark gray // OxFF000000
+val TextColor = Color.White // dark gray // OxFF000000
 // const val OffButtonColor = 0xFF929292 // dark-ish gray to signify 'power off'
 
 // Monitor setting
 val MonitorFontSize = 32.sp
-const val MonitorBgColor = 0xFF212121 //-> dark gray
-const val MonitorTextColor = 0xFFF8F8F8 // off-white
+val MonitorBgColor = Color(0xFF212121) //-> dark gray
+val MonitorTextColor = Color(0xFFF8F8F8) // off-white
 
 // Manipulation & Elevation setting
-const val ManipBtnColor = 0xFF022B3A// 0xFF3498DB  // sky blue
-const val ElevBtnColor = 0xFFCE7D81 // soft green
-val ManipElevFontSize = 21.sp // readability
-val ManipElevButtonWidth = 160.dp
-val ManipElevButtonHeight = 50.dp
+val ManipBtnColor = Color(0xFF022B3A)// 0xFF3498DB  // sky blue
+val ElevBtnColor = Color(0xFFCE7D81) // soft green
+
+val ButtonFontSize = 21.sp // readability
+
+val XLargeBtnSize = DpSize(170.dp, 65.dp)
+val LargeBtnSize = DpSize(110.dp, 50.dp)
+val MediumBtnSize = DpSize(92.dp, 65.dp)
+val SmallBtnSize = DpSize(80.dp, 50.dp)
+
+val VertButtonSize = DpSize(90.dp, 85.dp)
+
+val RoundButtonSize = DpSize(50.dp, 50.dp)
 
 // Navigation setting
-val NavFontSize = 21.sp // 'nav' = 'navigation'
-const val NavBtnColor = 0xFF1F7A8C // light gray
-const val NavButtonMaxWidth = 0.2f
+val NavBtnColor = Color(0xFF1F7A8C) // light gray
 
 // Positioning Setting (arms)
-val extendBtnColor = 0xFFF6A6A1
-val retractBtnColor = 0xFFF6A6A1
-const val PosButtonMaxWidth = 0.2f
-
-//******* Preset Default ************
-//// General setting
-//const val TextColor = 0xFF212529 // dark gray // OxFF000000
-//// const val OffButtonColor = 0xFF929292 // dark-ish gray to signify 'power off'
-//
-//// Monitor setting
-//val MonitorFontSize = 32.sp
-//const val MonitorBgColor = 0xFF212121 //-> dark gray
-//const val MonitorTextColor = 0xFFF8F8F8 // off-white
-//
-//// Manipulation & Elevation setting
-//const val ManipBtnColor = 0xFF007BFF// 0xFF3498DB  // sky blue
-//const val ElevBtnColor = 0xFF1ABC9C // soft green
-//val ManipElevFontSize = 21.sp // readability
-//val ManipElevButtonWidth = 160.dp
-//val ManipElevButtonHeight = 50.dp
-//
-//// Navigation setting
-//val NavFontSize = 21.sp // 'nav' = 'navigation'
-//const val NavBtnColor = 0xFFD3D3D3 // light gray
-//const val NavButtonMaxWidth = 0.2f
-//
-//// Positioning Setting (arms)
-//val extendBtnColor = 0xFFFFE0B2
-//val retractBtnColor = 0xFFFFCC80
-//const val PosButtonMaxWidth = 0.2f
-//*******************
-//use as 'preview'
-//@Preview(showBackground = true)
-//@Composable
-//fun GreetingPreview() {
-//    val navController = rememberNavController()
-
-//    DemoRoboControllerAppTheme {
-////        val fakeRepo = object : DataStoreRepo {
-////            override suspend fun putString(key: String, value: String) {}
-////            override suspend fun putBoolean(key: String, value: Boolean) {}
-////            override suspend fun getString(key: String): Flow<String>{
-////                return flow { emit("mocked_string_value")}
-////            }
-////
-////            override fun getAllStrings(): Flow<Pair<String, String>>{
-////                return flow { emit(Pair("value a", "Mock values"))}
-////            }
-////            override suspend fun getBoolean(key: String): Flow<Boolean>{
-////                return flow { emit(false)}
-////            }
-////            override suspend fun clearPReferences(key: String) {}
-////        }
-//        // Fake repo destoryed.
-//        val fakeViewModel = RobotControllerViewModel()
-//
-//        DisplayApp(
-//            viewModel = fakeViewModel,
-//            onSettingPressed = {navController.navigate("setting")}
-//        ) // pass in the 'viewModel' class
-//    }
-//}
+val ArmBtnColor = Color(0xFFF6A6A1)
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable // The whole app display
 fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(), onSettingPressed: () -> Unit) {
     val configuration = LocalConfiguration.current // check view mode
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
     val isAdvancedMode = viewModel.isAdvancedMode.collectAsState()
     val logLines by viewModel.logLines.collectAsState()
+    var showHelp by remember { mutableStateOf(false) }
+
+    fun onClick(
+        display: String = "",
+        message: String? = null
+    ) {
+        viewModel.setDisplayText(display)
+        message?.let{viewModel.webSocketManager.sendMessage(message)}
+    }
+
+//    val microphonePermissionState = rememberPermissionState(android.Manifest.permission.RECORD_AUDIO)
+//    fun onVoiceClick(){
+//        if (microphonePermissionState.status.isGranted) {
+//            Log.d("DEBUG", "Permission Granted")
+//            onClick("Listening...")
+//        } else {
+//            microphonePermissionState.launchPermissionRequest()
+//        }
+//    }
 
     Scaffold (
         topBar = {
@@ -186,6 +186,15 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(), onSettingP
                     titleContentColor = Color.White,
                     actionIconContentColor = Color.White
                 ),
+                navigationIcon = {
+                    IconButton(onClick = {showHelp = true}) {
+                        Icon(
+                            imageVector = Icons.Filled.Help,
+                            contentDescription = "Open help panel",
+                            tint = Color.White
+                        )
+                    }
+                },
                 actions = {
                     IconButton(onClick = {onSettingPressed()}) {
                         Icon(
@@ -198,166 +207,212 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(), onSettingP
         },
 
         content = {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(it) // use the whole screen size
-            ) {
-                if (isLandscape) { //'Landscape' view design section
-                    // Monitor sections
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth() // use allocated space as much as possible
-                            .weight(0.4f) // take portion of the space vertically - increase/decrease as needed
-                    ){
-                        ShowMonitor(viewModel.displayText.value) // .value gets it as string
-                    }
-
-                    // Manipulation, Navigation,  Elevation column
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth() // use allocated space as much as possible
-                            .weight(1.4f) // take portion of the space vertically - increase/decrease as needed
-                            .padding(2.dp)
-                    ){
-
-                        // Manipulation ('Grab' & 'Release' buttons) & Elevation ('Lift' & 'Lower' buttons)
-                        Row(
+            //'Landscape' view design section
+            if (isLandscape) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(it)
+                ){
+                    if (isAdvancedMode.value){
+                        Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(2.dp),
-                            horizontalArrangement = Arrangement.SpaceAround // Updated to SpaceAround
+                                .weight(1f),
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier.weight(4f)
+                            ) {
+                                ShowMonitor(viewModel.displayText.value)
+                            }
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f),
+                                horizontalArrangement = Arrangement.SpaceEvenly,
+                                Alignment.CenterVertically,
+                            ) {
+                                Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                                    Power(viewModel, !isLandscape)
+                                }
+                                Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                                    Advance(
+                                        isAdvancedMode.value,
+                                        !isLandscape,
+                                        onClick = { viewModel.toggleAdvancedMode() }
+                                    )
+                                }
+                            }
+                        }
+
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Box(modifier = Modifier.weight(1.5f)) {
+                                ScrollableList(logLines)
+                            }
                             Column(
                                 modifier = Modifier
                                     .weight(1f)
-                                    .padding(2.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 10.dp)
                             ) {
-                                Column(modifier = Modifier
-                                    .padding(3.dp)
-                                ) {
-                                    Grab(viewModel, isLandscape)
+                                viewModel.getInstruct()?.let { it1 ->
+                                    PacketMenuSpinner(
+                                        packetList = viewModel.packetList,
+                                        selectIndex = viewModel.currPacket,
+                                        packetInstruct = it1,
+                                        onSelect = { selectIndex ->
+                                            viewModel.onSelectPacket(selectIndex)
+                                        }
+                                    )
                                 }
-                                Column(modifier = Modifier
-                                    .padding(3.dp)
-                                ){
-                                    Lift(viewModel, isLandscape)
-                                }
-                            }
-                            Column(
-                                modifier = Modifier
-                                    .weight(1f),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Bottom
-                            ) {
-                                Power(viewModel, isLandscape)
-                                JoyStickToggle(viewModel, isLandscape)
-                                Advance(viewModel, isLandscape)
-                            }
-                            Column(
-                                modifier = Modifier
-                                    .weight(1f),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Column(modifier = Modifier
-                                    .padding(3.dp)
-                                ) {
-                                    Release(viewModel, isLandscape)
-                                }
-                                Column(modifier = Modifier
-                                    .padding(3.dp)
-                                ){
-                                    Lower(viewModel, isLandscape)
+                                val parameters = viewModel.getParameter()
+                                var parameterVal by remember { mutableStateOf(parameters?.let { it1 ->
+                                    List(
+                                        it1.size) { "" }
+                                }) }
+                                if (parameters != null) {
+                                    parameterVal?.let { it1 ->
+                                        ParameterField(
+                                            parameters,
+                                            it1,
+                                            enable = viewModel.isPowerOn.value,
+                                            onClick = { inputVal ->
+                                                parameterVal = inputVal
+                                                val message = "${viewModel.getId()}${
+                                                    parameterVal!!.joinToString(", ", "(", ")")
+                                                }"
+                                                //TODO("clarify exactly how they want the message to be formatted for websocket")
+                                                //viewModel.webSocketManager.sendMessage(message)
+                                                viewModel.setDisplayText("Message sent")
+                                                viewModel.addLogMessage(message)
+                                            }
+                                        )
+                                    }
                                 }
                             }
                         }
+                    }else {
+                        Spacer(Modifier.weight(.05f))
 
-                        //Navigation ('Forward','Backward','Left','Right' buttons) section
-                        Column(modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(0.8f),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally)
-                        {
-                            Forward(viewModel, isLandscape)
-                        }
-
-                        Column(modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(0.8f)
-                        ){
+                        //grabber
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(vertical = 5.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
                             Row(
                                 modifier = Modifier
+                                    .weight(2f)
                                     .fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceAround
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Left(viewModel, isLandscape)
-                                Right(viewModel, isLandscape)
+                                Column(
+                                    modifier = Modifier.fillMaxHeight(),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Lift(viewModel, isLandscape)
+                                    Lower(viewModel, isLandscape)
+                                }
+                                Column(
+                                    modifier = Modifier.fillMaxHeight(),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Extend(viewModel, isLandscape)
+                                    Retract(viewModel, isLandscape)
+                                }
                             }
-                        }
 
-                        Column(modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally)
-                        {
-                            Backward(viewModel, isLandscape)
-                        }
-                    }
-                } else { //'Portrait' view design section
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth() // use allocated space as much as possible
-                    ) {
-                        // Monitor section
-                        Box(contentAlignment = Alignment.Center,
-                            modifier = Modifier.weight(1f)) {
-                            ShowMonitor(viewModel.displayText.value) // .value makes it a string
-                        }
-
-                        // Power button, joystick toggle, advance button
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(0.3f),
-                            horizontalArrangement = Arrangement.SpaceEvenly,
-                            Alignment.CenterVertically,
-                        ){
-                            JoyStickToggle(viewModel, isLandscape)
-                            Power(viewModel,isLandscape)
-                            Advance(viewModel, isLandscape)
-                        }
-
-                        if(isAdvancedMode.value){
-                            // Manipulation section
-                            Row(horizontalArrangement = Arrangement.Center,
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.weight(0.4f).fillMaxWidth()
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxWidth()
                             ) {
                                 Grab(viewModel, isLandscape)
-                                Spacer(modifier = Modifier.width(32.dp)) // add spacing between buttons
                                 Release(viewModel, isLandscape)
                             }
+                        }
 
-                            // Elevation section
-                            Row(horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.weight(0.4f).fillMaxWidth()
+                        Spacer(Modifier.weight(.05f))
+
+                        //monitor
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.weight(2.5f)
+                        ) {
+                            ShowMonitor(viewModel.displayText.value)
+                        }
+
+                        Spacer(Modifier.weight(.05f))
+
+                        //control, power, toggle
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(vertical = 5.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(.7f),
+                                horizontalArrangement = Arrangement.SpaceEvenly,
+                                Alignment.CenterVertically,
                             ) {
-                                Lift(viewModel, isLandscape)
-                                Spacer(modifier = Modifier.width(32.dp)) // add spacing between buttons
-                                Lower(viewModel, isLandscape)
+                                Box(Modifier.weight(1f), contentAlignment = Alignment.Center){
+                                    Advance(
+                                        isAdvancedMode.value,
+                                        isLandscape = false,
+                                        onClick = { viewModel.toggleAdvancedMode() }
+                                    )
+                                }
+                                Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                                    Power(viewModel,isLandscape)
+                                }
+                                Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                                    // TODO: Landscape
+                                    JoyStickToggle(viewModel)
+                                    Text(
+                                        "J",
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (viewModel.usingJoystick.value) Color(0xFFF24236) else Color.DarkGray,
+                                        modifier = Modifier.align(Alignment.CenterEnd)
+                                            .fillMaxWidth(.3f)
+                                    )
+                                }
                             }
 
-                            // Navigation section
-                            Box(modifier = Modifier.weight(1f).fillMaxWidth().padding(horizontal = 8.dp))
-                            {
+                            Box(Modifier.weight(.7f)) {
+                                VoiceButton(
+                                    viewModel.isPowerOn.value,
+                                    onPress = {
+                                        //onVoiceClick()
+                                    },
+                                    onRelease = { onClick() }
+                                )
+                            }
+
+                            //control
+                            Box(
+                                modifier = Modifier
+                                    .weight(2f)
+                                    .fillMaxSize()
+                            ) {
                                 if (!viewModel.usingJoystick.value) {
-                                    Box(
-                                        modifier = Modifier.align(Alignment.TopCenter)
-                                    ) {
+                                    Box(modifier = Modifier.align(Alignment.TopCenter)) {
                                         Forward(viewModel, isLandscape)
                                     }
                                     Row(
@@ -370,55 +425,525 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(), onSettingP
                                         Spacer(modifier = Modifier.weight(0.7f))
                                         Right(viewModel, isLandscape)
                                     }
-                                    Box(
-                                        modifier = Modifier.align(Alignment.BottomCenter)
-                                    ) {
+                                    Box(modifier = Modifier.align(Alignment.BottomCenter)) {
                                         Backward(viewModel, isLandscape)
                                     }
                                 } else {
                                     JoyStick(viewModel)
                                 }
-                            }
 
-                            // Retract section
-                            Row(horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.weight(0.4f).fillMaxWidth()
-                            ) {
-                                Extend(viewModel, isLandscape)
-                                Spacer(modifier = Modifier.width(32.dp)) // add spacing between buttons
-                                Retract(viewModel, isLandscape)
-                            }
-                        }else{
-                            Column (
-                                modifier = Modifier.fillMaxWidth().weight(2.3f),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ){
-                                Box(modifier = Modifier.weight(1f)){
-                                    ScrollableList(logLines)
-                                }
-                                Column(
-                                    modifier = Modifier.weight(1f).fillMaxWidth().padding(horizontal = 10.dp)
-                                ){
-                                    PacketMenuSpinner(
-                                        packetList = viewModel.packetList,
-                                        packetInstruct = viewModel.getInstruct(),
-                                        onSelect = {selectPacket -> viewModel.onSelectPacket(selectPacket)}
+                                Box(
+                                    Modifier
+                                        .align(Alignment.TopEnd)
+                                        .fillMaxSize(0.3f), contentAlignment = Alignment.Center
+                                ) {
+                                    Turn(
+                                        icon = Icons.Filled.Rotate90DegreesCw,
+                                        isLandscape = isLandscape,
+                                        enable = viewModel.isPowerOn.value,
+                                        onPress = {
+                                            onClick(
+                                                "Turning Right 90deg",
+                                                "Turn right 90deg"
+                                            )
+                                        },
+                                        onRelease = { onClick() }
                                     )
                                 }
+
+                                Box(
+                                    Modifier
+                                        .align(Alignment.TopStart)
+                                        .fillMaxSize(0.3f), contentAlignment = Alignment.Center
+                                ) {
+                                    Turn(
+                                        "left",
+                                        icon = Icons.Filled.Rotate90DegreesCcw,
+                                        isLandscape = isLandscape,
+                                        enable = viewModel.isPowerOn.value,
+                                        onPress = {
+                                            onClick(
+                                                "Turning Left 90deg",
+                                                "Turn left 90deg"
+                                            )
+                                        },
+                                        onRelease = { onClick() }
+                                    )
+                                }
+                            }
+                        }
+
+                        Spacer(Modifier.weight(.05f))
+                    }
+                }
+            }else{
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(it) // use the whole screen size
+                ) {
+                    // Monitor section
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        ShowMonitor(viewModel.displayText.value) // .value makes it a string
+                    }
+
+                    // Power button, joystick toggle, advance button
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(0.3f),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        Alignment.CenterVertically,
+                    ) {
+                        Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                            // TODO: Landscape
+                            JoyStickToggle(viewModel)
+                            Text(
+                                "J",
+                                fontWeight = FontWeight.Bold,
+                                color = if (viewModel.usingJoystick.value) Color(0xFFF24236) else Color.DarkGray,
+                                modifier = Modifier.align(Alignment.CenterEnd).fillMaxWidth(.3f)
+                            )
+                        }
+                        Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                            Power(viewModel, isLandscape)
+                        }
+                        Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                            Advance(
+                                isAdvancedMode.value,
+                                isLandscape,
+                                onClick = { viewModel.toggleAdvancedMode() }
+                            )
+                        }
+                    }
+
+                    if (!isAdvancedMode.value) {
+                        // Manipulation section
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .weight(0.4f)
+                                .fillMaxWidth()
+                        ) {
+                            Grab(viewModel, isLandscape)
+                            Spacer(modifier = Modifier.width(32.dp)) // add spacing between buttons
+                            Release(viewModel, isLandscape)
+                        }
+
+                        // Elevation section
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .weight(0.4f)
+                                .fillMaxWidth()
+                        ) {
+                            Lift(viewModel, isLandscape)
+                            Spacer(modifier = Modifier.width(32.dp)) // add spacing between buttons
+                            Lower(viewModel, isLandscape)
+                        }
+
+                        // Retract section
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .weight(0.4f)
+                                .fillMaxWidth()
+                        ) {
+                            Extend(viewModel, isLandscape)
+                            Spacer(modifier = Modifier.width(32.dp)) // add spacing between buttons
+                            Retract(viewModel, isLandscape)
+                        }
+
+                        // Navigation section
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp)
+                        ){
+                            if (!viewModel.usingJoystick.value) {
+                                Box(
+                                    modifier = Modifier.align(Alignment.TopCenter)
+                                ) {
+                                    Forward(viewModel, isLandscape)
+                                }
+                                Row(
+                                    modifier = Modifier
+                                        .align(Alignment.Center)
+                                        .fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceEvenly
+                                ) {
+                                    Left(viewModel, isLandscape)
+                                    Spacer(modifier = Modifier.weight(0.7f))
+                                    Right(viewModel, isLandscape)
+                                }
+                                Box(
+                                    modifier = Modifier.align(Alignment.BottomCenter)
+                                ) {
+                                    Backward(viewModel, isLandscape)
+                                }
+                            } else {
+                                JoyStick(viewModel)
+                            }
+
+                            Box(
+                                Modifier
+                                    .align(Alignment.TopEnd)
+                                    .fillMaxSize(0.3f), contentAlignment = Alignment.Center
+                            ) {
+                                Turn(
+                                    icon = Icons.Filled.Rotate90DegreesCw,
+                                    isLandscape = isLandscape,
+                                    enable = viewModel.isPowerOn.value,
+                                    onPress = { onClick("Turning Right 90deg", "Turn right 90deg") },
+                                    onRelease = {onClick()}
+                                )
+                            }
+
+                            Box(
+                                Modifier
+                                    .align(Alignment.TopStart)
+                                    .fillMaxSize(0.3f), contentAlignment = Alignment.Center
+                            ) {
+                                Turn(
+                                    "left",
+                                    icon = Icons.Filled.Rotate90DegreesCcw,
+                                    isLandscape,
+                                    viewModel.isPowerOn.value,
+                                    onPress = { onClick("Turning Left 90deg", "Turn left 90deg") },
+                                    onRelease = {onClick()}
+                                )
+                            }
+
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.BottomEnd)
+                                    .fillMaxSize(0.3f),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                VoiceButton(
+                                    viewModel.isPowerOn.value,
+                                    onPress = {
+                                        //onVoiceClick()
+                                    },
+                                    onRelease = {onClick()}
+                                )
+                            }
+                        }
+                    } else {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(2.2f),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Box(modifier = Modifier.weight(2f)) {
+                                ScrollableList(logLines)
+                            }
+                            Column(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 10.dp)
+                            ) {
+                                viewModel.getInstruct()?.let { it1 ->
+                                    PacketMenuSpinner(
+                                        packetList = viewModel.packetList,
+                                        selectIndex = viewModel.currPacket,
+                                        packetInstruct = it1,
+                                        onSelect = { selectIndex ->
+                                            viewModel.onSelectPacket(selectIndex)
+                                        }
+                                    )
+                                }
+                                val parameters = viewModel.getParameter()
+                                var parameterVal by remember { mutableStateOf(parameters?.let { it1 ->
+                                    List(
+                                        it1.size) { "" }
+                                }) }
+                                if (parameters != null) {
+                                    parameterVal?.let { it1 ->
+                                        ParameterField(
+                                            parameters,
+                                            it1,
+                                            enable = viewModel.isPowerOn.value,
+                                            onClick = { inputVal ->
+                                                parameterVal = inputVal
+                                                val message = "${viewModel.getId()}${
+                                                    parameterVal!!.joinToString(", ","(",")")
+                                                }"
+                                                //TODO("clarify exactly how they want the message to be formatted for websocket")
+                                                //viewModel.webSocketManager.sendMessage(message)
+                                                viewModel.setDisplayText("Message sent")
+                                                viewModel.addLogMessage(message)
+                                            }
+                                        )
+                                    }
+                                }
+                            }
 //                                Box(
 //                                    modifier = Modifier.weight(1f),
 //                                    contentAlignment = Alignment.Center
 //                                ){
 //                                    InputData(viewModel)
 //                                }
-                            }
                         }
                     }
+                    Spacer(Modifier.weight(.1f))
+                }
+            }
+
+            if (showHelp) {
+                Dialog(onDismissRequest = { showHelp = false }, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+                    HelpDialog(
+                        isLandscape,
+                        onClick = {showHelp = false}
+                    )
                 }
             }
         }
     )
+}
+
+@Composable
+fun HelpDialog(
+    isLandscape: Boolean,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    val state = rememberScrollState()
+    LaunchedEffect(Unit) { state.animateScrollTo(0) }
+    Box(
+        modifier = modifier
+            .fillMaxWidth(if (isLandscape) .7f else .9f)
+            .fillMaxHeight(if (isLandscape) .85f else .7f),
+        contentAlignment = Alignment.Center
+    ){
+        OutlinedCard(
+            modifier = Modifier.fillMaxSize().padding(16.dp),
+            shape = RoundedCornerShape(10.dp),
+            elevation = CardDefaults.outlinedCardElevation(5.dp),
+            colors = CardDefaults.outlinedCardColors(Color.LightGray)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth(.8f)
+                    .align(Alignment.CenterHorizontally)
+                    .padding(vertical = 20.dp)
+                    .verticalScroll(state)
+            ) {
+                Text("User Manual", fontWeight = FontWeight.Bold, fontSize = ButtonFontSize, modifier = Modifier.align(Alignment.CenterHorizontally))
+
+                Divider(color = Color.DarkGray)
+
+                Text("Features:", fontWeight = FontWeight.Bold)
+                TextFromHtml(
+                    Modifier.padding(start = 10.dp),
+                    "<p><b>ON/OFF:</b> Toggle to enable control panel</p>" +
+                            "<p><b>J Switch:</b> Switch between buttons and joystick for movement</p>"+
+                            "<p><b>Advance:</b> Toggle between basic and advanced modes</p>"+
+                            "<p><b>Mic:</b> Press and hold then release to send a voice command</p>"
+                )
+                Text("Directional Controls:", fontWeight = FontWeight.Bold)
+                TextFromHtml(
+                    Modifier.padding(start = 10.dp),
+                    "<p>Available as 4 buttons or joystick</p>" +
+                            "<p><b>90° Clockwise Turn:</b> Top right of directional controls</p>"+
+                            "<p><b>90° Counterclockwise Turn:</b> Top left of directional controls</p>"
+                )
+                Text("Grabber Controls:", fontWeight = FontWeight.Bold)
+                TextFromHtml(
+                    Modifier.padding(start = 10.dp),
+                    "<p><b>Lift/Lower:</b> Press and hold to raise/lower arms</p>" +
+                            "<p><b>Extend/Retract:</b> Press and hold to extend/retract arms</p>"+
+                            "<p><b>Grab/Release:</b> Press and hold to close/open grabber hands</p>"
+                )
+
+                Text("Developers", fontWeight = FontWeight.Bold, modifier = Modifier.align(Alignment.CenterHorizontally))
+                Divider(color = Color.DarkGray)
+
+                Text("Franks", modifier = Modifier.align(Alignment.CenterHorizontally))
+                Text("Jonah", modifier = Modifier.align(Alignment.CenterHorizontally))
+                Text("Kyler", modifier = Modifier.align(Alignment.CenterHorizontally))
+                Text("Minnie", modifier = Modifier.align(Alignment.CenterHorizontally))
+                Text("Riley", modifier = Modifier.align(Alignment.CenterHorizontally))
+                Text("Shukra", modifier = Modifier.align(Alignment.CenterHorizontally))
+            }
+        }
+
+        //close button
+        IconButton(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .background(color = Color.Red, shape = CircleShape)
+                .border(2.dp, Color.White, CircleShape),
+            onClick = onClick
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.Close,
+                contentDescription = "Close Help Dialog",
+                tint = Color.White
+            )
+        }
+    }
+}
+
+@Composable
+fun TextFromHtml(
+    modifier: Modifier = Modifier,
+    htmlText: String
+) {
+    Text(
+        AnnotatedString.fromHtml(
+            htmlText,
+            linkStyles = TextLinkStyles(
+                style = SpanStyle(
+                    textDecoration = TextDecoration.Underline,
+                    fontStyle = FontStyle.Italic,
+                    color = Color.Blue
+                )
+            )
+        ),
+        modifier
+    )
+}
+
+@Composable
+fun ParameterField(
+    parameters: List<String>,
+    values: List<String>,
+    enable: Boolean = true,
+    onClick: (List<String>) -> Unit
+){
+    val inputValues = remember { mutableStateListOf(*values.toTypedArray())}
+    Row(
+        modifier = Modifier.fillMaxSize()
+    ){
+        Column (
+            modifier = Modifier
+                .fillMaxHeight()
+                .weight(4f)
+                .verticalScroll(rememberScrollState())
+        ){
+            parameters.forEachIndexed { index, parameter ->
+                CustomInputField(
+                    inputLabel = "$parameter:",
+                    modifier = Modifier.padding(bottom = 10.dp),
+                    currentValue = inputValues[index],
+                    onValueChange = {inputValues[index] = it}
+                )
+            }
+        }
+        Spacer(modifier = Modifier.weight(.2f))
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight(),
+            contentAlignment = Alignment.BottomCenter
+        ){
+            CustomButton(
+                text = "Send",
+                isEnabled = enable,
+                onClick = {
+                    onClick(inputValues)
+                }
+            )
+        }
+    }
+}
+
+@Composable
+fun Turn(
+    orientation: String = "right",
+    icon: ImageVector,
+    isLandscape: Boolean,
+    enable: Boolean,
+    onPress: () -> Unit,
+    onRelease: () -> Unit
+) {
+    GlowingButton(
+        enabled = enable,
+        text = if (isLandscape) null else "90",
+        icon = {
+            Icon(
+                imageVector = icon,
+                contentDescription = "rotate $orientation 90 degree",
+                tint = TextColor
+            )
+        },
+        btnColor = ManipBtnColor,
+        textColor = TextColor,
+        fontSize = 16.sp,
+        onPress = onPress,
+        onRelease = onRelease,
+        modifier = Modifier
+            .clip(CircleShape)
+            .background(ManipBtnColor) // Set the button's background color
+            .size(if (isLandscape) RoundButtonSize else SmallBtnSize),
+        paddingVal = 2.dp
+    )
+}
+
+
+@Composable
+fun VoiceButton(
+    enable: Boolean,
+    onPress: () -> Unit,
+    onRelease: () -> Unit)
+{
+    GlowingButton(
+        enabled = enable,
+        icon = {
+            Icon(
+                imageVector = Icons.Rounded.Mic,
+                contentDescription = "Voice Control",
+                tint = TextColor
+            )
+        },
+        btnColor = Color.Red,
+        onPress = onPress,
+        onRelease = onRelease,
+        modifier = Modifier
+            .clip(CircleShape)
+            .background(ManipBtnColor) // Set the button's background color
+            .size(RoundButtonSize),
+        paddingVal = 2.dp
+    )
+}
+
+@Composable
+fun Advance(isAdvancedMode: Boolean, isLandscape: Boolean, onClick: () -> Unit){
+    val text = if (isLandscape) {if (isAdvancedMode) "N" else "A" } else{if (isAdvancedMode) "Normal" else "Advance"}
+    Button(
+        modifier = Modifier
+            .size(if (isLandscape) RoundButtonSize else SmallBtnSize)
+            .clip(RoundedCornerShape(1.dp)),
+        onClick = onClick,
+        contentPadding = PaddingValues(1.dp),
+        colors = ButtonColors(
+            containerColor = Color.Magenta,
+            contentColor = Color.LightGray,
+            disabledContentColor = Color.Green,
+            disabledContainerColor = Color.Yellow
+        )
+    ) {
+        Text(
+            text,
+            fontSize = if (isLandscape) ButtonFontSize else 16.sp,
+            fontWeight = FontWeight.Bold
+        )
+    }
+//    CustomButton(
+//        text = if (isAdvancedMode) "Normal" else "Advance",
+//        isEnabled = true,
+//        onClick = {onClick()}
+//    )
 }
 
 @Composable
@@ -427,11 +952,12 @@ fun ParameterField(){}
 @Composable
 fun PacketMenuSpinner(
     packetList: List<String>,
+    selectIndex: Int = 0,
     packetInstruct: String,
-    onSelect: (String) -> Unit
+    onSelect: (Int) -> Unit
 ){
     var isExpanded by remember {mutableStateOf(false)}
-    val itemPosition = remember {mutableIntStateOf(0)}
+    val itemPosition = remember {mutableIntStateOf(selectIndex)}
     var isVisible by remember { mutableStateOf(false) }
 
     Row(
@@ -440,18 +966,22 @@ fun PacketMenuSpinner(
         modifier = Modifier.fillMaxWidth()
     ) {
         Text(
-            modifier = Modifier.weight(5f).clickable {
-                isExpanded = true
-            },
+            modifier = Modifier
+                .weight(5f)
+                .clickable {
+                    isExpanded = true
+                },
             text = packetList[itemPosition.intValue],
             color = Color.Black
         )
         Icon(
-            modifier = Modifier.weight(1f).clickable {
-                isExpanded = true
-            },
-            imageVector = Icons.Filled.ArrowDropDown,
-            contentDescription = "Localized description",
+            modifier = Modifier
+                .weight(1f)
+                .clickable {
+                    isExpanded = true
+                },
+            imageVector = Icons.Filled.ArrowDropUp,
+            contentDescription = "Expand packets list",
             tint = Color.Black
         )
         IconButton(
@@ -469,7 +999,9 @@ fun PacketMenuSpinner(
     DropdownMenu(
         expanded = isExpanded,
         onDismissRequest = {isExpanded = false},
-        modifier = Modifier.background(Color.White).fillMaxWidth()
+        modifier = Modifier
+            .background(Color.White)
+            .fillMaxWidth()
     ){
         packetList.forEachIndexed { index, item ->
             DropdownMenuItem(
@@ -477,7 +1009,7 @@ fun PacketMenuSpinner(
                 onClick = {
                     isExpanded = false
                     itemPosition.intValue = index
-                    onSelect(item)
+                    onSelect(index)
                 }
             )
         }
@@ -558,51 +1090,65 @@ fun InputData(viewModel: RobotControllerViewModel){
 fun Power(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
     // Access the current context (Activity or Context)
     val context = LocalContext.current
+    val isOn = viewModel.isPowerOn.value
     Button(
         onClick = {
             viewModel.switchPowerStatus()  // Toggle power status
+            val localisOn = viewModel.isPowerOn.value
+
 
             // Toggle the text based on the power status
             viewModel.setDisplayText(
-                if (viewModel.isPowerOn.value) "<camera live>" else "<camera offline>"
+                if (localisOn) "<camera live>" else "<camera offline>"
             )
 
             // Connect to WebSocket when power is turned on
-            if (viewModel.isPowerOn.value) {
+            if (localisOn) {
                 viewModel.startCommunication()
-                //WebSocketClient.connect(context)  // Call the connect method when power is ON
+
+                //viewModel.webSocketManager.connect(context)  // Call the connect method when power is ON
             } else {
                 viewModel.endCommunication()
-                //WebSocketClient.disconnect()  // Optionally, close the connection when power is OFF
+
+
+                //viewModel.webSocketManager.disconnect()  // Optionally, close the connection when power is OFF
             }
         },
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(if (viewModel.isPowerOn.value) 0xFFFF5733 else 0xFF4CAF50), // Green if on, red if off
-            contentColor = Color(TextColor)
+            containerColor = Color(if (isOn) 0xFFFF5733 else 0xFF4CAF50), // Green if on, red if off
+            contentColor = TextColor
         ),
         modifier = Modifier
             .clip(CircleShape) // Make the button circular
-            .width(if (isLandscape) ManipElevButtonWidth else ManipElevButtonWidth - 55.dp)
-            .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight - 2.dp)
+            .size(if (isLandscape) SmallBtnSize else LargeBtnSize),
+        contentPadding = PaddingValues(8.dp)
     ) {
         Text(
-            if (viewModel.isPowerOn.value) "Off" else "On",
-            fontSize = ManipElevFontSize,
+            if (isOn) "OFF" else "ON",
+            fontSize = ButtonFontSize,
             fontWeight = FontWeight.Bold
         )
-        Icon(Icons.Default.PlayArrow, contentDescription = "On and Off button")
+        if (!isLandscape){
+            if (isOn) Icon(Icons.Default.Stop, contentDescription = "Off button")
+            else Icon(Icons.Default.PlayArrow, contentDescription = "On button")
+        }
     }
 }
 
 @Composable
-fun JoyStickToggle(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
-    val context = LocalContext.current
+fun JoyStickToggle(viewModel: RobotControllerViewModel) {
     Switch(
         checked = viewModel.usingJoystick.value,
         onCheckedChange = {
             viewModel.switchJoystick()
         },
-        enabled = viewModel.isAdvancedMode.collectAsState().value
+        enabled = !viewModel.isAdvancedMode.collectAsState().value,
+        colors = SwitchDefaults.colors(
+            checkedThumbColor = if (!viewModel.isAdvancedMode.collectAsState().value) Color(0xFFF24236) else Color.LightGray,
+            checkedTrackColor = if (!viewModel.isAdvancedMode.collectAsState().value) Color(0xFFC55B58) else Color.LightGray,
+            uncheckedThumbColor = if (!viewModel.isAdvancedMode.collectAsState().value) Color.DarkGray else Color.LightGray,
+            uncheckedTrackColor = if (!viewModel.isAdvancedMode.collectAsState().value) Color(0xFF707070) else Color.LightGray,
+        )
     )
 }
 
@@ -644,24 +1190,6 @@ fun JoyStick(viewModel: RobotControllerViewModel = hiltViewModel(), filter: Poin
 //            }
 //    )
 //}
-
-@Composable
-fun Advance(viewModel: RobotControllerViewModel, isLandscape: Boolean){
-    // This will hold the current state of whether the button is clicked
-    val isAdvancedMode = viewModel.isAdvancedMode.collectAsState().value
-
-    // Function to toggle the advanced mode when clicked
-    val onClickToggle = {
-        viewModel.toggleAdvancedMode()
-    }
-
-    CustomButton(
-        text = if (isAdvancedMode) "Normal" else "Advance",
-        isEnabled = true,
-        onClick = onClickToggle
-    )
-}
-
 // TODO : This will be camera input, change it to do so ASAP
 // Temporarily a monitor: display text/action that's taking place/happening
 @Composable
@@ -670,7 +1198,7 @@ fun ShowMonitor(displayText: String){ //
         // background
         modifier = Modifier
             .fillMaxSize() // makes the column take up the full available space
-            .background(Color(MonitorBgColor)),
+            .background(MonitorBgColor),
         verticalArrangement = Arrangement.SpaceEvenly, // evenly spaces the header, main, and footer
         horizontalAlignment = Alignment.CenterHorizontally // centers horizontally (optional)
     ) {
@@ -681,12 +1209,14 @@ fun ShowMonitor(displayText: String){ //
                 .weight(1f) // assign how much space vertically
                 .height(100.dp) // sets the height of the Box to 200dp
                 .padding(16.dp) // adds padding around the Box (inside space)
-                .border(2.dp, Color(MonitorBgColor)) // to simulate a monitor border
-                .background(Color(MonitorBgColor)),
+                .border(2.dp, MonitorBgColor) // to simulate a monitor border
+                .background(MonitorBgColor),
             contentAlignment = Alignment.Center // center content
         ) {
-            Text(displayText, fontSize = MonitorFontSize ,
-                color = Color(MonitorTextColor),
+            Text(
+                displayText,
+                fontSize = MonitorFontSize ,
+                color = MonitorTextColor,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.align(Alignment.Center) // center text horizontally & vertically
             )
@@ -694,52 +1224,31 @@ fun ShowMonitor(displayText: String){ //
     }
 }
 
-// Manipulation: consist of 'Grab' & 'Release' btn
 @Composable
-fun Grab(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
-        GlowingButton(
-            enabled = viewModel.isPowerOn.value,
-            text = "Grab",
-            icon = { Icon(Icons.Default.AddCircle, contentDescription = "Grab", tint = Color(
-                TextColor
-            )) },
-            btnColor = Color(ManipBtnColor),
-            textColor = Color(TextColor),
-            fontSize = ManipElevFontSize,
-            onPress = {
-                if(viewModel.isPowerOn.value) {
-                    //WebSocketClient.sendMessage("Grab")
-                    Log.d("View", "Power is on, beginning communication.")
-                    viewModel.startCommunication()
-                }
-            },
-            onRelease = {
-                viewModel.setDisplayText("")
-            },
-            modifier = Modifier
-                .clip(CircleShape)
-                .background(Color(ManipBtnColor)) // Set the button's background color
-                .width(if (isLandscape) ManipElevButtonWidth else ManipElevButtonWidth + 10.dp)
-                .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp),
-
-            )
-
-    // TODO: Double check 'landscape' view
-//    Button(
-//        onClick = { viewModel.webSocketManager.sendMessage("Grab");viewModel.setDisplayText("Grabbing item...") },
-//        enabled = !viewModel.isPowerOn.value,
-//        colors = ButtonDefaults.buttonColors(
-//            containerColor = Color(ManipBtnColor), // button background color (soft green)
-//            contentColor = Color(TextColor)
-//        ),
-//        modifier = Modifier
-//            .clip(CircleShape) // make the button circular
-//            .width(if (isLandscape) ManipElevButtonWidth else ManipElevButtonWidth + 10.dp)
-//            .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
-//    ) {
-//        Text("Grab ",fontSize = ManipElevFontSize, fontWeight = FontWeight.Bold)
-//        Icon(Icons.Default.AddCircle, contentDescription = "Grab")
-//    }
+fun Grab(viewModel: RobotControllerViewModel , isLandscape: Boolean) {
+    GlowingButton(
+        enabled = viewModel.isPowerOn.value,
+        text = "Grab",
+        icon = {if (!isLandscape) {Icon(Icons.Default.AddCircle, contentDescription = "Grab", tint = TextColor) }},
+        btnColor = ManipBtnColor,
+        textColor = TextColor,
+        fontSize = ButtonFontSize,
+        onPress = {
+            if(viewModel.isPowerOn.value) {
+                viewModel.grab()
+                //viewModel.webSocketManager.sendMessage("Grab")
+                viewModel.setDisplayText("Grabbing item...")
+            }
+        },
+        onRelease = {
+            viewModel.setDisplayText("")
+        },
+        modifier = Modifier
+            .clip(CircleShape)
+            .background(NavBtnColor) // Set the button's background color
+            .size(if (isLandscape) MediumBtnSize else XLargeBtnSize),
+        paddingVal = 6.dp
+    )
 }
 
 @Composable
@@ -747,16 +1256,14 @@ fun Release(viewModel: RobotControllerViewModel, isLandscape: Boolean){
     GlowingButton(
         enabled = viewModel.isPowerOn.value,
         text ="Release" ,
-        icon = { Icon(Icons.Default.CheckCircle, contentDescription = "Release", tint = Color(
-            TextColor
-        )) },
-        btnColor = Color(ManipBtnColor) ,
-        textColor = Color(TextColor),
-        fontSize = ManipElevFontSize ,
+        icon = {if (!isLandscape) {Icon(Icons.Default.CheckCircle, contentDescription = "Grab", tint = TextColor) }},
+        btnColor = ManipBtnColor ,
+        textColor = TextColor,
+        fontSize = ButtonFontSize ,
         onPress = {
             if(viewModel.isPowerOn.value) {
-                //WebSocketClient.sendMessage("Release")
-                viewModel.endCommunication()
+                viewModel.release()
+                //viewModel.webSocketManager.sendMessage("Release")
                 viewModel.setDisplayText("Releasing item...")
             }
         },
@@ -765,42 +1272,35 @@ fun Release(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         },
         modifier = Modifier
             .clip(CircleShape)
-            .background(Color(ManipBtnColor)) // Set the button's background color
-            .width(if (isLandscape) ManipElevButtonWidth else ManipElevButtonWidth + 10.dp)
-            .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
+            .background(NavBtnColor) // Set the button's background color
+            .size(if (isLandscape) MediumBtnSize else XLargeBtnSize),
+        paddingVal = 6.dp
     )
-    // TODO: Setup 'landscape' view
-//    Button(
-//        onClick = { viewModel.webSocketManager.sendMessage("Release");viewModel.setDisplayText("Releasing Item...") },
-//        enabled = !viewModel.isPowerOn.value,
-//        colors = ButtonDefaults.buttonColors(
-//            containerColor = Color(ManipBtnColor), // button background color (soft green)
-//            contentColor = Color(TextColor)
-//        ), modifier = Modifier
-//            .clip(CircleShape) // make the button circular
-//            .width(if (isLandscape) ManipElevButtonWidth else ManipElevButtonWidth + 10.dp)
-//            .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
-//    ) {
-//        Text("Release ",fontSize = ManipElevFontSize, fontWeight = FontWeight.Bold)
-//        Icon(Icons.Default.CheckCircle, contentDescription = "Release")
-//    }
 }
 
-// Elevation: consist of 'Lift' & 'Lower' buttons 
+// Elevation: consist of 'Lift' & 'Lower' buttons
 @Composable
 fun Lift(viewModel: RobotControllerViewModel, isLandscape: Boolean) { // 'Lift' btn
     GlowingButton(
         enabled = viewModel.isPowerOn.value,
-        text ="Lift" ,
-        icon = { Icon(Icons.Default.KeyboardArrowUp, contentDescription = "Lift", tint = Color(
-            TextColor
-        )) },
-        btnColor = Color(ElevBtnColor) ,
-        textColor = Color(TextColor),
-        fontSize = ManipElevFontSize ,
+        isHorizontal = !isLandscape,
+        postText = "Lift" ,
+        icon = {
+            Icon(
+                imageVector = Icons.Filled.KeyboardArrowUp,
+                contentDescription = "Lift arm",
+                tint = TextColor,
+                modifier = Modifier.size(if(isLandscape) 25.dp else 45.dp)
+            )
+        },
+        btnColor = ElevBtnColor ,
+        textColor = TextColor,
+        fontSize = ButtonFontSize ,
+        shape = RoundedCornerShape(35.dp),
         onPress = {
             if(viewModel.isPowerOn.value) {
-                //WebSocketClient.sendMessage("Lift")
+                viewModel.lift()
+                //viewModel.webSocketManager.sendMessage("Lift")
                 viewModel.setDisplayText("Lifting item...")
             }
         },
@@ -808,45 +1308,36 @@ fun Lift(viewModel: RobotControllerViewModel, isLandscape: Boolean) { // 'Lift' 
             viewModel.setDisplayText("")
         },
         modifier = Modifier
-            .clip(CircleShape)
-            .background(Color(ElevBtnColor)) // Set the button's background color
-            .width(if (isLandscape) ManipElevButtonWidth else ManipElevButtonWidth + 10.dp)
-            .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
+            .clip(if (isLandscape) RoundedCornerShape(32.dp) else CircleShape)
+            .background(ElevBtnColor) // Set the button's background color
+            .size(if (isLandscape) VertButtonSize else XLargeBtnSize),
+        paddingVal = 6.dp
     )
-    // TODO: Setup 'landscape' view
-//    Button(
-//        onClick = {viewModel.webSocketManager.sendMessage("Lift"); viewModel.setDisplayText("Lifting Item...")},
-//        enabled = !viewModel.isPowerOn.value,
-//        colors = ButtonDefaults.buttonColors(
-//            containerColor = Color(ElevBtnColor), // button background color (purple)
-//            contentColor = Color(TextColor) // text color (white)
-//        ), modifier = Modifier
-//            .clip(CircleShape) // make the button circular
-//            .width(if (isLandscape) ManipElevButtonWidth else ManipElevButtonWidth + 10.dp)
-//            .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
-//    ) {
-//        Text("Lift ",fontSize = ManipElevFontSize, fontWeight = FontWeight.Bold)
-//        Icon(
-//            Icons.Default.KeyboardArrowUp,
-//            contentDescription = "Lift"
-//        )
-//    }
 }
 
 @Composable
 fun Lower(viewModel: RobotControllerViewModel, isLandscape: Boolean){
     GlowingButton(
         enabled = viewModel.isPowerOn.value,
-        text ="Lower" ,
-        icon = { Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Lower", tint = Color(
-            TextColor
-        )) },
-        btnColor = Color(ElevBtnColor) ,
-        textColor = Color(TextColor),
-        fontSize = ManipElevFontSize ,
+        isHorizontal = !isLandscape,
+        text = "Lower" ,
+        icon = {
+            Icon(
+
+                imageVector = Icons.Filled.KeyboardArrowDown,
+                contentDescription = "Lower arm",
+                tint = TextColor,
+                modifier = Modifier.size(if(isLandscape) 25.dp else 45.dp)
+            )
+        },
+        btnColor = ElevBtnColor ,
+        textColor = TextColor,
+        fontSize = ButtonFontSize ,
+        shape = RoundedCornerShape(35.dp),
         onPress = {
             if(viewModel.isPowerOn.value) {
-                //WebSocketClient.sendMessage("Lower")
+                viewModel.lower()
+                //viewModel.webSocketManager.sendMessage("Lower")
                 viewModel.setDisplayText("Lowering item...")
             }
         },
@@ -854,44 +1345,34 @@ fun Lower(viewModel: RobotControllerViewModel, isLandscape: Boolean){
             viewModel.setDisplayText("")
         },
         modifier = Modifier
-            .clip(CircleShape)
-            .background(Color(ElevBtnColor)) // Set the button's background color
-            .width(if (isLandscape) ManipElevButtonWidth else ManipElevButtonWidth + 10.dp)
-            .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp))
-
-//    Button(
-//        onClick = {viewModel.webSocketManager.sendMessage("Lower");viewModel.setDisplayText("Lowering Item...") },
-//        enabled = !viewModel.isPowerOn.value,
-//        colors = ButtonDefaults.buttonColors(
-//            containerColor = Color(ElevBtnColor), // button background color (soft green)
-//            contentColor = Color(TextColor)
-//        ), modifier = Modifier
-//            .clip(CircleShape) // Make the button circular
-//            .width(if (isLandscape) ManipElevButtonWidth else ManipElevButtonWidth + 10.dp)
-//            .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
-//    ) {
-//        Text("Lower ",fontSize = ManipElevFontSize, fontWeight = FontWeight.Bold)
-//        Icon(
-//            Icons.Default.KeyboardArrowDown,
-//            contentDescription = "Lower"
-//        )
-//    }
+            .clip(if (isLandscape) RoundedCornerShape(32.dp) else CircleShape)
+            .background(ElevBtnColor) // Set the button's background color
+            .size(if (isLandscape) VertButtonSize else XLargeBtnSize),
+        paddingVal = 6.dp
+    )
 }
 
 // Navigation: consists of 'Forward' 'Backward' 'Left' 'Right'
 @Composable
-fun Forward(viewModel: RobotControllerViewModel, isLandscape : Boolean) {
+fun Forward(viewModel: RobotControllerViewModel,isLandscape : Boolean) {
     GlowingButton(
         enabled = viewModel.isPowerOn.value,
-        text ="Forward ↑" ,
-        icon = { /* in any */  },
-        btnColor = Color(NavBtnColor) ,
-        textColor = Color(TextColor),
-        fontSize = NavFontSize ,
+        text = if (isLandscape) "" else "Forward" ,
+        icon = {
+            Icon(
+                imageVector = Icons.Filled.KeyboardArrowUp,
+                contentDescription = "Move forward",
+                tint = TextColor,
+                modifier = Modifier.size(45.dp)
+            )
+        },
+        btnColor = NavBtnColor ,
+        textColor = TextColor,
+        fontSize = ButtonFontSize ,
         onPress = {
             if(viewModel.isPowerOn.value) {
                 viewModel.moveUp()
-                //WebSocketClient.sendMessage("Forward")
+                //viewModel.webSocketManager.sendMessage("Forward")
                 viewModel.setDisplayText("Moving Forward...")
             }
         },
@@ -900,44 +1381,31 @@ fun Forward(viewModel: RobotControllerViewModel, isLandscape : Boolean) {
         },
         modifier = Modifier
             .clip(CircleShape)
-            .background(Color(NavBtnColor)) // Set the button's background color
-            .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth)
-            .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
-            .width(ManipElevButtonWidth)
+            .background(NavBtnColor) // Set the button's background color
+            .size(if (isLandscape) SmallBtnSize else XLargeBtnSize)
     )
-    // TODO: Double check 'landscape' view mod
-
-//        Button(
-//            onClick = {viewModel.webSocketManager.sendMessage("Forward"); viewModel.setDisplayText( "Moving Forward...") },
-//            enabled = !viewModel.isPowerOn.value,
-//            colors = ButtonDefaults.buttonColors(
-//                containerColor = Color(NavBtnColor),
-//                contentColor = Color(TextColor)
-//            ),
-//            modifier = Modifier
-//                .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth) // Take 20% of the screen width for landscape view
-//                .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
-//                .width(ManipElevButtonWidth)
-//        ) {
-//            Text("Forward ↑",
-//                fontSize = NavFontSize,
-//                fontWeight = FontWeight.Bold)
-//        }
 }
 
 @Composable
 fun Backward(viewModel: RobotControllerViewModel, isLandscape: Boolean){
     GlowingButton(
         enabled = viewModel.isPowerOn.value,
-        text ="Backward ↓" ,
-        icon = { /* in any */  },
-        btnColor = Color(NavBtnColor) ,
-        textColor = Color(TextColor),
-        fontSize = NavFontSize ,
+        text = if (isLandscape) "" else "Backward" ,
+        icon = {
+            Icon(
+                imageVector = Icons.Filled.KeyboardArrowDown,
+                contentDescription = "Move backward button",
+                tint = TextColor,
+                modifier = Modifier.size(45.dp)
+            )
+        },
+        btnColor = NavBtnColor ,
+        textColor = TextColor,
+        fontSize = ButtonFontSize ,
         onPress = {
             if(viewModel.isPowerOn.value) {
                 viewModel.moveDown()
-                //WebSocketClient.sendMessage("Backward")
+                //viewModel.webSocketManager.sendMessage("Backward")
                 viewModel.setDisplayText("Moving Backward...")
             }
         },
@@ -946,44 +1414,30 @@ fun Backward(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         },
         modifier = Modifier
             .clip(CircleShape)
-            .background(Color(NavBtnColor)) // Set the button's background color
-            .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth)
-            .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
-            .width(ManipElevButtonWidth)
+            .background(NavBtnColor) // Set the button's background color
+            .size(if (isLandscape) SmallBtnSize else XLargeBtnSize)
     )
-    // TODO: Double check 'landscape' view mode
-
-//        Button(
-//            onClick = { viewModel.webSocketManager.sendMessage("Move Backward"); viewModel.setDisplayText("Moving Backward...")},
-//            enabled = !viewModel.isPowerOn.value,
-//            colors = ButtonDefaults.buttonColors(
-//                containerColor = Color(NavBtnColor),
-//                contentColor = Color(TextColor)
-//            ),
-//            modifier = Modifier
-//                .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth)
-//                .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
-//                .width(ManipElevButtonWidth)
-//        ) {
-//            Text("Backward ↓",
-//                fontSize = NavFontSize,
-//                fontWeight = FontWeight.Bold)
-//        }
 }
 
 @Composable
 fun Left(viewModel: RobotControllerViewModel, isLandscape: Boolean){
     GlowingButton(
         enabled = viewModel.isPowerOn.value,
-        text ="← Left" ,
-        icon = { /* in any */  },
-        btnColor = Color(NavBtnColor) ,
-        textColor = Color(TextColor),
-        fontSize = NavFontSize ,
+        postText = if (isLandscape) "" else "Left" ,
+        icon = {
+            Icon(
+                imageVector = Icons.Filled.ArrowBackIos,
+                contentDescription = "Move left button",
+                tint = TextColor
+            )
+        },
+        btnColor = NavBtnColor ,
+        textColor = TextColor,
+        fontSize = ButtonFontSize ,
         onPress = {
             if(viewModel.isPowerOn.value) {
                 viewModel.moveLeft()
-                //WebSocketClient.sendMessage("Left")
+//                viewModel.webSocketManager.sendMessage("Left")
                 viewModel.setDisplayText("Moving Left...")
             }
         },
@@ -992,44 +1446,30 @@ fun Left(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         },
         modifier = Modifier
             .clip(CircleShape)
-            .background(Color(NavBtnColor)) // Set the button's background color
-            .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + 0.2f)
-            .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
-            .width(ManipElevButtonWidth)
+            .background(NavBtnColor) // Set the button's background color
+            .size(if (isLandscape) SmallBtnSize else XLargeBtnSize)
     )
-    // TODO: Double check 'landscape' view mode
-
-//        Button(
-//            onClick = {viewModel.webSocketManager.sendMessage("Move Left"); viewModel.setDisplayText("Moving Left...") },
-//            enabled = !viewModel.isPowerOn.value,
-//            colors = ButtonDefaults.buttonColors(
-//                containerColor = Color(NavBtnColor),
-//                contentColor = Color(TextColor)
-//            ),
-//            modifier = Modifier
-//                .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + NavButtonMaxWidth)
-//                .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
-//                .width(ManipElevButtonWidth)
-//        ) {
-//            Text("← Left",
-//                fontSize = NavFontSize,
-//                fontWeight = FontWeight.Bold)
-//        }
 }
 
 @Composable
 fun Right(viewModel: RobotControllerViewModel, isLandscape: Boolean){
     GlowingButton(
         enabled = viewModel.isPowerOn.value,
-        text ="Right →" ,
-        icon = { /* in any */  },
-        btnColor = Color(NavBtnColor) ,
-        textColor = Color(TextColor),
-        fontSize = NavFontSize ,
+        text = if (isLandscape) "" else "Right " ,
+        icon = {
+            Icon(
+                imageVector = Icons.Filled.ArrowForwardIos,
+                contentDescription = "Move right button",
+                tint = TextColor
+            )
+        },
+        btnColor = NavBtnColor ,
+        textColor = TextColor,
+        fontSize = ButtonFontSize ,
         onPress = {
             if(viewModel.isPowerOn.value) {
                 viewModel.moveRight()
-                //WebSocketClient.sendMessage("Right")
+                //viewModel.webSocketManager.sendMessage("Right")
                 viewModel.setDisplayText("Moving Right...")
             }
         },
@@ -1038,56 +1478,35 @@ fun Right(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         },
         modifier = Modifier
             .clip(CircleShape)
-            .background(Color(NavBtnColor)) // Set the button's background color
-            .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + 0.4f)
-            .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
-            .width(ManipElevButtonWidth)
+            .background(NavBtnColor) // Set the button's background color
+            .size(if (isLandscape) SmallBtnSize else XLargeBtnSize)
     )
-    // TODO: Double check 'landscape' view mode
-
-//        Button(
-//            onClick = {viewModel.webSocketManager.sendMessage("Move Right"); viewModel.setDisplayText("Moving Right...") },
-//            enabled = !viewModel.isPowerOn.value,
-//            colors = ButtonDefaults.buttonColors(
-//                containerColor = Color(NavBtnColor),
-//                contentColor = Color(TextColor)
-//            ),
-//            modifier = Modifier
-//                .fillMaxWidth(if (isLandscape) NavButtonMaxWidth else NavButtonMaxWidth + 0.4f)
-//                .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
-//                .width(ManipElevButtonWidth)
-//        ) {
-//            Text("Right →",
-//                fontSize = NavFontSize,
-//                fontWeight = FontWeight.Bold)
-//        }
 }
-
 
 // (Arms) Positioning
 @Composable
 fun Extend(viewModel: RobotControllerViewModel, isLandscape: Boolean){
     GlowingButton(
         enabled = viewModel.isPowerOn.value,
-        text ="Extend" ,
-        icon = { /* in any */  },
-        btnColor = Color(extendBtnColor) ,
-        textColor = Color(TextColor),
-        fontSize = NavFontSize ,
+        text ="Extend",
+        btnColor = ArmBtnColor ,
+        textColor = TextColor,
+        fontSize = ButtonFontSize ,
+        shape = RoundedCornerShape(35.dp),
         onPress = {
             if(viewModel.isPowerOn.value) {
-                //WebSocketClient.sendMessage("Extend")
-                viewModel.setDisplayText("Extending...")
+                viewModel.webSocketManager.sendMessage("Extend")
+                viewModel.setDisplayText("Extending arm...")
             }
         },
         onRelease = {
             viewModel.setDisplayText("")
         },
         modifier = Modifier
-            .clip(CircleShape)
-            .background(Color(NavBtnColor)) // Set the button's background color
-            .width(if (isLandscape) ManipElevButtonWidth else ManipElevButtonWidth + 10.dp)
-            .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
+            .clip(if (isLandscape) RoundedCornerShape(35.dp) else CircleShape)
+            .background(NavBtnColor) // Set the button's background color
+            .size(if (isLandscape) VertButtonSize else XLargeBtnSize),
+        paddingVal = 6.dp
     )
 }
 
@@ -1095,41 +1514,24 @@ fun Extend(viewModel: RobotControllerViewModel, isLandscape: Boolean){
 fun Retract(viewModel: RobotControllerViewModel, isLandscape: Boolean){
     GlowingButton(
         enabled = viewModel.isPowerOn.value,
-        text ="Retract" ,
-        icon = { /* in any */  },
-        btnColor = Color(retractBtnColor) ,
-        textColor = Color(TextColor),
-        fontSize = NavFontSize ,
+        text = "Retract",
+        btnColor = ArmBtnColor ,
+        textColor = TextColor,
+        fontSize = ButtonFontSize ,
+        shape = RoundedCornerShape(35.dp),
         onPress = {
             if(viewModel.isPowerOn.value) {
-                //WebSocketClient.sendMessage("Retract")
-                viewModel.setDisplayText("Retracting item...")
+                viewModel.webSocketManager.sendMessage("Retract")
+                viewModel.setDisplayText("Retracting arm...")
             }
         },
         onRelease = {
             viewModel.setDisplayText("")
         },
         modifier = Modifier
-            .clip(CircleShape)
-            .background(Color(NavBtnColor)) // Set the button's background color
-            .width(if (isLandscape) ManipElevButtonWidth else ManipElevButtonWidth + 10.dp)
-            .height(if (isLandscape) ManipElevButtonHeight else ManipElevButtonHeight + 10.dp)
+            .clip(if (isLandscape) RoundedCornerShape(35.dp) else CircleShape)
+            .background(NavBtnColor) // Set the button's background color
+            .size(if (isLandscape) VertButtonSize else XLargeBtnSize),
+        paddingVal = 6.dp
     )
 }
-
-// TODO: shortcut to turn on app when multiple taps detected
-
-//    if (showDialog) {
-//        AlertDialog(
-//            onDismissRequest = { showDialog = false},
-//            confirmButton = {},
-//            title = { Text("Action in Progress") },
-//            text = { Text("Button Disabled") } // This is where the message is shown
-//        )
-//
-//        // Automatically dismiss the dialog after 3 seconds
-//        LaunchedEffect(Unit) {
-//            delay(1000) // Wait for 3 seconds
-//            showDialog = false // Dismiss the dialog
-//        }
-//    }

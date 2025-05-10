@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import android.util.Log;
+import androidx.compose.material3.HorizontalDivider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.demorobocontrollerapp.helpers.CustomButton
 
@@ -135,7 +136,7 @@ internal fun InternalSettingsSection(
             SettingPair(it.screenName, it.currentValue)
         }
 
-        Divider(color = Color.LightGray)
+        HorizontalDivider(color = Color.LightGray)
     }
 
 

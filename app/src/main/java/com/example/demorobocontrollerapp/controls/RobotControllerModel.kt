@@ -63,11 +63,6 @@ sealed class Packets {
     ) : Packets()
 }
 
-data class PacketInfo(
-    val parameters: List<String>,
-    val help: String
-)
-
 class RobotControllerRepository{
     private var _robotData = RobotControllerModel("<camera offline>",false, false)
     var joystick = JoystickModel(1f, 1f)
@@ -77,16 +72,6 @@ class RobotControllerRepository{
     var usingJoystick: Boolean = _robotData.usingJoystick
 
     var packetList = listOf("Movement", "Grabber Instruction", "Constant Communication", "Grabber Information", "Movement Response", "Debug")
-    val packetData = mapOf(
-        "Movement" to PacketInfo(
-            parameters = listOf("Speed:", "Angular:"),
-            help = "..."
-        ),
-        "Grabber Instruction" to PacketInfo(
-            parameters = listOf("Height:", "Status:"),
-            help = "..."
-        ),
-    )
 
     fun setDisplayMessage(newDisplayMessage: String){
         _robotData.displayMessage = newDisplayMessage

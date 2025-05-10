@@ -15,7 +15,9 @@ interface RobotInfoRepository {
 
     suspend fun sendMovement(speed: Float, angular: Float)
 
-    suspend fun sendGrabber(height: Int, instruction: GrabberInstruction)
+    suspend fun sendGrabber(instruction: GrabberInstruction)
+
+    suspend fun sendLiftLower(height: Float)
 
     fun getUpdates(): Flow<List<Command>>
 

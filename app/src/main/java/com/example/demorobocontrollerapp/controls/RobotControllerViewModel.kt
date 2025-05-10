@@ -1,6 +1,7 @@
 // ViewModel: Manages UI-related data and interacts with the Model to provide it to the View.
 package com.example.demorobocontrollerapp.controls
 import android.util.Log
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -11,6 +12,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import com.example.demorobocontrollerapp.data.RobotInfoRepository
 import com.example.demorobocontrollerapp.data.source.local.settings.prefversion.DataStoreRepo
+import com.example.demorobocontrollerapp.data.source.network.tcpdatarequests.GrabberInstruction
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,7 +30,8 @@ class RobotControllerViewModel @Inject constructor(
     private val dataStore: DataStoreRepo,
     private val robotRepository: RobotInfoRepository
 ): ViewModel() {
-    val webSocketManager = WebSocketClient // com.example.demorobocontrollerapp.WebSocketManager is initialized
+    val webSocketManager =
+        WebSocketClient // com.example.demorobocontrollerapp.WebSocketManager is initialized
 
     // TODO: data to send through Raspberry Pi
     private val _robotState = MutableLiveData<String>()
@@ -53,13 +56,43 @@ class RobotControllerViewModel @Inject constructor(
     val isPowerOn: State<Boolean> = _isPowerOn
     val usingJoystick: State<Boolean> = _usingJoystick
 
-    private val _isAdvancedMode = MutableStateFlow(true)
+    private var _isAdvancedMode = MutableStateFlow(false)
     val isAdvancedMode = _isAdvancedMode.asStateFlow()
+
+    data class PacketInfo(
+        val id: String,
+        val parameters: List<String>,
+        val help: String
+    )
+
+
+    // Packet Spinner
+    var packetList = listOf(
+        "Movement",
+        "Grabber Instruction",
+        "Constant Communication",
+        "Grabber Information",
+        "Movement Response",
+        "Debug"
+    )
+    val packetData = mapOf(
+        "Movement" to PacketInfo(
+            id = "Movement",
+            parameters = listOf("Speed", "Angular"),
+            help = "..."
+        ),
+        "Grabber Instruction" to PacketInfo(
+            id = "GrabberInstruction",
+            parameters = listOf("Height", "Status"),
+            help = "..."
+        ),
+    )
+
 
     fun toggleAdvancedMode() {
         viewModelScope.launch {
-            val currentMode = isAdvancedMode.value
-            dataStore.putBoolean("advanced_mode", !currentMode)
+            val toggleMode = !_isAdvancedMode.value
+            _isAdvancedMode.value = toggleMode
         }
     }
 
@@ -67,7 +100,7 @@ class RobotControllerViewModel @Inject constructor(
 
 
     // Public method to update the display text
-    fun switchPowerStatus(){
+    fun switchPowerStatus() {
         _repository.isPowerOn = !_repository.isPowerOn
         _isPowerOn.value = _repository.isPowerOn
     }
@@ -91,23 +124,30 @@ class RobotControllerViewModel @Inject constructor(
     }
 
     //packet spinner
-    val packetList = _repository.packetList
     private val _selectedPacket = MutableStateFlow<String>(packetList[0])
-    private val _currPacketInfo = mutableStateOf(_repository.packetData[_selectedPacket.value]?: PacketInfo(emptyList(), "No instruction found."))
-    val currPacketInfo: State<PacketInfo> get() = _currPacketInfo
+    private val _currPacketInfo = mutableStateOf(packetData[_selectedPacket.value])
+    var currPacket = 0
 
-    fun onSelectPacket(packet: String){
-        _selectedPacket.value = packet
-        _currPacketInfo.value = _repository.packetData[_selectedPacket.value]?: PacketInfo(emptyList(), "No instruction found.")
-    }
-    fun getParameter(): List<String>{
-        return currPacketInfo.value.parameters
-    }
-    fun getInstruct(): String{
-        return currPacketInfo.value.help
+    fun onSelectPacket(index: Int) {
+        _selectedPacket.value = packetList[index]
+        _currPacketInfo.value = packetData[_selectedPacket.value]
+        currPacket = index
     }
 
-    fun displayDialog(message: String){
+    fun getParameter(): List<String>? {
+        return _currPacketInfo.value?.parameters
+    }
+
+    fun getInstruct(): String? {
+        return _currPacketInfo.value?.help
+    }
+
+
+    fun getId(): String? {
+        return _currPacketInfo.value?.id
+    }
+
+    fun displayDialog(message: String) {
         _dialogMessage.value = message
         _showDialog.value = true
         CoroutineScope(Dispatchers.Main).launch {
@@ -153,6 +193,32 @@ class RobotControllerViewModel @Inject constructor(
     fun moveRight() {
         viewModelScope.launch(Dispatchers.IO) {
             robotRepository.sendMovement(0.3f, -0.3f)
+        }
+    }
+
+    fun lift() {
+        viewModelScope.launch(Dispatchers.IO) {
+            robotRepository.sendLiftLower(0.1f)
+        }
+    }
+
+    fun lower() {
+        viewModelScope.launch(Dispatchers.IO) {
+            robotRepository.sendLiftLower(-0.1f)
+        }
+    }
+
+
+    fun grab() {
+        viewModelScope.launch(Dispatchers.IO) {
+            robotRepository.sendGrabber(GrabberInstruction.Close)
+        }
+
+    }
+
+    fun release() {
+        viewModelScope.launch(Dispatchers.IO) {
+            robotRepository.sendGrabber(GrabberInstruction.Open)
         }
     }
 }

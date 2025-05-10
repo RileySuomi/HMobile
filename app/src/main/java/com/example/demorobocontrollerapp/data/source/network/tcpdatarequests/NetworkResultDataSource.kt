@@ -7,7 +7,9 @@ interface NetworkResultDataSource {
 
     fun sendMovement(speed: Float, angular: Float)
 
-    fun sendGrabber(value: Int, grabber: GrabberInstruction)
+    fun sendLifter(value: Float)
+
+    fun sendGrabber(value: GrabberInstruction)
 
     fun updateRobotStatus()
 

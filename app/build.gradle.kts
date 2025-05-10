@@ -11,11 +11,11 @@ android {
     compileSdk = 35 // Updated from 34 to 35
 
     defaultConfig {
-        applicationId = "com.example.robocontroldatastore"
+        applicationId = "com.example.minniebuild"
         minSdk = 25
         targetSdk = 35 // You can keep this as 34 or update to 35 if you wish to target the latest runtime behavior
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -65,7 +65,6 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("androidx.navigation:navigation-compose:2.8.5")
     implementation("androidx.test.espresso:espresso-core:3.6.1")
@@ -83,6 +82,8 @@ dependencies {
     implementation("androidx.room:room-runtime:2.7.0")
     implementation("androidx.room:room-ktx:2.7.0")
     implementation("androidx.media3:media3-common-ktx:1.6.1")
+    implementation("com.google.firebase:protolite-well-known-types:18.0.1")
+    implementation("androidx.compose.material3:material3-android:1.3.2")
     ksp("androidx.room:room-compiler:2.7.0")
 
     // Hilt
@@ -108,6 +109,9 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+    // Kotlin Json serialization
+    implementation("com.google.code.gson:gson:2.13.1")
 }
 
 
