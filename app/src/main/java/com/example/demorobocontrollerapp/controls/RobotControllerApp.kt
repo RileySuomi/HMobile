@@ -41,6 +41,7 @@ import androidx.compose.material.icons.filled.Help
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Rotate90DegreesCcw
 import androidx.compose.material.icons.filled.Rotate90DegreesCw
@@ -151,7 +152,10 @@ val ArmBtnColor = Color(0xFFF6A6A1)
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable // The whole app display
-fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(), onSettingPressed: () -> Unit) {
+fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(),
+               onSettingPressed: () -> Unit,
+               onVoiceCommandPressed: () -> Unit) {
+
     val configuration = LocalConfiguration.current // check view mode
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
@@ -395,15 +399,16 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(), onSettingP
                                 }
                             }
 
-                            Box(Modifier.weight(.7f)) {
-                                VoiceButton(
-                                    viewModel.isPowerOn.value,
-                                    onPress = {
-                                        //onVoiceClick()
-                                    },
-                                    onRelease = { onClick() }
-                                )
-                            }
+//                            Box(Modifier.weight(.7f)) {
+//                                navigationIcon {
+//                                    IconButton(onClick = {onVoiceCommandPressed() }) {
+//                                        Icon(
+//                                            imageVector = Icons.Filled.Mic,
+//                                            contentDescription = "Voice Command Screen"
+//                                        )
+//                                    }
+//                                }
+//                            }
 
                             //control
                             Box(
@@ -627,12 +632,19 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(), onSettingP
                                     .fillMaxSize(0.3f),
                                 contentAlignment = Alignment.Center
                             ) {
-                                VoiceButton(
-                                    viewModel.isPowerOn.value,
-                                    onPress = {
-                                        //onVoiceClick()
+                                GlowingButton(
+                                    icon = {
+                                        IconButton(onClick = {onVoiceCommandPressed()}) {
+                                            Icon(
+                                            imageVector = Icons.Rounded.Mic,
+                                            contentDescription = "Voice Control",
+                                            tint = TextColor
+                                            )
+                                        }
                                     },
-                                    onRelease = {onClick()}
+                                    btnColor = Color.Red,
+                                    onPress = {onVoiceCommandPressed()},
+                                    onRelease = {}
                                 )
                             }
                         }
@@ -891,31 +903,33 @@ fun Turn(
 }
 
 
-@Composable
-fun VoiceButton(
-    enable: Boolean,
-    onPress: () -> Unit,
-    onRelease: () -> Unit)
-{
-    GlowingButton(
-        enabled = enable,
-        icon = {
-            Icon(
-                imageVector = Icons.Rounded.Mic,
-                contentDescription = "Voice Control",
-                tint = TextColor
-            )
-        },
-        btnColor = Color.Red,
-        onPress = onPress,
-        onRelease = onRelease,
-        modifier = Modifier
-            .clip(CircleShape)
-            .background(ManipBtnColor) // Set the button's background color
-            .size(RoundButtonSize),
-        paddingVal = 2.dp
-    )
-}
+//@Composable
+//fun VoiceButton(
+//    enable: Boolean,
+//    onPress: () -> Unit,
+//    onRelease: () -> Unit)
+//{
+//    GlowingButton(
+//        enabled = enable,
+//        icon = {
+//            IconButton(onClick = {onVoiceCommandPressed()}) {
+//                Icon(
+//                imageVector = Icons.Rounded.Mic,
+//                contentDescription = "Voice Control",
+//                tint = TextColor
+//                )
+//            }
+//        },
+//        btnColor = Color.Red,
+//        onPress = onPress,
+//        onRelease = onRelease,
+//        modifier = Modifier
+//            .clip(CircleShape)
+//            .background(ManipBtnColor) // Set the button's background color
+//            .size(RoundButtonSize),
+//        paddingVal = 2.dp
+//    )
+//}
 
 @Composable
 fun Advance(isAdvancedMode: Boolean, isLandscape: Boolean, onClick: () -> Unit){
