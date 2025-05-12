@@ -56,7 +56,7 @@ class RobotConnection {
     fun startConnection() {
         Thread {
             try {
-                socketConnection = Socket("72.233.179.204", 65432)
+                socketConnection = Socket("72.233.179.206", 65432)
                 val stream = socketConnection.getOutputStream()
                 writer = PrintWriter(stream)
                 reader = BufferedReader(InputStreamReader(socketConnection.getInputStream()))
@@ -71,86 +71,43 @@ class RobotConnection {
         }.start()
     }
 
-    fun startListeningForMap(imageView: ImageView) {
-        if (!openConnection) {
-            Log.e("RobotConnection", "Not connected to the server!")
-            return
-        }
-        if (isListening) {
-            Log.d("RobotConnection", "Already listening for map data")
-            return
-        }
+    fun listenForMapUpdates(onMapReceived: (Bitmap) -> Unit) {
+        if (reader == null) return
 
-        isListening = true
-
-        Thread {
-            listenForMapData(imageView)  // Call the private function safely
-        }.start()
-    }
-
-    private fun listenForMapData(imageView: ImageView) {
         Thread {
             try {
-                val inputStream = socketConnection.getInputStream()
-                val reader = BufferedReader(InputStreamReader(inputStream))
-
                 while (true) {
-                    val line = reader.readLine()
-                    if (line != null) {
-                        val json = JSONObject(line)
-                        val width = json.getInt("width")
-                        val height = json.getInt("height")
-                        val resolution = json.getDouble("resolution")
-                        val data = json.getJSONArray("data")
+                    val jsonString = reader?.readLine() ?: continue
+                    val json = JSONObject(jsonString)
 
-                        Log.d("RobotConnection", "Received Map: ${width}x${height}, Resolution: $resolution")
-                        updateMapUI(width, height, data, imageView)
+                    val width = json.getInt("width")
+                    val height = json.getInt("height")
+                    val dataArray = json.getJSONArray("data")
+
+                    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+                    for (y in 0 until height) {
+                        for (x in 0 until width) {
+                            val i = (height - 1 - y) * width + x  // flip y-axis
+                            val value = dataArray.getInt(i)
+                            val color = when {
+                                value == -1 -> Color.GRAY       // unknown
+                                value == 0 -> Color.WHITE       // free space
+                                value == 100 -> Color.BLACK     // occupied
+                                else -> Color.RED               // unexpected
+                            }
+                            bitmap.setPixel(x, y, color)  // Android's (0,0) is top-left
+                        }
                     }
+
+                    onMapReceived(bitmap)
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e("RobotConnection", "Error while listening for map: ${e.message}")
             }
         }.start()
     }
 
 
-    private fun updateMapUI(width: Int, height: Int, data: JSONArray, imageView: ImageView) {
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-
-        for (y in 0 until height) {
-            for (x in 0 until width) {
-                val index = y * width + x
-                val value = data.getInt(index) // Get occupancy value (-1, 0-100)
-
-                // Convert occupancy value to a grayscale color
-                val color = when {
-                    value == -1 -> Color.GRAY  // Unknown area
-                    value == 0 -> Color.WHITE  // Free space
-                    value in 1..100 -> Color.BLACK // Occupied space
-                    else -> Color.RED  // Should never happen
-                }
-
-                bitmap.setPixel(x, height - y - 1, color) // Flip vertically
-            }
-        }
-
-        // Update the ImageView on the UI thread
-        imageView.post {
-            imageView.setImageBitmap(bitmap)
-        }
-    }
-
-    fun requestMap() {
-        if (openConnection && writer != null) {
-            writer?.apply {
-                write("GET_MAP\n")  // Send request with newline
-                flush()
-            }
-            Log.d("RobotConnection", "Sent GET_MAP request")
-        } else {
-            Log.e("RobotConnection", "Connection is not open or writer is null")
-        }
-    }
 
 
 

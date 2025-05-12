@@ -51,7 +51,7 @@ fun NavigationGraph() {
 
         composable("map") {
             MapScreen(
-                viewModel = NavigationModel(),
+                viewModel = RobotControllerViewModel(),
                 onBackPressed = {
                     navController.popBackStack() // Go back to main screen
                 }

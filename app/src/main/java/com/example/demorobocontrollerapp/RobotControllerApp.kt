@@ -690,6 +690,7 @@ fun Forward(viewModel: RobotControllerViewModel,isLandscape : Boolean) {
         fontSize = NavFontSize ,
         onPress = {
             if(viewModel.isPowerOn.value) {
+                viewModel.moveUp()
                 viewModel.webSocketManager.sendMessage("Forward")
                 viewModel.setDisplayText("Moving Forward...")
             }

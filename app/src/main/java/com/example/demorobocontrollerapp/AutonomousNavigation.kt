@@ -31,6 +31,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.viewinterop.AndroidView
@@ -48,7 +50,7 @@ fun MapPreview() {
             composable("home") {
                 // Display Home screen with a setting button
                 MapScreen(
-                    viewModel = NavigationModel(),
+                    viewModel = RobotControllerViewModel(),
                     onBackPressed = {
                         // This simulates navigating back to the main screen
                         navController.navigate("main")
@@ -66,9 +68,10 @@ fun MapPreview() {
 
 @Composable
 fun MapScreen(
-    viewModel: NavigationModel,
+    viewModel: RobotControllerViewModel,
     onBackPressed: () -> Unit
 ) {
+    val connection = RobotConnection();
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -91,31 +94,32 @@ fun MapScreen(
                 var imageViewRef: ImageView? = null
 
                 // Embed ImageView using AndroidView
+                val mapBitmap by viewModel.mapBitmap.collectAsState()
+
                 AndroidView(
                     factory = { context ->
                         ImageView(context).apply {
                             layoutParams = ViewGroup.LayoutParams(
                                 ViewGroup.LayoutParams.MATCH_PARENT,
-                                600 // adjust as needed
+                                1500
                             )
                             scaleType = ImageView.ScaleType.FIT_CENTER
-                            imageViewRef = this // hold reference
                         }
                     },
-                    update = {
-                        // Optional: update view if needed
+                    update = { imageView ->
+                        mapBitmap?.let {
+                            imageView.setImageBitmap(it)
+                        }
                     }
                 )
+
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Add Map button
                 Button(
                     onClick = {
-                        imageViewRef?.let { view ->
-                            viewModel.robotConnection.startListeningForMap(view)
-                            viewModel.robotConnection.requestMap()
-                        }
+                        viewModel.getMap()
                     },
                     modifier = Modifier
                         .width(150.dp)
@@ -123,6 +127,17 @@ fun MapScreen(
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Blue, contentColor = Color.White)
                 ) {
                     Text("Add Map")
+                }
+                Button(
+                    onClick = {
+                        viewModel.startCommunication()
+                    },
+                    modifier = Modifier
+                        .width(150.dp)
+                        .height(40.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Blue, contentColor = Color.White)
+                ) {
+                    Text("start Map")
                 }
             }
         }
@@ -139,3 +154,5 @@ fun loadMap() {
     // Add your logic for loading a map
     println("Load Map clicked")
 }
+
+

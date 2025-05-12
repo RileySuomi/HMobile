@@ -1,5 +1,6 @@
 // ViewModel: Manages UI-related data and interacts with the Model to provide it to the View.
 package com.example.demorobocontrollerapp
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -7,9 +8,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 // this is mergi checks
@@ -42,6 +46,9 @@ class RobotControllerViewModel : ViewModel() {
 
     private var connection = RobotConnection();
 
+    private val _mapBitmap = MutableStateFlow<Bitmap?>(null)
+    val mapBitmap: StateFlow<Bitmap?> = _mapBitmap
+
     // Public method to update the display text
     fun switchPowerStatus(){
         _repository.isPowerOn = !_repository.isPowerOn
@@ -68,7 +75,9 @@ class RobotControllerViewModel : ViewModel() {
     }
     fun startCommunication() {
         viewModelScope.launch(Dispatchers.IO) {
-            connection.startConnection();
+            connection.startConnection()
+            delay(1000) // small delay to ensure connection is open
+            listenForMap()
         }
     }
 
@@ -102,6 +111,23 @@ class RobotControllerViewModel : ViewModel() {
             connection.SendMessage("Right\n");
         }
     }
+
+    fun getMap() {
+        viewModelScope.launch(Dispatchers.IO) {
+            connection.SendMessage("get_map");
+
+        }
+    }
+
+    fun listenForMap() {
+        viewModelScope.launch(Dispatchers.IO) {
+            connection.listenForMapUpdates { bitmap ->
+                _mapBitmap.value = bitmap
+            }
+        }
+    }
+
+
 }
 
 // implement negation - !
