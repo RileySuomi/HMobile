@@ -31,7 +31,12 @@ class VoiceCommandViewModel @Inject constructor(
     private val _recognizedText = MutableStateFlow("Speak a command...")
     val recognizedText: StateFlow<String> = _recognizedText.asStateFlow()
 
-    private val _commandStatus = MutableStateFlow("Ready for voice command")
+    private val _commandStatus = MutableStateFlow("Ready for voice command\n\n" +
+            "-Forward\n" +
+            "-Back\n" +
+            "-Left\n" +
+            "-Right\n" +
+            "-Stop\n")
     val commandStatus: StateFlow<String> = _commandStatus.asStateFlow()
 
     private val _isListening = MutableStateFlow(false)
