@@ -160,6 +160,20 @@ class RobotControllerViewModel @Inject constructor(
 
     }
 
+    fun hardRotationRight() {
+        viewModelScope.launch(Dispatchers.IO) {
+            Log.d("Rotation", "Send hard rotation right")
+            robotRepository.sendMovement(0.5f, 1.57f)
+        }
+    }
+
+    fun hardRotationLeft() {
+        viewModelScope.launch(Dispatchers.IO) {
+            Log.d("Rotation", "Send hard rotation left")
+            robotRepository.sendMovement(0.5f, -1.57f)
+        }
+    }
+
     fun startCommunication() {
         viewModelScope.launch(Dispatchers.IO) {
             robotRepository.beginCommunication()
