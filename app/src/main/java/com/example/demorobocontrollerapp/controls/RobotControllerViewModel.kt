@@ -1,5 +1,6 @@
 // ViewModel: Manages UI-related data and interacts with the Model to provide it to the View.
 package com.example.demorobocontrollerapp.controls
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
@@ -58,6 +59,9 @@ class RobotControllerViewModel @Inject constructor(
 
     private var _isAdvancedMode = MutableStateFlow(false)
     val isAdvancedMode = _isAdvancedMode.asStateFlow()
+
+    private val _mapBitmap = MutableStateFlow<Bitmap?>(null)
+    val mapBitmap: StateFlow<Bitmap?> = _mapBitmap
 
     data class PacketInfo(
         val id: String,
@@ -219,6 +223,12 @@ class RobotControllerViewModel @Inject constructor(
     fun release() {
         viewModelScope.launch(Dispatchers.IO) {
             robotRepository.sendGrabber(GrabberInstruction.Open)
+        }
+    }
+
+    fun getMap() {
+        viewModelScope.launch(Dispatchers.IO) {
+            robotRepository.sendMapRequest()
         }
     }
 }

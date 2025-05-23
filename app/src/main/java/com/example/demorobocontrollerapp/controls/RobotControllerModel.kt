@@ -1,9 +1,15 @@
 package com.example.demorobocontrollerapp.controls
 
+import android.graphics.Bitmap
 import android.util.Log
 import java.io.IOException
 import java.io.PrintWriter
 import java.net.Socket
+import org.json.JSONObject
+import java.io.BufferedReader
+import android.graphics.Color
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.set
 
 data class RobotControllerModel(
     var displayMessage: String,
@@ -81,6 +87,7 @@ class RobotControllerRepository{
 class RobotConnection {
     var socketConnection = Socket()
     var writer: PrintWriter? = null
+    var reader: BufferedReader? = null
     private var openConnection = false
     private var panicking = false
 
@@ -97,6 +104,42 @@ class RobotConnection {
         writer?.write("First message!\n")
         writer?.flush()
         openConnection = true
+    }
+
+    fun listenForMapUpdates(onMapReceived: (Bitmap) -> Unit) {
+        if (reader == null) return
+
+        Thread {
+            try {
+                while (true) {
+                    val jsonString = reader?.readLine() ?: continue
+                    val json = JSONObject(jsonString)
+
+                    val width = json.getInt("width")
+                    val height = json.getInt("height")
+                    val dataArray = json.getJSONArray("data")
+
+                    val bitmap = createBitmap(width, height)
+                    for (y in 0 until height) {
+                        for (x in 0 until width) {
+                            val i = (height - 1 - y) * width + x  // flip y-axis
+                            val value = dataArray.getInt(i)
+                            val color = when (value) {
+                                -1 -> Color.GRAY       // unknown
+                                0 -> Color.WHITE       // free space
+                                100 -> Color.BLACK     // occupied
+                                else -> Color.RED               // unexpected
+                            }
+                            bitmap[x, y] = color  // Android's (0,0) is top-left
+                        }
+                    }
+
+                    onMapReceived(bitmap)
+                }
+            } catch (e: Exception) {
+                Log.e("RobotConnection", "Error while listening for map: ${e.message}")
+            }
+        }.start()
     }
 
     fun EndConnection() {

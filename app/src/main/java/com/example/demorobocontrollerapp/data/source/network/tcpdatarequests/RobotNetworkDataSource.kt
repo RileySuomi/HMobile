@@ -1,10 +1,15 @@
 package com.example.demorobocontrollerapp.data.source.network.tcpdatarequests
 
+import android.graphics.Bitmap
+import android.graphics.Color
 import android.util.Log
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.set
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import org.json.JSONObject
+import java.io.BufferedReader
 import java.io.IOException
 import java.io.PrintWriter
 import java.net.InetSocketAddress
@@ -14,14 +19,17 @@ import javax.inject.Inject
 import javax.net.SocketFactory
 import javax.net.ssl.SSLSocket
 import javax.net.ssl.SSLSocketFactory
+import android.graphics.Bitmap.Config
 
 class RobotNetworkDataSource @Inject constructor() : NetworkResultDataSource {
     private var socketConnection: Socket = Socket()
     private var writer: PrintWriter? = null
+    private var reader: BufferedReader? = null
     private var openConnection = false
     private var panicking = false
     private var insecure = false
     private val gson = Gson()
+    override var currentMap = createBitmap(1,1)
 
     var defaultHost: String = "10.10.10.10"
     var defaultPort: Int = 65432
@@ -84,6 +92,47 @@ class RobotNetworkDataSource @Inject constructor() : NetworkResultDataSource {
         checkNetworkStart()
         val grab: JsonObject = gson.toJsonTree(NetworkGrabberInstruction(value)) as JsonObject
         sendMessage(gson.toJson(grab) + "\n")
+    }
+
+    override fun sendMapRequest() {
+        checkNetworkStart()
+        sendMessage("get_map")
+    }
+
+    override fun listenForMap() {
+        if (reader == null) return
+
+        Thread {
+            try {
+                while (true) {
+                    val jsonString = reader?.readLine() ?: continue
+                    val json = JSONObject(jsonString)
+
+                    val width = json.getInt("width")
+                    val height = json.getInt("height")
+                    val dataArray = json.getJSONArray("data")
+
+                    val bitmap = createBitmap(width, height)
+                    for (y in 0 until height) {
+                        for (x in 0 until width) {
+                            val i = (height - 1 - y) * width + x  // flip y-axis
+                            val value = dataArray.getInt(i)
+                            val color = when (value) {
+                                -1 -> Color.GRAY       // unknown
+                                0 -> Color.WHITE       // free space
+                                100 -> Color.BLACK     // occupied
+                                else -> Color.RED               // unexpected
+                            }
+                            bitmap[x, y] = color  // Android's (0,0) is top-left
+                        }
+                    }
+
+                    currentMap = bitmap
+                }
+            } catch (e: Exception) {
+                Log.e("RobotConnection", "Error while listening for map: ${e.message}")
+            }
+        }.start()
     }
 
     override fun updateRobotStatus() {

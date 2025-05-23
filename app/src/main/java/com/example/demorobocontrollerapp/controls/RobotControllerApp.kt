@@ -45,6 +45,7 @@ import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Rotate90DegreesCcw
 import androidx.compose.material.icons.filled.Rotate90DegreesCw
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material.icons.rounded.Close
@@ -154,6 +155,7 @@ val ArmBtnColor = Color(0xFFF6A6A1)
 @Composable // The whole app display
 fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(),
                onSettingPressed: () -> Unit,
+               onMapPressed: () -> Unit,
                onVoiceCommandPressed: () -> Unit) {
 
     val configuration = LocalConfiguration.current // check view mode
@@ -200,6 +202,12 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(),
                     }
                 },
                 actions = {
+                    IconButton(onClick = {onMapPressed()}) {
+                        Icon(
+                            imageVector = Icons.Filled.Search,
+                            contentDescription = "Go to map"
+                        )
+                    }
                     IconButton(onClick = {onSettingPressed()}) {
                         Icon(
                             imageVector = Icons.Filled.Settings,

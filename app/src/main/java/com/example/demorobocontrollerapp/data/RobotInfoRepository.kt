@@ -1,5 +1,6 @@
 package com.example.demorobocontrollerapp.data
 
+import android.graphics.Bitmap
 import com.example.demorobocontrollerapp.data.source.network.tcpdatarequests.GrabberInstruction
 import kotlinx.coroutines.flow.Flow
 
@@ -18,6 +19,12 @@ interface RobotInfoRepository {
     suspend fun sendGrabber(instruction: GrabberInstruction)
 
     suspend fun sendLiftLower(height: Float)
+
+    suspend fun sendMapRequest()
+
+    suspend fun listenForMap()
+
+    suspend fun getMapState(): Flow<Bitmap>
 
     fun getUpdates(): Flow<List<Command>>
 

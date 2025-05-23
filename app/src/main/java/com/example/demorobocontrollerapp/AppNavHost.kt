@@ -37,6 +37,9 @@ fun NavigationGraph() {
                  },
                 onVoiceCommandPressed = {
                     navController.navigate("voiceControl")
+                },
+                onMapPressed = {
+                    navController.navigate("mapPage")
                 }
             )
         }
@@ -56,6 +59,15 @@ fun NavigationGraph() {
                 viewModel = hiltViewModel(),
                 onBackPressed = {
                     navController.popBackStack() // Go back to main screen
+                }
+            )
+        }
+
+        composable("mapPage"){
+            MapScreen(
+                viewModel = hiltViewModel(),
+                onBackPressed = {
+                    navController.popBackStack()
                 }
             )
         }

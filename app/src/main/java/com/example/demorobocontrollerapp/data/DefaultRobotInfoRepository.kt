@@ -1,5 +1,6 @@
 package com.example.demorobocontrollerapp.data
 
+import android.graphics.Bitmap
 import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.demorobocontrollerapp.data.source.local.command.CommandDao
@@ -96,6 +97,20 @@ class DefaultRobotInfoRepository @Inject constructor(
 
     override fun getUpdates(): Flow<List<Command>> {
         TODO("Not yet implemented")
+    }
+
+    override suspend fun sendMapRequest(){
+        networkResultDataSource.sendMapRequest()
+    }
+
+    override suspend fun listenForMap(){
+        networkResultDataSource.listenForMap()
+    }
+
+    override suspend fun getMapState():Flow<Bitmap>{
+        return flow{
+            networkResultDataSource.currentMap
+        }
     }
 
 
