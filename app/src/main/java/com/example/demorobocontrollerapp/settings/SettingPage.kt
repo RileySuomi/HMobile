@@ -46,6 +46,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import android.util.Log;
 import androidx.compose.material3.HorizontalDivider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.wear.compose.material.Checkbox
 import com.example.demorobocontrollerapp.helpers.CustomButton
 
 
@@ -140,6 +141,29 @@ internal fun InternalSettingsSection(
     }
 
 
+}
+
+@Composable
+internal fun CheckBoxSettingsPair(viewModel: SettingViewModel, key: String, display: String, onOff: Boolean) {
+    Row (
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(0.dp, 10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            modifier = Modifier.padding(10.dp,0.dp),
+            text = display,
+            color = Color.Black,
+        )
+        Checkbox(
+            checked = onOff,
+            onCheckedChange = {
+                val newValue = it.toString()
+                viewModel.updateById(key, newValue)
+            }
+        )
+    }
 }
 
 @Composable

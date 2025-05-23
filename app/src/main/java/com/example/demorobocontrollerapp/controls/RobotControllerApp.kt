@@ -455,10 +455,12 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(),
                                         isLandscape = isLandscape,
                                         enable = viewModel.isPowerOn.value,
                                         onPress = {
+                                            viewModel.hardRotationRight()
                                             onClick(
                                                 "Turning Right 90deg",
                                                 "Turn right 90deg"
                                             )
+
                                         },
                                         onRelease = { onClick() }
                                     )
@@ -475,6 +477,7 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(),
                                         isLandscape = isLandscape,
                                         enable = viewModel.isPowerOn.value,
                                         onPress = {
+                                            viewModel.hardRotationLeft()
                                             onClick(
                                                 "Turning Left 90deg",
                                                 "Turn left 90deg"
@@ -614,7 +617,9 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(),
                                     icon = Icons.Filled.Rotate90DegreesCw,
                                     isLandscape = isLandscape,
                                     enable = viewModel.isPowerOn.value,
-                                    onPress = { onClick("Turning Right 90deg", "Turn right 90deg") },
+
+                                    onPress = { onClick("Turning Right 90deg", "Turn right 90deg")
+                                              viewModel.hardRotationRight()},
                                     onRelease = {onClick()}
                                 )
                             }
@@ -629,7 +634,10 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(),
                                     icon = Icons.Filled.Rotate90DegreesCcw,
                                     isLandscape,
                                     viewModel.isPowerOn.value,
-                                    onPress = { onClick("Turning Left 90deg", "Turn left 90deg") },
+                                    onPress = {
+                                        onClick("Turning Left 90deg", "Turn left 90deg")
+                                        viewModel.hardRotationLeft()
+                                              },
                                     onRelease = {onClick()}
                                 )
                             }
