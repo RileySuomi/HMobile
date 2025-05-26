@@ -245,9 +245,44 @@ class RobotControllerViewModel @Inject constructor(
             robotRepository.sendMapRequest()
         }
     }
+
+    fun sendClickedCoordinate(mapX: Int, mapY: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            robotRepository.getMapMetadata()?.let { metadata ->
+                val (worldX, worldY) = convertToWorldCoordinates(
+                    mapX, mapY,
+                    resolution = metadata.resolution,
+                    originX = metadata.originX,
+                    originY = metadata.originY,
+                    mapHeight = metadata.height
+                )
+
+                robotRepository.sendCoordinates(worldX, worldY)
+            } ?: run {
+                Log.e("sendClickCoordinate", "Map metadata is not available")
+            }
+
+        }
 }
 
-// implement negation - !
+    private fun convertToWorldCoordinates(
+        pixelX: Int,
+        pixelY: Int,
+        resolution: Float,
+        originX: Float,
+        originY: Float,
+        mapHeight: Int
+    ): Pair<Float, Float> {
+        // Flip y-axis again to align with ROS's bottom-left origin
+        val mapY = mapHeight - pixelY
+
+        val worldX = originX + pixelX * resolution
+        val worldY = originY + mapY * resolution
+        return Pair(worldX, worldY)
+    }
+}
+
+    // implement negation - !
 private operator fun Unit.not() {
     return !this
 }

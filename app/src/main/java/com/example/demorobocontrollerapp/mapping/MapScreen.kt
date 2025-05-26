@@ -2,6 +2,9 @@
 
 package com.example.demorobocontrollerapp
 
+import android.annotation.SuppressLint
+import android.graphics.Matrix
+import android.view.MotionEvent
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.compose.runtime.Composable
@@ -61,6 +64,7 @@ fun MapPreview() {
 }
 
 
+@SuppressLint("ClickableViewAccessibility")
 @Composable
 fun MapScreen(
     viewModel: RobotControllerViewModel = hiltViewModel(),
@@ -96,9 +100,31 @@ fun MapScreen(
                         ImageView(context).apply {
                             layoutParams = ViewGroup.LayoutParams(
                                 ViewGroup.LayoutParams.MATCH_PARENT,
-                                1500
+                                1000
                             )
                             scaleType = ImageView.ScaleType.FIT_CENTER
+
+                            setOnTouchListener { v, event ->
+                                if (event.action == MotionEvent.ACTION_DOWN) {
+                                    val imageView = v as ImageView
+                                    val x = event.x
+                                    val y = event.y
+
+                                    // Convert to map pixel coordinates
+                                    val imageMatrix = imageView.imageMatrix
+                                    val inverse = Matrix()
+                                    imageMatrix.invert(inverse)
+                                    val touchPoint = floatArrayOf(x, y)
+                                    inverse.mapPoints(touchPoint)
+
+                                    val mapX = touchPoint[0].toInt()
+                                    val mapY = touchPoint[1].toInt()
+
+                                    // Send the clicked coordinates
+                                    viewModel.sendClickedCoordinate(mapX, mapY)
+                                }
+                                true
+                            }
                         }
                     },
                     update = { imageView ->
@@ -107,6 +133,7 @@ fun MapScreen(
                         }
                     }
                 )
+
 
 
                 Spacer(modifier = Modifier.height(16.dp))

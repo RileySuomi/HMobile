@@ -20,6 +20,7 @@ import javax.net.SocketFactory
 import javax.net.ssl.SSLSocket
 import javax.net.ssl.SSLSocketFactory
 import android.graphics.Bitmap.Config
+import com.example.demorobocontrollerapp.data.source.network.tcpdatarequests.MapMetadata
 
 class RobotNetworkDataSource @Inject constructor() : NetworkResultDataSource {
     private var socketConnection: Socket = Socket()
@@ -30,6 +31,7 @@ class RobotNetworkDataSource @Inject constructor() : NetworkResultDataSource {
     private var insecure = false
     private val gson = Gson()
     override var currentMap = createBitmap(1,1)
+    override var mapMetadata: MapMetadata? = null
 
     var defaultHost: String = "10.10.10.10"
     var defaultPort: Int = 65432
@@ -110,6 +112,13 @@ class RobotNetworkDataSource @Inject constructor() : NetworkResultDataSource {
 
                     val width = json.getInt("width")
                     val height = json.getInt("height")
+                    val resolution = json.getDouble("resolution").toFloat()
+                    val origin = json.getJSONObject("origin")
+                    val originX = origin.getDouble("x").toFloat()
+                    val originY = origin.getDouble("y").toFloat()
+
+                    mapMetadata = MapMetadata(resolution, originX, originY, width, height)
+
                     val dataArray = json.getJSONArray("data")
 
                     val bitmap = createBitmap(width, height)
@@ -134,6 +143,17 @@ class RobotNetworkDataSource @Inject constructor() : NetworkResultDataSource {
             }
         }.start()
     }
+
+    override fun sendCoordinates(xCoordinate: Float, yCoordinate: Float){
+        checkNetworkStart()
+        val goal = JsonObject().apply {
+            addProperty("type", "goal")
+            addProperty("x", xCoordinate)
+            addProperty("y", yCoordinate)
+        }
+        sendMessage(gson.toJson(goal) + "\n")
+    }
+
 
     override fun updateRobotStatus() {
         checkNetworkStart()

@@ -2,6 +2,7 @@ package com.example.demorobocontrollerapp.data
 
 import android.graphics.Bitmap
 import com.example.demorobocontrollerapp.data.source.network.tcpdatarequests.GrabberInstruction
+import com.example.demorobocontrollerapp.data.source.network.tcpdatarequests.MapMetadata
 import kotlinx.coroutines.flow.Flow
 
 interface RobotInfoRepository {
@@ -23,6 +24,10 @@ interface RobotInfoRepository {
     suspend fun sendMapRequest()
 
     suspend fun listenForMap()
+
+    suspend fun sendCoordinates(xCoordinate: Float, yCoordinate: Float)
+
+    suspend fun getMapMetadata(): MapMetadata?
 
     suspend fun getMapState(): Flow<Bitmap>
 

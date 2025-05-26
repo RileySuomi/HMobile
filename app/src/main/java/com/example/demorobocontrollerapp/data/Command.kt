@@ -6,6 +6,8 @@ data class Command(
     val angularSpeed: Float? = 0f,
     val height: Int? = 0,
     val grabberStatus: GrabberInstruction = GrabberInstruction.Idle,
+    val xCoordinate: Int? = 0,
+    val yCoordinate: Int? = 0
     )
 
 enum class CommandType {

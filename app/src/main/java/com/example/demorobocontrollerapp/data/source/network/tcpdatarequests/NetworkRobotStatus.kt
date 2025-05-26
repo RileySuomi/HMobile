@@ -35,6 +35,19 @@ data class DebugPacket(
     val parameters: List<String>,
 )
 
+data class Coordinates(
+    val xCoordinate: Int,
+    val yCoordinate: Int
+)
+
+data class MapMetadata(
+    val resolution: Float,
+    val originX: Float,
+    val originY: Float,
+    val width: Int,
+    val height: Int
+)
+
 enum class GrabberInstruction {
     Close,
     Open,

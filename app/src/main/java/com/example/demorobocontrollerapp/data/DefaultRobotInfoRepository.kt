@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 import android.util.Log
+import com.example.demorobocontrollerapp.data.source.network.tcpdatarequests.MapMetadata
 
 @Singleton
 class DefaultRobotInfoRepository @Inject constructor(
@@ -105,6 +106,14 @@ class DefaultRobotInfoRepository @Inject constructor(
 
     override suspend fun listenForMap(){
         networkResultDataSource.listenForMap()
+    }
+
+    override suspend fun sendCoordinates(xCoordinate: Float, yCoordinate: Float){
+        networkResultDataSource.sendCoordinates(xCoordinate, yCoordinate)
+    }
+
+    override suspend fun getMapMetadata(): MapMetadata? {
+        return networkResultDataSource.mapMetadata
     }
 
     override suspend fun getMapState():Flow<Bitmap>{
