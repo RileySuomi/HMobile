@@ -1,13 +1,10 @@
 package com.example.demorobocontrollerapp.settings
 
-import android.provider.Settings
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.demorobocontrollerapp.data.RobotInfoRepository
-import com.example.demorobocontrollerapp.data.source.local.settings.prefversion.DataStoreRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +12,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import org.junit.Test
 import javax.inject.Inject
 
 data class SettingsProperty (

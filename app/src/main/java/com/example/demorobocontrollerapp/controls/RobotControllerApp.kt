@@ -4,6 +4,7 @@ package com.example.demorobocontrollerapp.controls
 
 import android.content.res.Configuration
 import android.util.Log
+import android.view.SoundEffectConstants
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,7 +20,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -33,7 +33,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ArrowBackIos
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.CheckCircle
@@ -41,7 +40,6 @@ import androidx.compose.material.icons.filled.Help
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Rotate90DegreesCcw
 import androidx.compose.material.icons.filled.Rotate90DegreesCw
@@ -51,14 +49,13 @@ import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Mic
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedCard
@@ -86,6 +83,7 @@ import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
@@ -93,29 +91,19 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Popup
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.compose.rememberNavController
-import androidx.wear.compose.material.Switch
-import com.example.demorobocontrollerapp.helpers.CustomButton
-import com.example.demorobocontrollerapp.data.source.local.settings.prefversion.DataStoreRepo
-import com.example.demorobocontrollerapp.helpers.GlowingButton
-import com.example.demorobocontrollerapp.data.source.network.unused.WebSocketClient
-import com.example.demorobocontrollerapp.ui.theme.DemoRoboControllerAppTheme
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlin.math.roundToInt
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.window.Popup
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.wear.compose.material.Switch
 import androidx.wear.compose.material.SwitchDefaults
+import com.example.demorobocontrollerapp.helpers.CustomButton
 import com.example.demorobocontrollerapp.helpers.CustomInputField
+import com.example.demorobocontrollerapp.helpers.GlowingButton
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.rpc.Help
 
 //******* Preset 1 ************
 // General setting
@@ -149,17 +137,16 @@ val NavBtnColor = Color(0xFF1F7A8C) // light gray
 val ArmBtnColor = Color(0xFFF6A6A1)
 
 
-
-
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable // The whole app display
 fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(),
                onSettingPressed: () -> Unit,
                onMapPressed: () -> Unit,
                onVoiceCommandPressed: () -> Unit) {
-
     val configuration = LocalConfiguration.current // check view mode
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
+    val view = LocalView.current
 
     val isAdvancedMode = viewModel.isAdvancedMode.collectAsState()
     val logLines by viewModel.logLines.collectAsState()
@@ -171,6 +158,7 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(),
     ) {
         viewModel.setDisplayText(display)
         message?.let{viewModel.webSocketManager.sendMessage(message)}
+        view.playSoundEffect(SoundEffectConstants.CLICK)
     }
 
 //    val microphonePermissionState = rememberPermissionState(android.Manifest.permission.RECORD_AUDIO)
@@ -193,7 +181,10 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(),
                     actionIconContentColor = Color.White
                 ),
                 navigationIcon = {
-                    IconButton(onClick = {showHelp = true}) {
+                    IconButton(onClick = {
+                        showHelp = true
+                        view.playSoundEffect(SoundEffectConstants.CLICK)
+                    }) {
                         Icon(
                             imageVector = Icons.Filled.Help,
                             contentDescription = "Open help panel",
@@ -252,7 +243,7 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(),
                                 Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
                                     Advance(
                                         isAdvancedMode.value,
-                                        !isLandscape,
+                                        isLandscape = false,
                                         onClick = { viewModel.toggleAdvancedMode() }
                                     )
                                 }
@@ -387,7 +378,7 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(),
                                 Box(Modifier.weight(1f), contentAlignment = Alignment.Center){
                                     Advance(
                                         isAdvancedMode.value,
-                                        isLandscape = false,
+                                        isLandscape = true,
                                         onClick = { viewModel.toggleAdvancedMode() }
                                     )
                                 }
@@ -715,12 +706,6 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(),
                                     }
                                 }
                             }
-//                                Box(
-//                                    modifier = Modifier.weight(1f),
-//                                    contentAlignment = Alignment.Center
-//                                ){
-//                                    InputData(viewModel)
-//                                }
                         }
                     }
                     Spacer(Modifier.weight(.1f))
@@ -731,7 +716,10 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(),
                 Dialog(onDismissRequest = { showHelp = false }, properties = DialogProperties(usePlatformDefaultWidth = false)) {
                     HelpDialog(
                         isLandscape,
-                        onClick = {showHelp = false}
+                        onClick = {
+                            showHelp = false
+                            view.playSoundEffect(SoundEffectConstants.CLICK)
+                        }
                     )
                 }
             }
@@ -757,7 +745,7 @@ fun HelpDialog(
             modifier = Modifier.fillMaxSize().padding(16.dp),
             shape = RoundedCornerShape(10.dp),
             elevation = CardDefaults.outlinedCardElevation(5.dp),
-            colors = CardDefaults.outlinedCardColors(Color.LightGray)
+            colors = CardDefaults.outlinedCardColors(Color.DarkGray)
         ) {
             Column(
                 modifier = Modifier
@@ -768,7 +756,7 @@ fun HelpDialog(
             ) {
                 Text("User Manual", fontWeight = FontWeight.Bold, fontSize = ButtonFontSize, modifier = Modifier.align(Alignment.CenterHorizontally))
 
-                Divider(color = Color.DarkGray)
+                HorizontalDivider(color = Color.White)
 
                 Text("Features:", fontWeight = FontWeight.Bold)
                 TextFromHtml(
@@ -794,7 +782,7 @@ fun HelpDialog(
                 )
 
                 Text("Developers", fontWeight = FontWeight.Bold, modifier = Modifier.align(Alignment.CenterHorizontally))
-                Divider(color = Color.DarkGray)
+                HorizontalDivider(color = Color.White)
 
                 Text("Franks", modifier = Modifier.align(Alignment.CenterHorizontally))
                 Text("Jonah", modifier = Modifier.align(Alignment.CenterHorizontally))
@@ -956,11 +944,9 @@ fun Advance(isAdvancedMode: Boolean, isLandscape: Boolean, onClick: () -> Unit){
             .clip(RoundedCornerShape(1.dp)),
         onClick = onClick,
         contentPadding = PaddingValues(1.dp),
-        colors = ButtonColors(
-            containerColor = Color.Magenta,
-            contentColor = Color.LightGray,
-            disabledContentColor = Color.Green,
-            disabledContainerColor = Color.Yellow
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color(0xFFE5A255),
+            contentColor = Color.Black
         )
     ) {
         Text(
@@ -969,15 +955,7 @@ fun Advance(isAdvancedMode: Boolean, isLandscape: Boolean, onClick: () -> Unit){
             fontWeight = FontWeight.Bold
         )
     }
-//    CustomButton(
-//        text = if (isAdvancedMode) "Normal" else "Advance",
-//        isEnabled = true,
-//        onClick = {onClick()}
-//    )
 }
-
-@Composable
-fun ParameterField(){}
 
 @Composable
 fun PacketMenuSpinner(
@@ -1120,29 +1098,29 @@ fun InputData(viewModel: RobotControllerViewModel){
 fun Power(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
     // Access the current context (Activity or Context)
     val context = LocalContext.current
+    val view = LocalView.current
     val isOn = viewModel.isPowerOn.value
     Button(
         onClick = {
             viewModel.switchPowerStatus()  // Toggle power status
-            val localisOn = viewModel.isPowerOn.value
-
 
             // Toggle the text based on the power status
             viewModel.setDisplayText(
-                if (localisOn) "<camera live>" else "<camera offline>"
+                if (isOn) "<camera live>" else "<camera offline>"
             )
 
             // Connect to WebSocket when power is turned on
-            if (localisOn) {
+            if (isOn) {
                 viewModel.startCommunication()
 
                 //viewModel.webSocketManager.connect(context)  // Call the connect method when power is ON
             } else {
                 viewModel.endCommunication()
 
-
                 //viewModel.webSocketManager.disconnect()  // Optionally, close the connection when power is OFF
             }
+
+            view.playSoundEffect(SoundEffectConstants.CLICK)
         },
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(if (isOn) 0xFFFF5733 else 0xFF4CAF50), // Green if on, red if off
@@ -1275,7 +1253,7 @@ fun Grab(viewModel: RobotControllerViewModel , isLandscape: Boolean) {
         },
         modifier = Modifier
             .clip(CircleShape)
-            .background(NavBtnColor) // Set the button's background color
+            .background(ManipBtnColor) // Set the button's background color
             .size(if (isLandscape) MediumBtnSize else XLargeBtnSize),
         paddingVal = 6.dp
     )
@@ -1302,7 +1280,7 @@ fun Release(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         },
         modifier = Modifier
             .clip(CircleShape)
-            .background(NavBtnColor) // Set the button's background color
+            .background(ManipBtnColor) // Set the button's background color
             .size(if (isLandscape) MediumBtnSize else XLargeBtnSize),
         paddingVal = 6.dp
     )
@@ -1534,7 +1512,7 @@ fun Extend(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         },
         modifier = Modifier
             .clip(if (isLandscape) RoundedCornerShape(35.dp) else CircleShape)
-            .background(NavBtnColor) // Set the button's background color
+            .background(ArmBtnColor) // Set the button's background color
             .size(if (isLandscape) VertButtonSize else XLargeBtnSize),
         paddingVal = 6.dp
     )
@@ -1560,7 +1538,7 @@ fun Retract(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         },
         modifier = Modifier
             .clip(if (isLandscape) RoundedCornerShape(35.dp) else CircleShape)
-            .background(NavBtnColor) // Set the button's background color
+            .background(ArmBtnColor) // Set the button's background color
             .size(if (isLandscape) VertButtonSize else XLargeBtnSize),
         paddingVal = 6.dp
     )

@@ -2,30 +2,26 @@
 
 package com.example.demorobocontrollerapp.settings
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import android.util.Log
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.rounded.CheckCircleOutline
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -35,19 +31,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import android.util.Log;
-import androidx.compose.material3.HorizontalDivider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.wear.compose.material.Checkbox
-import com.example.demorobocontrollerapp.helpers.CustomButton
 
 
 ////use as 'preview'
@@ -84,6 +81,7 @@ import com.example.demorobocontrollerapp.helpers.CustomButton
 
 @Composable
 fun DisplaySetting(viewModel: SettingViewModel = hiltViewModel(), onBackPressed: () -> Unit) {
+    val focusManager = LocalFocusManager.current
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -109,7 +107,12 @@ fun DisplaySetting(viewModel: SettingViewModel = hiltViewModel(), onBackPressed:
                 modifier = Modifier
                     .padding(it)
                     .fillMaxSize()
-                    .padding(0.dp, 10.dp, 0.dp, 10.dp)
+                    .padding(10.dp)
+                    .pointerInput(Unit){
+                        detectTapGestures(onTap = {
+                            focusManager.clearFocus()
+                        })
+                    }
             ) {
                 val settings by viewModel.uiState.collectAsStateWithLifecycle()
                 if (settings is SettingsModelUiState.Success) {
@@ -168,6 +171,8 @@ internal fun CheckBoxSettingsPair(viewModel: SettingViewModel, key: String, disp
 
 @Composable
 internal fun EditableSettingsPair(viewModel: SettingViewModel, key: String, display: String, setting: String) {
+    var input by remember { mutableStateOf(setting) }
+    val textField = FocusRequester()
     Row (
         modifier = Modifier
             .fillMaxWidth()
@@ -175,25 +180,38 @@ internal fun EditableSettingsPair(viewModel: SettingViewModel, key: String, disp
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            modifier = Modifier.padding(10.dp,0.dp),
+            modifier = Modifier.weight(1f),
             text = display,
             color = Color.Black,
         )
         TextField(
-            value = TextFieldValue(setting, selection = TextRange(setting.length)),
+            value = TextFieldValue(input, selection = TextRange(input.length)),
             onValueChange = { newValue: TextFieldValue ->
-                viewModel.updateById(key, newValue.text);
-                Log.d("Settings", "Updated field ${key} to value ${newValue.text}")
+                input = newValue.text
+                viewModel.updateById(key, input)
+                Log.d("Settings", "Updated field $key to value $input")
             },
-            modifier = Modifier.padding(20.dp,0.dp,0.dp,0.dp),
-            colors = TextFieldDefaults.colors(
-
-            ),
+            modifier = Modifier
+                .padding(10.dp, 0.dp, 0.dp, 0.dp)
+                .weight(2f),
+            singleLine = true,
             keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Done,
                 capitalization = KeyboardCapitalization.None,
                 autoCorrectEnabled = false,
                 keyboardType = KeyboardType.Number,
-                showKeyboardOnFocus = true)
+                showKeyboardOnFocus = true
+            ),
+            keyboardActions = KeyboardActions(){
+                viewModel.updateById(key, input.trim())
+                Log.d("Settings", "Updated field $key to value ${input.trim()}")
+                textField.freeFocus()
+            },
+            colors = TextFieldDefaults.colors(
+                cursorColor = Color.Black
+            ),
+            trailingIcon = { Icon(imageVector = Icons.Rounded.CheckCircleOutline, contentDescription = "valid input") }
+            //TODO: ask abt validation
         )
     }
 }
@@ -207,175 +225,16 @@ internal fun SettingPair(display: String, setting: String) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            modifier = Modifier.padding(10.dp,0.dp),
+            modifier = Modifier.weight(1f),
             text = display,
-            color = Color.Black,
+            color = Color.Black
         )
         Text(
-            modifier = Modifier.padding(20.dp,0.dp,0.dp,0.dp),
+            modifier = Modifier
+                .padding(20.dp, 0.dp, 0.dp, 0.dp)
+                .weight(2f),
             text = setting,
             color = Color.DarkGray,
         )
     }
 }
-
-@Composable
-fun PhoneIP(ip: String) {
-    Row (
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(0.dp, 10.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            modifier = Modifier.padding(10.dp,0.dp),
-            text = "Phone IP:",
-            color = Color.Black,
-        )
-        Text(
-            modifier = Modifier.padding(20.dp,0.dp,0.dp,0.dp),
-            text = ip,
-            color = Color.DarkGray,
-        )
-    }
-}
-
-@Composable
-fun RobotIP(ip: String) {
-    Row (
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(0.dp, 10.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            modifier = Modifier.padding(10.dp,0.dp),
-            text = "Robot IP:",
-            color = Color.Black,
-        )
-        Text(
-            modifier = Modifier.padding(20.dp,0.dp,0.dp,0.dp),
-            text = ip,
-            color = Color.DarkGray,
-        )
-    }
-}
-
-@Composable
-fun WirelessConnection(wifi: String) {
-    Row (
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(0.dp, 10.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            modifier = Modifier.padding(10.dp,0.dp),
-            text = "Wireless:",
-            color = Color.Black,
-        )
-        Text(
-            modifier = Modifier.padding(21.dp,0.dp,0.dp,0.dp),
-            text = wifi,
-            color = Color.DarkGray,
-        )
-    }
-}
-
-//editable port
-@Composable
-fun Port (currentValue: String, onSave: (String) -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            modifier = Modifier
-                .padding(start = 10.dp)
-                .weight(1f),
-            text = "Port:",
-            color = Color.Black,
-        )
-        Row(
-            Modifier
-                .weight(2f)
-                .padding(0.dp),
-            verticalAlignment = Alignment.CenterVertically
-        )
-        {
-            var inputPort by remember { mutableStateOf(currentValue) }
-            BasicTextField(
-                modifier = Modifier
-                    .weight(1f)
-                    .background(Color.DarkGray)
-                    .padding(bottom = 1.dp)
-                    .background(Color.White),
-                textStyle = LocalTextStyle.current.copy(fontSize = 18.sp),
-                value = inputPort,
-                onValueChange = { inputPort = it },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                singleLine = true,
-                decorationBox = { innerTextField ->
-                    Row(
-                        modifier = Modifier.padding(horizontal = 5.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        innerTextField()
-                    }
-                }
-            )
-
-            Box(modifier = Modifier.weight(1f)){
-                CustomButton(
-                    text = if (currentValue != inputPort) "Save" else "Saved",
-                    isEnabled = (currentValue != inputPort),
-                    padding = PaddingValues(start = 15.dp),
-                    onClick = {onSave(inputPort)}
-                )
-            }
-        }
-    }
-}
-
-//advanced mode switch
-//@Composable
-//fun AdvMode(state: MutableState<Boolean> = remember { mutableStateOf(false) }){
-//    Row(
-//        modifier = Modifier.fillMaxWidth(),
-//        verticalAlignment = Alignment.CenterVertically,
-//        horizontalArrangement = Arrangement.Center
-//    ){
-//        Text(
-//            modifier = Modifier.padding(end = 20.dp),
-//            text = "Advanced Mode"
-//        )
-//        Switch(
-//            checked = state.value,
-//            onCheckedChange = {
-//                state.value = it
-//                //add advanced display sheet (collapsable) / mask on top of screen
-//            },
-//            thumbContent = if (state.value) {
-//                {
-//                    Icon(
-//                        imageVector = Icons.Filled.Check,
-//                        "",
-//                        Modifier.size(SwitchDefaults.IconSize),
-//                        tint = Color.White
-//                    )
-//                }
-//            }else{
-//                null
-//            },
-//            colors = SwitchDefaults.colors(
-//                checkedThumbColor = MaterialTheme.colorScheme.primary,
-//                checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
-//                uncheckedThumbColor = MaterialTheme.colorScheme.secondary,
-//                uncheckedTrackColor = MaterialTheme.colorScheme.secondaryContainer,
-//            )
-//        )
-//    }
-//}

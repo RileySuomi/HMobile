@@ -1,5 +1,6 @@
 package com.example.demorobocontrollerapp.helpers
 
+import android.view.SoundEffectConstants
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -29,8 +30,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
@@ -61,6 +64,8 @@ fun GlowingButton(
     paddingVal: Dp = 10.dp,
     shape: RoundedCornerShape = CircleShape
 ) {
+    val view = LocalView.current
+
     // Track button press state
     var isPressed by remember { mutableStateOf(false) }
 
@@ -113,7 +118,8 @@ fun GlowingButton(
                     )
                 }
             }
-            .padding(paddingVal), // Inner padding for content
+            .padding(paddingVal)
+            .onFocusChanged { view.playSoundEffect(SoundEffectConstants.CLICK) }, // Inner padding for content
         contentAlignment = Alignment.Center
     ) {
         // Use Row to align text and icon horizontally
