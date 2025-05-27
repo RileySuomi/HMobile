@@ -90,6 +90,12 @@ class RobotNetworkDataSource @Inject constructor() : NetworkResultDataSource {
         sendMessage(gson.toJson(movementElement) + "\n")
     }
 
+    override fun sendExtend(value: Float) {
+        checkNetworkStart()
+        var movementElement: JsonObject = gson.toJsonTree(NetworkExtenderInstruction(value)) as JsonObject
+        sendMessage(gson.toJson(movementElement) + "\n")
+    }
+
     override fun sendGrabber(value: GrabberInstruction) {
         checkNetworkStart()
         val grab: JsonObject = gson.toJsonTree(NetworkGrabberInstruction(value)) as JsonObject

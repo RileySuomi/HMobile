@@ -11,6 +11,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.demorobocontrollerapp.data.RobotInfoRepository
 import com.example.demorobocontrollerapp.data.source.local.settings.prefversion.DataStoreRepo
 import com.example.demorobocontrollerapp.data.source.network.tcpdatarequests.GrabberInstruction
@@ -216,13 +217,13 @@ class RobotControllerViewModel @Inject constructor(
 
     fun lift() {
         viewModelScope.launch(Dispatchers.IO) {
-            robotRepository.sendLiftLower(0.1f)
+            robotRepository.sendLiftLower(0.5f)
         }
     }
 
     fun lower() {
         viewModelScope.launch(Dispatchers.IO) {
-            robotRepository.sendLiftLower(-0.1f)
+            robotRepository.sendLiftLower(-0.5f)
         }
     }
 
@@ -237,6 +238,18 @@ class RobotControllerViewModel @Inject constructor(
     fun release() {
         viewModelScope.launch(Dispatchers.IO) {
             robotRepository.sendGrabber(GrabberInstruction.Open)
+        }
+    }
+
+    fun extend() {
+        viewModelScope.launch(Dispatchers.IO) {
+            robotRepository.sendExtendRetract(0.5f)
+        }
+    }
+
+    fun retract() {
+        viewModelScope.launch(Dispatchers.IO) {
+            robotRepository.sendExtendRetract(-0.5f)
         }
     }
 

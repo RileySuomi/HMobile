@@ -21,6 +21,8 @@ interface RobotInfoRepository {
 
     suspend fun sendLiftLower(height: Float)
 
+    suspend fun sendExtendRetract(height: Float)
+
     suspend fun sendMapRequest()
 
     suspend fun listenForMap()

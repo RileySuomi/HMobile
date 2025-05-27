@@ -1503,7 +1503,8 @@ fun Extend(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         shape = RoundedCornerShape(35.dp),
         onPress = {
             if(viewModel.isPowerOn.value) {
-                viewModel.webSocketManager.sendMessage("Extend")
+                viewModel.extend()
+                //viewModel.webSocketManager.sendMessage("Extend")
                 viewModel.setDisplayText("Extending arm...")
             }
         },
@@ -1529,7 +1530,8 @@ fun Retract(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         shape = RoundedCornerShape(35.dp),
         onPress = {
             if(viewModel.isPowerOn.value) {
-                viewModel.webSocketManager.sendMessage("Retract")
+                viewModel.retract()
+                //viewModel.webSocketManager.sendMessage("Retract")
                 viewModel.setDisplayText("Retracting arm...")
             }
         },

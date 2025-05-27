@@ -96,6 +96,10 @@ class DefaultRobotInfoRepository @Inject constructor(
         networkResultDataSource.sendLifter(height)
     }
 
+    override suspend fun sendExtendRetract(height: Float) {
+        networkResultDataSource.sendExtend(height)
+    }
+
     override fun getUpdates(): Flow<List<Command>> {
         TODO("Not yet implemented")
     }

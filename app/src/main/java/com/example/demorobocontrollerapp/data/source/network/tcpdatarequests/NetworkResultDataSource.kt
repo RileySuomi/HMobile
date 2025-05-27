@@ -14,6 +14,8 @@ interface NetworkResultDataSource {
 
     fun sendLifter(value: Float)
 
+    fun sendExtend(value: Float)
+
     fun sendGrabber(value: GrabberInstruction)
 
     fun updateRobotStatus()

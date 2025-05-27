@@ -15,6 +15,10 @@ data class NetworkLiftInstruction(
     val heightIncrement: Float
 )
 
+data class NetworkExtenderInstruction(
+    val extenderIncrement: Float
+)
+
 data class RobotUpdate(
     val battery: Float,
     val temp: Float,
