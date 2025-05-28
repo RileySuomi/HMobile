@@ -95,7 +95,7 @@ fun MapScreen(
 
                 // Embed ImageView using AndroidView
                 Log.d("2", "2")
-                val mapBitmap by viewModel.mapBitmap.collectAsState()
+                val mapBitmap by viewModel._mapBitmap.collectAsState(initial = null)
                 Log.d("3", "3")
                 AndroidView(
                     factory = { context ->

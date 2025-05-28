@@ -194,7 +194,6 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(),
                 },
                 actions = {
                     IconButton(onClick = {onMapPressed()}) {
-                        viewModel.listenForMap()
                         Icon(
                             imageVector = Icons.Filled.Search,
                             contentDescription = "Go to map"

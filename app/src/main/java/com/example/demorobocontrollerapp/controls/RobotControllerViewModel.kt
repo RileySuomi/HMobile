@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.example.demorobocontrollerapp.data.source.network.unused.WebSocketClient
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 
 @HiltViewModel
@@ -61,8 +62,8 @@ class RobotControllerViewModel @Inject constructor(
     private var _isAdvancedMode = MutableStateFlow(false)
     val isAdvancedMode = _isAdvancedMode.asStateFlow()
 
-    private val _mapBitmap = MutableStateFlow<Bitmap?>(null)
-    val mapBitmap: StateFlow<Bitmap?> = _mapBitmap
+    val _mapBitmap = MutableStateFlow<Bitmap?>(null)
+    var mapBitmap: Flow<Bitmap?> = _mapBitmap
 
     data class PacketInfo(
         val id: String,
@@ -182,6 +183,8 @@ class RobotControllerViewModel @Inject constructor(
     fun startCommunication() {
         viewModelScope.launch(Dispatchers.IO) {
             robotRepository.beginCommunication()
+            delay(1000)
+            listenForMap()
         }
     }
 
@@ -259,10 +262,12 @@ class RobotControllerViewModel @Inject constructor(
         }
     }
 
-    fun listenForMap() {
+    private fun listenForMap() {
         viewModelScope.launch(Dispatchers.IO) {
-            robotRepository.getMapState()
-        }
+            robotRepository.getMapState().collect { bitmap ->
+                _mapBitmap.value = bitmap
+            }
+        }//dolphin
     }
 
     fun sendZeroLift(){
