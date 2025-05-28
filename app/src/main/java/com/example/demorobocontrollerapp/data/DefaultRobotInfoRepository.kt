@@ -104,6 +104,10 @@ class DefaultRobotInfoRepository @Inject constructor(
         TODO("Not yet implemented")
     }
 
+    override suspend fun giveMeMap(): Bitmap {
+        return networkResultDataSource.sendAndGetMap()
+    }
+
     override suspend fun sendMapRequest(){
         networkResultDataSource.sendMapRequest()
     }

@@ -11,6 +11,8 @@ interface RobotInfoRepository {
 
     fun endCommunication()
 
+    suspend fun giveMeMap(): Bitmap
+
     suspend fun updateSettings(key: String, screenName: String, value: String, editable: Boolean = true): Int
 
     suspend fun updateSetting(key: String, value: String)

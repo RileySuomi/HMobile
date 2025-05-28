@@ -79,7 +79,8 @@ object DatabaseModule  {
                 super.onCreate(db)
                 db.execSQL("INSERT INTO settingsObjects (settingName, settingDisplayName, settingValue, editable) VALUES" +
                         "('robotIp', 'Robot IP', '72.233.179.204', 1)," +
-                        "('robotPort', 'Robot Port', '65432', 1);")
+                        "('robotPort', 'Robot Port', '65432', 1)," +
+                        "('minnieMode', 'Minnie Mode?', 'True');")
             }
         }).build()
 

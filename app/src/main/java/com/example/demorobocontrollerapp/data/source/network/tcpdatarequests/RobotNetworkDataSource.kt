@@ -20,6 +20,7 @@ import javax.net.SocketFactory
 import javax.net.ssl.SSLSocket
 import javax.net.ssl.SSLSocketFactory
 import android.graphics.Bitmap.Config
+import android.graphics.Bitmap.createBitmap
 import com.example.demorobocontrollerapp.data.source.network.tcpdatarequests.MapMetadata
 import java.io.InputStreamReader
 
@@ -104,6 +105,45 @@ class RobotNetworkDataSource @Inject constructor() : NetworkResultDataSource {
         sendMessage(gson.toJson(grab) + "\n")
     }
 
+    override fun sendAndGetMap(): Bitmap {
+        checkNetworkStart()
+        sendMessage("get_map")
+        try {
+            val jsonString = reader?.readLine() ?: return createBitmap(1,1)
+            val json = JSONObject(jsonString)
+
+            val width = json.getInt("width")
+            val height = json.getInt("height")
+            val resolution = json.getDouble("resolution").toFloat()
+            //val origin = json.getJSONObject("origin")
+           // val originX = origin.getDouble("x").toFloat()
+            //val originY = origin.getDouble("y").toFloat()
+
+            mapMetadata = MapMetadata(resolution, 0f, 0f, width, height)
+
+            val dataArray = json.getJSONArray("data")
+
+            val bitmap = createBitmap(width, height)
+            for (y in 0 until height) {
+                for (x in 0 until width) {
+                    val i = (height - 1 - y) * width + x  // flip y-axis
+                    val value = dataArray.getInt(i)
+                    val color = when (value) {
+                        -1 -> Color.GRAY       // unknown
+                        0 -> Color.WHITE       // free space
+                        100 -> Color.BLACK     // occupied
+                        else -> Color.RED               // unexpected
+                    }
+                    bitmap[x, y] = color  // Android's (0,0) is top-left
+                }
+            }
+            return bitmap;
+        } catch (e: Exception) {
+            Log.e("RobotConnection", "Error while listening for map: ${e.message}")
+        }
+        return createBitmap(1, 1)
+    }
+
     override fun sendMapRequest() {
         checkNetworkStart()
         sendMessage("get_map")
@@ -144,8 +184,8 @@ class RobotNetworkDataSource @Inject constructor() : NetworkResultDataSource {
                             bitmap[x, y] = color  // Android's (0,0) is top-left
                         }
                     }
-
                     currentMap = bitmap
+                    onMapReceived.invoke(currentMap)
                 }
             } catch (e: Exception) {
                 Log.e("RobotConnection", "Error while listening for map: ${e.message}")
@@ -174,6 +214,8 @@ class RobotNetworkDataSource @Inject constructor() : NetworkResultDataSource {
         var movementElement: JsonObject = gson.toJsonTree(NetworkExtenderInstruction(value)) as JsonObject
         sendMessage(gson.toJson(movementElement) + "\n")
     }
+
+
 
 
     override fun updateRobotStatus() {

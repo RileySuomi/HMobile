@@ -162,10 +162,6 @@ class RobotControllerViewModel @Inject constructor(
         }
     }
 
-    fun openConnection() {
-
-    }
-
     fun hardRotationRight() {
         viewModelScope.launch(Dispatchers.IO) {
             Log.d("Rotation", "Send hard rotation right")
@@ -183,8 +179,7 @@ class RobotControllerViewModel @Inject constructor(
     fun startCommunication() {
         viewModelScope.launch(Dispatchers.IO) {
             robotRepository.beginCommunication()
-            delay(1000)
-            listenForMap()
+
         }
     }
 
@@ -258,15 +253,18 @@ class RobotControllerViewModel @Inject constructor(
 
     fun getMap() {
         viewModelScope.launch(Dispatchers.IO) {
-            robotRepository.sendMapRequest()
+            _mapBitmap.value = robotRepository.giveMeMap()
         }
     }
 
     private fun listenForMap() {
         viewModelScope.launch(Dispatchers.IO) {
-            robotRepository.getMapState().collect { bitmap ->
-                _mapBitmap.value = bitmap
+            robotRepository.listenForMap {
+                bitmap -> _mapBitmap.value = bitmap
             }
+//            robotRepository.getMapState().collect { bitmap ->
+//                _mapBitmap.value = bitmap
+//            }
         }
     }
 

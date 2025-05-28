@@ -1099,10 +1099,11 @@ fun Power(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
     // Access the current context (Activity or Context)
     val context = LocalContext.current
     val view = LocalView.current
-    val isOn = viewModel.isPowerOn.value
+    var isOn = viewModel.isPowerOn.value
     Button(
         onClick = {
             viewModel.switchPowerStatus()  // Toggle power status
+            isOn = viewModel.isPowerOn.value
 
             // Toggle the text based on the power status
             viewModel.setDisplayText(

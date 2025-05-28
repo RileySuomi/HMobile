@@ -32,4 +32,6 @@ interface NetworkResultDataSource {
 
     fun sendCoordinates(xCoordinate: Float, yCoordinate: Float)
 
+    fun sendAndGetMap(): Bitmap
+
 }
