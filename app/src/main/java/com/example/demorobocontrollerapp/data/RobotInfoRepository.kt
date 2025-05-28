@@ -25,7 +25,11 @@ interface RobotInfoRepository {
 
     suspend fun sendMapRequest()
 
-    suspend fun listenForMap()
+    suspend fun listenForMap(onMapReceived: (Bitmap) -> Unit)
+
+    suspend fun sendZeroMovementLift(height: Float)
+
+    suspend fun sendZeroMovementRetract(height: Float)
 
     suspend fun sendCoordinates(xCoordinate: Float, yCoordinate: Float)
 

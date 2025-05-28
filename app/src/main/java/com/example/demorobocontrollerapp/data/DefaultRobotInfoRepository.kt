@@ -108,8 +108,8 @@ class DefaultRobotInfoRepository @Inject constructor(
         networkResultDataSource.sendMapRequest()
     }
 
-    override suspend fun listenForMap(){
-        networkResultDataSource.listenForMap()
+    override suspend fun listenForMap(onMapReceived: (Bitmap) -> Unit){
+        networkResultDataSource.listenForMap(onMapReceived)
     }
 
     override suspend fun sendCoordinates(xCoordinate: Float, yCoordinate: Float){
@@ -124,6 +124,14 @@ class DefaultRobotInfoRepository @Inject constructor(
         return flow{
             networkResultDataSource.currentMap
         }
+    }
+
+    override suspend fun sendZeroMovementLift(height: Float) {
+        networkResultDataSource.sendZeroLift(height)
+    }
+
+    override suspend fun sendZeroMovementRetract(height: Float) {
+        networkResultDataSource.sendZeroRetract(height)
     }
 
 

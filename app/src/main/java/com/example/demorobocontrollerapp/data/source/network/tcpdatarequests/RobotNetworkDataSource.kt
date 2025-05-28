@@ -21,6 +21,7 @@ import javax.net.ssl.SSLSocket
 import javax.net.ssl.SSLSocketFactory
 import android.graphics.Bitmap.Config
 import com.example.demorobocontrollerapp.data.source.network.tcpdatarequests.MapMetadata
+import java.io.InputStreamReader
 
 class RobotNetworkDataSource @Inject constructor() : NetworkResultDataSource {
     private var socketConnection: Socket = Socket()
@@ -53,6 +54,7 @@ class RobotNetworkDataSource @Inject constructor() : NetworkResultDataSource {
 
             socketConnection.connect(InetSocketAddress(host, port), 5000)//context.createSocket(host, port)
             val stream = socketConnection.getOutputStream()
+            reader = BufferedReader(InputStreamReader(socketConnection.getInputStream()))
 
             writer = PrintWriter(stream)
 
@@ -107,7 +109,8 @@ class RobotNetworkDataSource @Inject constructor() : NetworkResultDataSource {
         sendMessage("get_map")
     }
 
-    override fun listenForMap() {
+    override fun listenForMap(onMapReceived: (Bitmap) -> Unit) {
+        Log.d("1", "1")
         if (reader == null) return
 
         Thread {
@@ -158,6 +161,18 @@ class RobotNetworkDataSource @Inject constructor() : NetworkResultDataSource {
             addProperty("y", yCoordinate)
         }
         sendMessage(gson.toJson(goal) + "\n")
+    }
+
+    override fun sendZeroLift(value: Float) {
+        checkNetworkStart()
+        var movementElement: JsonObject = gson.toJsonTree(NetworkLiftInstruction(value)) as JsonObject
+        sendMessage(gson.toJson(movementElement) + "\n")
+    }
+
+    override fun sendZeroRetract(value: Float) {
+        checkNetworkStart()
+        var movementElement: JsonObject = gson.toJsonTree(NetworkExtenderInstruction(value)) as JsonObject
+        sendMessage(gson.toJson(movementElement) + "\n")
     }
 
 

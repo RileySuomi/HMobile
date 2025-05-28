@@ -217,13 +217,13 @@ class RobotControllerViewModel @Inject constructor(
 
     fun lift() {
         viewModelScope.launch(Dispatchers.IO) {
-            robotRepository.sendLiftLower(0.5f)
+            robotRepository.sendLiftLower(-1.0f)
         }
     }
 
     fun lower() {
         viewModelScope.launch(Dispatchers.IO) {
-            robotRepository.sendLiftLower(-0.5f)
+            robotRepository.sendLiftLower(1.0f)
         }
     }
 
@@ -243,19 +243,37 @@ class RobotControllerViewModel @Inject constructor(
 
     fun extend() {
         viewModelScope.launch(Dispatchers.IO) {
-            robotRepository.sendExtendRetract(0.5f)
+            robotRepository.sendExtendRetract(-1.0f)
         }
     }
 
     fun retract() {
         viewModelScope.launch(Dispatchers.IO) {
-            robotRepository.sendExtendRetract(-0.5f)
+            robotRepository.sendExtendRetract(1.0f)
         }
     }
 
     fun getMap() {
         viewModelScope.launch(Dispatchers.IO) {
             robotRepository.sendMapRequest()
+        }
+    }
+
+    fun listenForMap() {
+        viewModelScope.launch(Dispatchers.IO) {
+            robotRepository.getMapState()
+        }
+    }
+
+    fun sendZeroLift(){
+        viewModelScope.launch(Dispatchers.IO) {
+            robotRepository.sendZeroMovementLift(0f)
+        }
+    }
+
+    fun sendZeroRetract(){
+        viewModelScope.launch(Dispatchers.IO) {
+            robotRepository.sendZeroMovementRetract(0f)
         }
     }
 

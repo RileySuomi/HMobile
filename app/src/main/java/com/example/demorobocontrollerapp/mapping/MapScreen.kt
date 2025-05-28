@@ -4,6 +4,7 @@ package com.example.demorobocontrollerapp
 
 import android.annotation.SuppressLint
 import android.graphics.Matrix
+import android.util.Log
 import android.view.MotionEvent
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -93,8 +94,9 @@ fun MapScreen(
                 var imageViewRef: ImageView? = null
 
                 // Embed ImageView using AndroidView
+                Log.d("2", "2")
                 val mapBitmap by viewModel.mapBitmap.collectAsState()
-
+                Log.d("3", "3")
                 AndroidView(
                     factory = { context ->
                         ImageView(context).apply {

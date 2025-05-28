@@ -194,6 +194,7 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(),
                 },
                 actions = {
                     IconButton(onClick = {onMapPressed()}) {
+                        viewModel.listenForMap()
                         Icon(
                             imageVector = Icons.Filled.Search,
                             contentDescription = "Go to map"
@@ -1314,6 +1315,7 @@ fun Lift(viewModel: RobotControllerViewModel, isLandscape: Boolean) { // 'Lift' 
         },
         onRelease = {
             viewModel.setDisplayText("")
+            viewModel.sendZeroLift()
         },
         modifier = Modifier
             .clip(if (isLandscape) RoundedCornerShape(32.dp) else CircleShape)
@@ -1351,6 +1353,7 @@ fun Lower(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         },
         onRelease = {
             viewModel.setDisplayText("")
+            viewModel.sendZeroLift()
         },
         modifier = Modifier
             .clip(if (isLandscape) RoundedCornerShape(32.dp) else CircleShape)
@@ -1510,6 +1513,7 @@ fun Extend(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         },
         onRelease = {
             viewModel.setDisplayText("")
+            viewModel.sendZeroRetract()
         },
         modifier = Modifier
             .clip(if (isLandscape) RoundedCornerShape(35.dp) else CircleShape)
@@ -1537,6 +1541,7 @@ fun Retract(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         },
         onRelease = {
             viewModel.setDisplayText("")
+            viewModel.sendZeroRetract()
         },
         modifier = Modifier
             .clip(if (isLandscape) RoundedCornerShape(35.dp) else CircleShape)

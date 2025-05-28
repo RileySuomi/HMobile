@@ -24,7 +24,11 @@ interface NetworkResultDataSource {
 
     fun sendMapRequest()
 
-    fun listenForMap()
+    fun listenForMap(onMapReceived: (Bitmap) -> Unit)
+
+    fun sendZeroLift(value: Float)
+
+    fun sendZeroRetract(value: Float)
 
     fun sendCoordinates(xCoordinate: Float, yCoordinate: Float)
 
