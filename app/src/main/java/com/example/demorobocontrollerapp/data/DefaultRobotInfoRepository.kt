@@ -122,7 +122,7 @@ class DefaultRobotInfoRepository @Inject constructor(
 
     override suspend fun getMapState():Flow<Bitmap>{
         return flow{
-            networkResultDataSource.currentMap
+            emit(networkResultDataSource.currentMap)
         }
     }
 

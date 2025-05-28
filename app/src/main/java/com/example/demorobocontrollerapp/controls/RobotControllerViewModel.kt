@@ -267,7 +267,7 @@ class RobotControllerViewModel @Inject constructor(
             robotRepository.getMapState().collect { bitmap ->
                 _mapBitmap.value = bitmap
             }
-        }//dolphin
+        }
     }
 
     fun sendZeroLift(){
