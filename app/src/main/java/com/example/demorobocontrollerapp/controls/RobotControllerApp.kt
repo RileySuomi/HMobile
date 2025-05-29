@@ -48,6 +48,8 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Mic
+import androidx.compose.material.icons.rounded.Redo
+import androidx.compose.material.icons.rounded.Undo
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
@@ -58,6 +60,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonColors
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -80,6 +84,7 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -152,15 +157,6 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(),
     val logLines by viewModel.logLines.collectAsState()
     var showHelp by remember { mutableStateOf(false) }
 
-    fun onClick(
-        display: String = "",
-        message: String? = null
-    ) {
-        viewModel.setDisplayText(display)
-        message?.let{viewModel.webSocketManager.sendMessage(message)}
-        view.playSoundEffect(SoundEffectConstants.CLICK)
-    }
-
 //    val microphonePermissionState = rememberPermissionState(android.Manifest.permission.RECORD_AUDIO)
 //    fun onVoiceClick(){
 //        if (microphonePermissionState.status.isGranted) {
@@ -229,6 +225,15 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(),
                                 modifier = Modifier.weight(4f)
                             ) {
                                 ShowMonitor(viewModel.displayText.value)
+                                MonitorSwitch(viewModel, Modifier.align(Alignment.TopCenter).height(48.dp).fillMaxWidth(.15f))
+                                Row(
+                                    modifier = Modifier.align(Alignment.TopEnd).padding(5.dp, 10.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ){
+                                    Undo(viewModel)
+                                    Redo(viewModel)
+                                }
                             }
                             Row(
                                 modifier = Modifier
@@ -357,6 +362,15 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(),
                             modifier = Modifier.weight(2.5f)
                         ) {
                             ShowMonitor(viewModel.displayText.value)
+                            MonitorSwitch(viewModel, Modifier.align(Alignment.TopCenter).height(48.dp).fillMaxWidth(.15f))
+                            Row(
+                                modifier = Modifier.align(Alignment.TopEnd).padding(5.dp, 10.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ){
+                                Undo(viewModel)
+                                Redo(viewModel)
+                            }
                         }
 
                         Spacer(Modifier.weight(.05f))
@@ -375,7 +389,7 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(),
                                 horizontalArrangement = Arrangement.SpaceEvenly,
                                 Alignment.CenterVertically,
                             ) {
-                                Box(Modifier.weight(1f), contentAlignment = Alignment.Center){
+                                Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
                                     Advance(
                                         isAdvancedMode.value,
                                         isLandscape = true,
@@ -383,7 +397,7 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(),
                                     )
                                 }
                                 Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                                    Power(viewModel,isLandscape)
+                                    Power(viewModel, isLandscape)
                                 }
                                 Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
                                     // TODO: Landscape
@@ -392,7 +406,8 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(),
                                         "J",
                                         fontWeight = FontWeight.Bold,
                                         color = if (viewModel.usingJoystick.value) Color(0xFFF24236) else Color.DarkGray,
-                                        modifier = Modifier.align(Alignment.CenterEnd)
+                                        modifier = Modifier
+                                            .align(Alignment.CenterEnd)
                                             .fillMaxWidth(.3f)
                                     )
                                 }
@@ -410,74 +425,14 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(),
 //                            }
 
                             //control
-                            Box(
+                            ControlBox(
+                                isLandscape,
+                                viewModel.usingJoystick.value,
                                 modifier = Modifier
                                     .weight(2f)
-                                    .fillMaxSize()
-                            ) {
-                                if (!viewModel.usingJoystick.value) {
-                                    Box(modifier = Modifier.align(Alignment.TopCenter)) {
-                                        Forward(viewModel, isLandscape)
-                                    }
-                                    Row(
-                                        modifier = Modifier
-                                            .align(Alignment.Center)
-                                            .fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceEvenly
-                                    ) {
-                                        Left(viewModel, isLandscape)
-                                        Spacer(modifier = Modifier.weight(0.7f))
-                                        Right(viewModel, isLandscape)
-                                    }
-                                    Box(modifier = Modifier.align(Alignment.BottomCenter)) {
-                                        Backward(viewModel, isLandscape)
-                                    }
-                                } else {
-                                    JoyStick(viewModel)
-                                }
-
-                                Box(
-                                    Modifier
-                                        .align(Alignment.TopEnd)
-                                        .fillMaxSize(0.3f), contentAlignment = Alignment.Center
-                                ) {
-                                    Turn(
-                                        icon = Icons.Filled.Rotate90DegreesCw,
-                                        isLandscape = isLandscape,
-                                        enable = viewModel.isPowerOn.value,
-                                        onPress = {
-                                            viewModel.hardRotationRight()
-                                            onClick(
-                                                "Turning Right 90deg",
-                                                "Turn right 90deg"
-                                            )
-
-                                        },
-                                        onRelease = { onClick() }
-                                    )
-                                }
-
-                                Box(
-                                    Modifier
-                                        .align(Alignment.TopStart)
-                                        .fillMaxSize(0.3f), contentAlignment = Alignment.Center
-                                ) {
-                                    Turn(
-                                        "left",
-                                        icon = Icons.Filled.Rotate90DegreesCcw,
-                                        isLandscape = isLandscape,
-                                        enable = viewModel.isPowerOn.value,
-                                        onPress = {
-                                            viewModel.hardRotationLeft()
-                                            onClick(
-                                                "Turning Left 90deg",
-                                                "Turn left 90deg"
-                                            )
-                                        },
-                                        onRelease = { onClick() }
-                                    )
-                                }
-                            }
+                                    .fillMaxSize(),
+                                viewModel
+                            )
                         }
 
                         Spacer(Modifier.weight(.05f))
@@ -494,7 +449,16 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(),
                         contentAlignment = Alignment.Center,
                         modifier = Modifier.weight(1f)
                     ) {
-                        ShowMonitor(viewModel.displayText.value) // .value makes it a string
+                        ShowMonitor(viewModel.displayText.value)
+                        MonitorSwitch(viewModel, Modifier.align(Alignment.TopCenter).fillMaxWidth(.2f))
+                        Row(
+                            modifier = Modifier.align(Alignment.BottomEnd).padding(10.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ){
+                            Undo(viewModel)
+                            Redo(viewModel)
+                        }
                     }
 
                     // Power button, joystick toggle, advance button
@@ -512,7 +476,9 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(),
                                 "J",
                                 fontWeight = FontWeight.Bold,
                                 color = if (viewModel.usingJoystick.value) Color(0xFFF24236) else Color.DarkGray,
-                                modifier = Modifier.align(Alignment.CenterEnd).fillMaxWidth(.3f)
+                                modifier = Modifier
+                                    .align(Alignment.CenterEnd)
+                                    .fillMaxWidth(.3f)
                             )
                         }
                         Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
@@ -568,93 +534,16 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(),
                         }
 
                         // Navigation section
-                        Box(
+                        ControlBox(
+                            isLandscape,
+                            viewModel.usingJoystick.value,
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxWidth()
-                                .padding(horizontal = 8.dp)
-                        ){
-                            if (!viewModel.usingJoystick.value) {
-                                Box(
-                                    modifier = Modifier.align(Alignment.TopCenter)
-                                ) {
-                                    Forward(viewModel, isLandscape)
-                                }
-                                Row(
-                                    modifier = Modifier
-                                        .align(Alignment.Center)
-                                        .fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceEvenly
-                                ) {
-                                    Left(viewModel, isLandscape)
-                                    Spacer(modifier = Modifier.weight(0.7f))
-                                    Right(viewModel, isLandscape)
-                                }
-                                Box(
-                                    modifier = Modifier.align(Alignment.BottomCenter)
-                                ) {
-                                    Backward(viewModel, isLandscape)
-                                }
-                            } else {
-                                JoyStick(viewModel)
-                            }
-
-                            Box(
-                                Modifier
-                                    .align(Alignment.TopEnd)
-                                    .fillMaxSize(0.3f), contentAlignment = Alignment.Center
-                            ) {
-                                Turn(
-                                    icon = Icons.Filled.Rotate90DegreesCw,
-                                    isLandscape = isLandscape,
-                                    enable = viewModel.isPowerOn.value,
-
-                                    onPress = { onClick("Turning Right 90deg", "Turn right 90deg")
-                                              viewModel.hardRotationRight()},
-                                    onRelease = {onClick()}
-                                )
-                            }
-
-                            Box(
-                                Modifier
-                                    .align(Alignment.TopStart)
-                                    .fillMaxSize(0.3f), contentAlignment = Alignment.Center
-                            ) {
-                                Turn(
-                                    "left",
-                                    icon = Icons.Filled.Rotate90DegreesCcw,
-                                    isLandscape,
-                                    viewModel.isPowerOn.value,
-                                    onPress = {
-                                        onClick("Turning Left 90deg", "Turn left 90deg")
-                                        viewModel.hardRotationLeft()
-                                              },
-                                    onRelease = {onClick()}
-                                )
-                            }
-
-                            Box(
-                                modifier = Modifier
-                                    .align(Alignment.BottomEnd)
-                                    .fillMaxSize(0.3f),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                GlowingButton(
-                                    icon = {
-                                        IconButton(onClick = {onVoiceCommandPressed()}) {
-                                            Icon(
-                                            imageVector = Icons.Rounded.Mic,
-                                            contentDescription = "Voice Control",
-                                            tint = TextColor
-                                            )
-                                        }
-                                    },
-                                    btnColor = Color.Red,
-                                    onPress = {onVoiceCommandPressed()},
-                                    onRelease = {}
-                                )
-                            }
-                        }
+                                .padding(horizontal = 8.dp),
+                            viewModel,
+                            onVoiceCommandPressed
+                        )
                     } else {
                         Column(
                             modifier = Modifier
@@ -728,6 +617,143 @@ fun DisplayApp(viewModel: RobotControllerViewModel = hiltViewModel(),
 }
 
 @Composable
+fun Undo(viewModel: RobotControllerViewModel){
+    IconButton(
+        onClick = {
+            viewModel.setDisplayText("Undo")
+        },
+        colors = IconButtonDefaults.filledIconButtonColors(Color.White.copy(alpha = .7f))
+    ) {
+        Icon(
+            imageVector = Icons.Rounded.Undo,
+            contentDescription = "Voice Control",
+            tint = MonitorBgColor
+        )
+    }
+}
+
+@Composable
+fun Redo(viewModel: RobotControllerViewModel){
+    IconButton(
+        onClick = {
+            viewModel.setDisplayText("Redo")
+        },
+        colors = IconButtonDefaults.filledIconButtonColors(Color.White.copy(alpha = .7f))
+    ) {
+        Icon(
+            imageVector = Icons.Rounded.Redo,
+            contentDescription = "Voice Control",
+            tint = MonitorBgColor
+        )
+    }
+}
+
+@Composable
+fun ControlBox(
+    isLandscape: Boolean,
+    joystick: Boolean,
+    modifier: Modifier,
+    viewModel: RobotControllerViewModel,
+    onVoiceCommandPressed: (() -> Unit)? = null
+){
+    fun onClick(
+        display: String = "",
+        message: String? = null
+    ) {
+        viewModel.setDisplayText(display)
+        message?.let{viewModel.webSocketManager.sendMessage(message)}
+    }
+
+    // Navigation section
+    Box(
+        modifier = modifier
+    ){
+        if (!joystick) {
+            Box(
+                modifier = Modifier.align(Alignment.TopCenter)
+            ) {
+                Forward(viewModel, isLandscape)
+            }
+            Row(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Left(viewModel, isLandscape)
+                Right(viewModel, isLandscape)
+            }
+            Box(
+                modifier = Modifier.align(Alignment.BottomCenter)
+            ) {
+                Backward(viewModel, isLandscape)
+            }
+        } else {
+            JoyStick(viewModel)
+        }
+
+        Box(
+            Modifier
+                .align(Alignment.TopEnd)
+                .fillMaxSize(0.3f), contentAlignment = Alignment.Center
+        ) {
+            Turn(
+                icon = Icons.Filled.Rotate90DegreesCw,
+                isLandscape = isLandscape,
+                enable = viewModel.isPowerOn.value,
+                onPress = { onClick("Turning Right 90deg", "Turn right 90deg")
+                    viewModel.hardRotationRight()},
+                onRelease = {onClick()}
+            )
+        }
+
+        Box(
+            Modifier
+                .align(Alignment.TopStart)
+                .fillMaxSize(0.3f), contentAlignment = Alignment.Center
+        ) {
+            Turn(
+                "left",
+                icon = Icons.Filled.Rotate90DegreesCcw,
+                isLandscape,
+                viewModel.isPowerOn.value,
+                onPress = {
+                    onClick("Turning Left 90deg", "Turn left 90deg")
+                    viewModel.hardRotationLeft()
+                },
+                onRelease = {onClick()}
+            )
+        }
+
+        if (onVoiceCommandPressed != null) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .fillMaxSize(0.3f),
+                contentAlignment = Alignment.Center
+            ) {
+                IconButton(
+                    {onVoiceCommandPressed()},
+                    enabled = viewModel.isPowerOn.value,
+                    colors = IconButtonColors(
+                        containerColor = Color.Red,
+                        contentColor = Color.Red,
+                        disabledContentColor = Color.DarkGray,
+                        disabledContainerColor = Color.DarkGray
+                    )
+                ){
+                    Icon(
+                        imageVector = Icons.Rounded.Mic,
+                        contentDescription = "Voice Control",
+                        tint = TextColor
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
 fun HelpDialog(
     isLandscape: Boolean,
     modifier: Modifier = Modifier,
@@ -742,7 +768,9 @@ fun HelpDialog(
         contentAlignment = Alignment.Center
     ){
         OutlinedCard(
-            modifier = Modifier.fillMaxSize().padding(16.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
             shape = RoundedCornerShape(10.dp),
             elevation = CardDefaults.outlinedCardElevation(5.dp),
             colors = CardDefaults.outlinedCardColors(Color.DarkGray)
@@ -1058,40 +1086,40 @@ fun ScrollableList(logLines: List<String>){
     }
 }
 
-@Composable
-fun InputData(viewModel: RobotControllerViewModel){
-    var textInput: String by rememberSaveable { mutableStateOf("") }
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ){
-        TextField(
-            value = textInput,
-            onValueChange = { newText ->
-                textInput = newText
-            },
-            placeholder = {
-                Text(text = "Data input")
-            }
-        )
-        CustomButton(
-            text = "Send",
-            isEnabled = true,
-            PaddingValues(start = 15.dp),
-            onClick = {
-                if(viewModel.isPowerOn.value) {
-                    //WebSocketClient.sendMessage(textInput)
-                    viewModel.setDisplayText("Message sent")
-                    viewModel.addLogMessage(textInput)
-                }
-            }
-        )
-    }
-}
+//@Composable
+//fun InputData(viewModel: RobotControllerViewModel){
+//    var textInput: String by rememberSaveable { mutableStateOf("") }
+//
+//    Row(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .padding(vertical = 10.dp),
+//        verticalAlignment = Alignment.CenterVertically,
+//        horizontalArrangement = Arrangement.SpaceEvenly
+//    ){
+//        TextField(
+//            value = textInput,
+//            onValueChange = { newText ->
+//                textInput = newText
+//            },
+//            placeholder = {
+//                Text(text = "Data input")
+//            }
+//        )
+//        CustomButton(
+//            text = "Send",
+//            isEnabled = true,
+//            PaddingValues(start = 15.dp),
+//            onClick = {
+//                if(viewModel.isPowerOn.value) {
+//                    //WebSocketClient.sendMessage(textInput)
+//                    viewModel.setDisplayText("Message sent")
+//                    viewModel.addLogMessage(textInput)
+//                }
+//            }
+//        )
+//    }
+//}
 
 // Power button to turn on/off connection
 @Composable
@@ -1144,6 +1172,30 @@ fun Power(viewModel: RobotControllerViewModel, isLandscape: Boolean) {
 }
 
 @Composable
+fun MonitorSwitch(
+    viewModel: RobotControllerViewModel,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier.padding(0.dp, 10.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Switch(
+            checked = false,
+            onCheckedChange = { },
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = Color(0xFFFFC107),
+                checkedTrackColor = Color(0xFFF6B359),
+                uncheckedThumbColor = Color.LightGray,
+                uncheckedTrackColor = Color.LightGray
+            )
+        )
+        Text("Map")
+    }
+}
+
+@Composable
 fun JoyStickToggle(viewModel: RobotControllerViewModel) {
     Switch(
         checked = viewModel.usingJoystick.value,
@@ -1172,7 +1224,7 @@ fun JoyStick(viewModel: RobotControllerViewModel = hiltViewModel(), filter: Poin
 
         }
         .pointerInput(filter) {
-            detectDragGestures {_, _ -> Log.d("Debug", "Dragging")}
+            detectDragGestures { _, _ -> Log.d("Debug", "Dragging") }
             awaitPointerEventScope {
                 val event = awaitPointerEvent()
 
@@ -1201,34 +1253,23 @@ fun JoyStick(viewModel: RobotControllerViewModel = hiltViewModel(), filter: Poin
 // TODO : This will be camera input, change it to do so ASAP
 // Temporarily a monitor: display text/action that's taking place/happening
 @Composable
-fun ShowMonitor(displayText: String){ //
-    Column(
-        // background
+fun ShowMonitor(displayText: String){
+    // Monitor
+    Box(
         modifier = Modifier
-            .fillMaxSize() // makes the column take up the full available space
+            .fillMaxSize()
+            .height(100.dp) // sets the height of the Box to 200dp
+            .border(2.dp, MonitorBgColor) // to simulate a monitor border
             .background(MonitorBgColor),
-        verticalArrangement = Arrangement.SpaceEvenly, // evenly spaces the header, main, and footer
-        horizontalAlignment = Alignment.CenterHorizontally // centers horizontally (optional)
+        contentAlignment = Alignment.Center // center content
     ) {
-        // Monitor
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f) // assign how much space vertically
-                .height(100.dp) // sets the height of the Box to 200dp
-                .padding(16.dp) // adds padding around the Box (inside space)
-                .border(2.dp, MonitorBgColor) // to simulate a monitor border
-                .background(MonitorBgColor),
-            contentAlignment = Alignment.Center // center content
-        ) {
-            Text(
-                displayText,
-                fontSize = MonitorFontSize ,
-                color = MonitorTextColor,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.align(Alignment.Center) // center text horizontally & vertically
-            )
-        }
+        Text(
+            displayText,
+            fontSize = MonitorFontSize ,
+            color = MonitorTextColor,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.align(Alignment.Center) // center text horizontally & vertically
+        )
     }
 }
 
@@ -1314,7 +1355,6 @@ fun Lift(viewModel: RobotControllerViewModel, isLandscape: Boolean) { // 'Lift' 
         },
         onRelease = {
             viewModel.setDisplayText("")
-            viewModel.sendZeroLift()
         },
         modifier = Modifier
             .clip(if (isLandscape) RoundedCornerShape(32.dp) else CircleShape)
@@ -1352,7 +1392,6 @@ fun Lower(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         },
         onRelease = {
             viewModel.setDisplayText("")
-            viewModel.sendZeroLift()
         },
         modifier = Modifier
             .clip(if (isLandscape) RoundedCornerShape(32.dp) else CircleShape)
@@ -1505,14 +1544,12 @@ fun Extend(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         shape = RoundedCornerShape(35.dp),
         onPress = {
             if(viewModel.isPowerOn.value) {
-                viewModel.extend()
-                //viewModel.webSocketManager.sendMessage("Extend")
+                viewModel.webSocketManager.sendMessage("Extend")
                 viewModel.setDisplayText("Extending arm...")
             }
         },
         onRelease = {
             viewModel.setDisplayText("")
-            viewModel.sendZeroRetract()
         },
         modifier = Modifier
             .clip(if (isLandscape) RoundedCornerShape(35.dp) else CircleShape)
@@ -1533,14 +1570,12 @@ fun Retract(viewModel: RobotControllerViewModel, isLandscape: Boolean){
         shape = RoundedCornerShape(35.dp),
         onPress = {
             if(viewModel.isPowerOn.value) {
-                viewModel.retract()
-                //viewModel.webSocketManager.sendMessage("Retract")
+                viewModel.webSocketManager.sendMessage("Retract")
                 viewModel.setDisplayText("Retracting arm...")
             }
         },
         onRelease = {
             viewModel.setDisplayText("")
-            viewModel.sendZeroRetract()
         },
         modifier = Modifier
             .clip(if (isLandscape) RoundedCornerShape(35.dp) else CircleShape)
