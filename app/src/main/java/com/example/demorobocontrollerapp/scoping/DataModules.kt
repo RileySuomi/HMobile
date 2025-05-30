@@ -80,7 +80,7 @@ object DatabaseModule  {
                 db.execSQL("INSERT INTO settingsObjects (settingName, settingDisplayName, settingValue, editable) VALUES" +
                         "('robotIp', 'Robot IP', '72.233.179.204', 1)," +
                         "('robotPort', 'Robot Port', '65432', 1)," +
-                        "('minnieMode', 'Minnie Mode?', 'True');")
+                        "('historyLength', 'History length', '20', 1);")
             }
         }).build()
 

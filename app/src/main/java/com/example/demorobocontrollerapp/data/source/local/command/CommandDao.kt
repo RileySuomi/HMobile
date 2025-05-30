@@ -1,6 +1,7 @@
 package com.example.demorobocontrollerapp.data.source.local.command
 
 import androidx.room.Dao
+import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
@@ -12,6 +13,9 @@ interface CommandDao {
 
     @Upsert
     suspend fun upsert(command: LocalCommand)
+
+    @Query("SELECT id, command, timestamp FROM sentCommands WHERE timestamp")
+    suspend fun getForUndo()
 
     @Query("DELETE FROM sentCommands WHERE id = :commandId")
     suspend fun deletedById(commandId: Int): Int
