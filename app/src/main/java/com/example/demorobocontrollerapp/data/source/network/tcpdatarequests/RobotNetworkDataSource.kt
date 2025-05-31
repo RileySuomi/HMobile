@@ -115,11 +115,11 @@ class RobotNetworkDataSource @Inject constructor() : NetworkResultDataSource {
             val width = json.getInt("width")
             val height = json.getInt("height")
             val resolution = json.getDouble("resolution").toFloat()
-            //val origin = json.getJSONObject("origin")
-           // val originX = origin.getDouble("x").toFloat()
-            //val originY = origin.getDouble("y").toFloat()
+            val origin = json.getJSONObject("origin")
+            val originX = origin.getDouble("x").toFloat()
+            val originY = origin.getDouble("y").toFloat()
 
-            mapMetadata = MapMetadata(resolution, 0f, 0f, width, height)
+            mapMetadata = MapMetadata(resolution, originX, originY, width, height)
 
             val dataArray = json.getJSONArray("data")
 
