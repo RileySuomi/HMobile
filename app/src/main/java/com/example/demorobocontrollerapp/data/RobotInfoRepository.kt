@@ -1,7 +1,8 @@
 package com.example.demorobocontrollerapp.data
 
 import android.graphics.Bitmap
-import com.example.demorobocontrollerapp.data.source.network.tcpdatarequests.GrabberInstruction
+import com.example.demorobocontrollerapp.data.GrabberInstruction
+import com.example.demorobocontrollerapp.data.source.local.command.LocalCommand
 import com.example.demorobocontrollerapp.data.source.network.tcpdatarequests.MapMetadata
 import kotlinx.coroutines.flow.Flow
 
@@ -12,6 +13,12 @@ interface RobotInfoRepository {
     fun endCommunication()
 
     suspend fun giveMeMap(): Bitmap
+
+    suspend fun undo(): Boolean
+
+    suspend fun redo(): Boolean
+
+    suspend fun dropUndoCache()
 
     suspend fun updateSettings(key: String, screenName: String, value: String, editable: Boolean = true): Int
 

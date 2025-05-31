@@ -1,6 +1,7 @@
 package com.example.demorobocontrollerapp.data.source.network.tcpdatarequests
 
 import android.graphics.Bitmap
+import com.example.demorobocontrollerapp.data.GrabberInstruction
 import com.example.demorobocontrollerapp.data.source.network.tcpdatarequests.MapMetadata
 
 interface NetworkResultDataSource {

@@ -8,7 +8,10 @@ import com.google.type.DateTime
     tableName = "sentCommands"
 )
 data class LocalCommand (
-    @PrimaryKey(autoGenerate = true) val id: Int,
-    var command: String,
-    var timestamp: DateTime
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    var type: Int,
+    var val1: Float,
+    var val2: Float = 0f,
+    var timestamp: Long = System.currentTimeMillis(),
+    var undone: Boolean = false
 )

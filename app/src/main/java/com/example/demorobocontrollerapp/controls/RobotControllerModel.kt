@@ -10,6 +10,7 @@ import java.io.BufferedReader
 import android.graphics.Color
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.set
+import com.example.demorobocontrollerapp.data.GrabberInstruction
 
 data class RobotControllerModel(
     var displayMessage: String,
@@ -28,7 +29,6 @@ data class JoystickModel (
     var centerY: Float = length / 2
 )
 
-enum class GrabberInstruction{CLOSE, OPEN, IDLE}
 //enum class GrabberStatus{CLOSING, OPENING, CLOSED, OPENED}
 //enum class GrabberMovement{MOVING_UP, MOVING_DOWN, IDLE}
 

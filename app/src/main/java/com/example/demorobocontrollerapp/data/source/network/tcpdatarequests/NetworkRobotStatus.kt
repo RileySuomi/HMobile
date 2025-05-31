@@ -1,5 +1,7 @@
 package com.example.demorobocontrollerapp.data.source.network.tcpdatarequests
 
+import com.example.demorobocontrollerapp.data.GrabberInstruction
+
 
 data class NetworkMovementInstruction(
     val speed: Float,
@@ -51,12 +53,6 @@ data class MapMetadata(
     val width: Int,
     val height: Int
 )
-
-enum class GrabberInstruction {
-    Close,
-    Open,
-    Idle
-}
 
 enum class ElevatorStatus {
     MovingUp,

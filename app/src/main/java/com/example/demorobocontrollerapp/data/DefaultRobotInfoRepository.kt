@@ -1,30 +1,22 @@
 package com.example.demorobocontrollerapp.data
 
 import android.graphics.Bitmap
-import androidx.compose.runtime.collectAsState
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.demorobocontrollerapp.data.source.local.command.CommandDao
 import com.example.demorobocontrollerapp.data.source.local.command.LocalCommand
 import com.example.demorobocontrollerapp.data.source.local.settings.daoversion.LocalSetting
 import com.example.demorobocontrollerapp.data.source.local.settings.daoversion.SettingsDao
-import com.example.demorobocontrollerapp.data.source.local.settings.prefversion.DataStoreRepo
-import com.example.demorobocontrollerapp.data.source.network.tcpdatarequests.GrabberInstruction
-import com.example.demorobocontrollerapp.data.source.network.tcpdatarequests.NetworkGrabberInstruction
-import com.example.demorobocontrollerapp.data.source.network.tcpdatarequests.NetworkMovementInstruction
 import com.example.demorobocontrollerapp.data.source.network.tcpdatarequests.NetworkResultDataSource
 import com.example.demorobocontrollerapp.scoping.ApplicationScope
 import com.example.demorobocontrollerapp.scoping.DefaultDispatcher
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 import android.util.Log
+import com.example.demorobocontrollerapp.data.GrabberInstruction
 import com.example.demorobocontrollerapp.data.source.network.tcpdatarequests.MapMetadata
 
 @Singleton
@@ -76,20 +68,55 @@ class DefaultRobotInfoRepository @Inject constructor(
     }
 
     override suspend fun sendMovement(speed: Float, angular: Float) {
+        localCommandDataSource.updateAndRemove(LocalCommand(type = CommandType.SendMove.value, val1 = speed, val2 = angular))
         networkResultDataSource.sendMovement(speed, angular)
-        localCommandDataSource.upsert(LocalCommand(commandIndex, com.example.demorobocontrollerapp.data.source.network.tcpdatarequests.NetworkMovementInstruction(
-            speed,
-            angular
-        ).toString()))
-        commandIndex += 1
     }
 
-    override suspend fun sendGrabber(instruction: GrabberInstruction) {
+    override suspend fun sendGrabber(instruction: com.example.demorobocontrollerapp.data.GrabberInstruction) {
+        localCommandDataSource.updateAndRemove(LocalCommand(type = CommandType.SendGrab.value, val1 = instruction.value.toFloat()))
         networkResultDataSource.sendGrabber(instruction)
-        localCommandDataSource.upsert(LocalCommand(commandIndex, NetworkGrabberInstruction(
-            instruction
-        ).toString()))
-        commandIndex += 1
+    }
+
+    override suspend fun dropUndoCache() {
+        localCommandDataSource.deleteCache()
+    }
+
+    override suspend fun undo(): Boolean {
+        val command = localCommandDataSource.getAndMarkUndo()
+        command?.let {
+            val c = LocalToData(it)
+
+            when (c.commandType) {
+                CommandType.SendMove -> {
+                    networkResultDataSource.sendMovement(-c.speed, c.angularSpeed)
+                    return true
+                }
+                else -> {
+                    return false
+                }
+            }
+        } ?: run {
+            return false;
+        }
+    }
+
+    override suspend fun redo(): Boolean {
+        val command = localCommandDataSource.getAndMarkRedo()
+        command?.let {
+            val c = LocalToData(it)
+
+            when (c.commandType) {
+                CommandType.SendMove -> {
+                    networkResultDataSource.sendMovement(c.speed, c.angularSpeed)
+                    return true
+                }
+                else -> {
+                    return false
+                }
+            }
+        } ?: run {
+            return false
+        }
     }
 
     override suspend fun sendLiftLower(height: Float) {

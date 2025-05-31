@@ -21,6 +21,7 @@ import javax.net.ssl.SSLSocket
 import javax.net.ssl.SSLSocketFactory
 import android.graphics.Bitmap.Config
 import android.graphics.Bitmap.createBitmap
+import com.example.demorobocontrollerapp.data.GrabberInstruction
 import com.example.demorobocontrollerapp.data.source.network.tcpdatarequests.MapMetadata
 import java.io.InputStreamReader
 

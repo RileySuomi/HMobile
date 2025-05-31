@@ -41,7 +41,6 @@ abstract class RepositoryModule {
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class DataSourceModule {
-
     @Singleton
     @Binds
     abstract fun bindNetworkDataSource(dataSource: RobotNetworkDataSource): NetworkResultDataSource
@@ -60,8 +59,14 @@ object DatabaseModule  {
             CommandDatabase::class.java,
             "Commands.db"
 
-        ).build()
+        ).addCallback(object: RoomDatabase.Callback() {
+            override fun onOpen(db: SupportSQLiteDatabase) {
+                db.execSQL("DELETE FROM sentCommands")
+            }
+        }).fallbackToDestructiveMigration(true).build()
     }
+
+
 
     @Provides
     fun provideCommandsDao(database: CommandDatabase): CommandDao = database.commandDao()
@@ -82,7 +87,8 @@ object DatabaseModule  {
                         "('robotPort', 'Robot Port', '65432', 1)," +
                         "('historyLength', 'History length', '20', 1);")
             }
-        }).build()
+        })
+            .fallbackToDestructiveMigration(true).build()
 
 //            .also { instance -> {
 //            val scope = CoroutineScope(context = Dispatchers.Main)

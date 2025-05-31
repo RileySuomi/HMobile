@@ -621,6 +621,7 @@ fun Undo(viewModel: RobotControllerViewModel){
     IconButton(
         onClick = {
             viewModel.setDisplayText("Undo")
+            viewModel.undoCommand()
         },
         colors = IconButtonDefaults.filledIconButtonColors(Color.White.copy(alpha = .7f))
     ) {
@@ -637,6 +638,7 @@ fun Redo(viewModel: RobotControllerViewModel){
     IconButton(
         onClick = {
             viewModel.setDisplayText("Redo")
+            viewModel.redoCommand()
         },
         colors = IconButtonDefaults.filledIconButtonColors(Color.White.copy(alpha = .7f))
     ) {

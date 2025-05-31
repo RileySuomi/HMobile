@@ -2,19 +2,15 @@
 package com.example.demorobocontrollerapp.controls
 import android.graphics.Bitmap
 import android.util.Log
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.demorobocontrollerapp.data.GrabberInstruction
 import com.example.demorobocontrollerapp.data.RobotInfoRepository
 import com.example.demorobocontrollerapp.data.source.local.settings.prefversion.DataStoreRepo
-import com.example.demorobocontrollerapp.data.source.network.tcpdatarequests.GrabberInstruction
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -26,7 +22,6 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.example.demorobocontrollerapp.data.source.network.unused.WebSocketClient
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 
 @HiltViewModel
 class RobotControllerViewModel @Inject constructor(
@@ -166,6 +161,18 @@ class RobotControllerViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             Log.d("Rotation", "Send hard rotation right")
             robotRepository.sendMovement(0.5f, 1.57f)
+        }
+    }
+
+    fun undoCommand() {
+        viewModelScope.launch(Dispatchers.IO) {
+            robotRepository.undo()
+        }
+    }
+
+    fun redoCommand() {
+        viewModelScope.launch(Dispatchers.IO) {
+            robotRepository.redo()
         }
     }
 

@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.ui.graphics.Color
 import androidx.compose.material3.Text
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.demorobocontrollerapp.NavigationGraph
 import dagger.hilt.android.AndroidEntryPoint
 
